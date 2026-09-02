@@ -30,11 +30,13 @@ services:
       DB_USER: ${DB_USER:-postgres}
       DB_PASSWORD: ${DB_PASSWORD:-postgres}
       JWT_SECRET: ${JWT_SECRET:-changeme}
+      DATABASE_URL: postgres://${DB_USER:-postgres}:${DB_PASSWORD:-postgres}@db:5432/${DB_NAME:-huellatdea}
     ports:
       - '4000:4000'
     volumes:
       - ./backend:/app
       - /app/node_modules
+      - ./database:/database
 
   frontend:
     build: ./frontend
