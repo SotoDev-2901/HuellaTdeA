@@ -9,7 +9,9 @@ export const submitQuestionnaireSchema = z.object({
   transportDaysPerWeek: z.number().int().min(1, 'Selecciona al menos 1 día').max(7),
 
   campusHoursPerDay: z.number().min(0, 'Las horas no pueden ser negativas').max(24),
-  campusSpaces: z.array(z.enum(['aulas', 'biblioteca', 'laboratorios'])).optional(),
+  campusSpaces: z
+    .array(z.enum(['aulas', 'biblioteca', 'laboratorios', 'cafeteria', 'auditorio', 'zonas_verdes']))
+    .optional(),
   usesLaptop: z.boolean(),
   chargesDevices: z.boolean(),
 

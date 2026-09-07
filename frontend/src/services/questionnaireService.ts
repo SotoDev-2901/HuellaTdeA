@@ -3,7 +3,13 @@ import { apiGet, apiPost } from '../lib/api';
 export type TransportMode = 'caminar' | 'bicicleta' | 'moto' | 'carro' | 'transporte_publico';
 export type DietType = 'vegano' | 'vegetariano' | 'mixto_moderado' | 'carne_frecuente';
 export type WasteFrequency = 'baja' | 'media' | 'alta';
-export type CampusSpace = 'aulas' | 'biblioteca' | 'laboratorios';
+export type CampusSpace =
+  | 'aulas'
+  | 'biblioteca'
+  | 'laboratorios'
+  | 'cafeteria'
+  | 'auditorio'
+  | 'zonas_verdes';
 export type WasteComponent = 'plastico' | 'papel' | 'organico';
 
 export interface QuestionnairePayload {

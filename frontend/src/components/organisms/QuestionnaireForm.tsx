@@ -5,6 +5,15 @@ import {
   PiMotorcycleBold,
   PiCarSimpleBold,
   PiBusBold,
+  PiChalkboardBold,
+  PiBooksBold,
+  PiFlaskBold,
+  PiForkKnifeBold,
+  PiMicrophoneStageBold,
+  PiTreeBold,
+  PiRecycleBold,
+  PiNewspaperClippingBold,
+  PiLeafBold,
 } from 'react-icons/pi';
 import { FiCoffee, FiTrash2 } from 'react-icons/fi';
 import { Button } from '../atoms/Button';
@@ -12,7 +21,6 @@ import { Input } from '../atoms/Input';
 import { OptionCard } from '../atoms/OptionCard';
 import { IconOptionCard } from '../atoms/IconOptionCard';
 import { Slider } from '../atoms/Slider';
-import { Checkbox } from '../atoms/Checkbox';
 import type {
   CampusSpace,
   DietType,
@@ -58,10 +66,13 @@ const TRANSPORT_MODES: { value: TransportMode; label: string; icon: typeof PiBus
   { value: 'transporte_publico', label: 'T. Público', icon: PiBusBold },
 ];
 
-const CAMPUS_SPACES: { value: CampusSpace; label: string }[] = [
-  { value: 'aulas', label: 'Aulas' },
-  { value: 'biblioteca', label: 'Biblioteca' },
-  { value: 'laboratorios', label: 'Laboratorios' },
+const CAMPUS_SPACES: { value: CampusSpace; label: string; icon: typeof PiBusBold }[] = [
+  { value: 'aulas', label: 'Aulas', icon: PiChalkboardBold },
+  { value: 'biblioteca', label: 'Biblioteca', icon: PiBooksBold },
+  { value: 'laboratorios', label: 'Laboratorios', icon: PiFlaskBold },
+  { value: 'cafeteria', label: 'Cafetería', icon: PiForkKnifeBold },
+  { value: 'auditorio', label: 'Auditorio', icon: PiMicrophoneStageBold },
+  { value: 'zonas_verdes', label: 'Zonas verdes', icon: PiTreeBold },
 ];
 
 const WASTE_FREQUENCIES: { value: WasteFrequency; label: string; description: string }[] = [
@@ -70,10 +81,10 @@ const WASTE_FREQUENCIES: { value: WasteFrequency; label: string; description: st
   { value: 'alta', label: 'Alta', description: 'Múltiples envases y papeles diarios' },
 ];
 
-const WASTE_COMPONENTS: { value: WasteComponent; label: string }[] = [
-  { value: 'plastico', label: 'Plástico' },
-  { value: 'papel', label: 'Papel' },
-  { value: 'organico', label: 'Orgánico' },
+const WASTE_COMPONENTS: { value: WasteComponent; label: string; icon: typeof PiBusBold }[] = [
+  { value: 'plastico', label: 'Plástico', icon: PiRecycleBold },
+  { value: 'papel', label: 'Papel', icon: PiNewspaperClippingBold },
+  { value: 'organico', label: 'Orgánico', icon: PiLeafBold },
 ];
 
 const DIET_TYPES: { value: DietType; label: string }[] = [
@@ -231,15 +242,16 @@ export function QuestionnaireForm({
 
           <div>
             <label className="mb-1.5 block text-sm font-medium text-graphite">
-              ¿En qué espacios pasas más tiempo?
+              ¿En qué espacios pasas más tiempo? (Selecciona todos los que apliquen)
             </label>
-            <div className="flex flex-col gap-2">
+            <div className="grid grid-cols-3 gap-2">
               {CAMPUS_SPACES.map((space) => (
-                <Checkbox
+                <IconOptionCard
                   key={space.value}
+                  icon={space.icon}
                   label={space.label}
-                  checked={values.campusSpaces.includes(space.value)}
-                  onChange={() => onChange('campusSpaces', toggleInArray(values.campusSpaces, space.value))}
+                  selected={values.campusSpaces.includes(space.value)}
+                  onClick={() => onChange('campusSpaces', toggleInArray(values.campusSpaces, space.value))}
                 />
               ))}
             </div>
@@ -336,13 +348,14 @@ export function QuestionnaireForm({
             <label className="mb-1.5 block text-sm font-medium text-graphite">
               ¿Qué tipo de residuos generas más? (Selecciona todos los que apliquen)
             </label>
-            <div className="flex flex-col gap-2">
+            <div className="grid grid-cols-3 gap-2">
               {WASTE_COMPONENTS.map((component) => (
-                <Checkbox
+                <IconOptionCard
                   key={component.value}
+                  icon={component.icon}
                   label={component.label}
-                  checked={values.wasteComposition.includes(component.value)}
-                  onChange={() =>
+                  selected={values.wasteComposition.includes(component.value)}
+                  onClick={() =>
                     onChange('wasteComposition', toggleInArray(values.wasteComposition, component.value))
                   }
                 />

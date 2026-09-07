@@ -12,9 +12,9 @@ const brand = { title: 'TDEA HUELLA', subtitle: 'Carbon Tracking' };
 
 export function QuestionnairePage() {
   return (
-    <AppShell navItems={navItems} brand={brand} topBarTitle="Footprint Wizard">
-      <div className="mx-auto max-w-xl">
-        <div className="rounded-card bg-surface p-6 shadow-soft">
+    <AppShell navItems={navItems} brand={brand}>
+      <div className="mx-auto max-w-3xl">
+        <div className="rounded-card bg-surface p-8 shadow-soft">
           <QuestionnaireContainer />
         </div>
       </div>

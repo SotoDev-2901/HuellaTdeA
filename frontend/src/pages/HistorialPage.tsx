@@ -24,7 +24,7 @@ export function HistorialPage() {
   }, []);
 
   return (
-    <AppShell navItems={navItems} brand={brand} topBarTitle="Historial">
+    <AppShell navItems={navItems} brand={brand}>
       <div className="rounded-card bg-surface p-6 shadow-soft">
         <h2 className="font-display text-lg font-bold text-ink">Tus cuestionarios respondidos</h2>
         <p className="mt-1 text-sm text-graphite">
