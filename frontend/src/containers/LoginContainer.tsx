@@ -15,6 +15,7 @@ export function LoginContainer() {
   const [values, setValues] = useState<LoginFormValues>(initialValues);
   const [errors, setErrors] = useState<LoginFormErrors>({});
   const [loading, setLoading] = useState(false);
+  const [resending, setResending] = useState(false);
   const { setSession } = useAuth();
   const navigate = useNavigate();
 
@@ -40,10 +41,24 @@ export function LoginContainer() {
       setSession(user, token, values.remember);
       navigate('/dashboard');
     } catch (err) {
-      const message = err instanceof ApiError ? err.message : 'No se pudo iniciar sesión';
-      setErrors({ form: message });
+      if (err instanceof ApiError && err.status === 403) {
+        setErrors({ form: err.message, unverified: true });
+      } else {
+        const message = err instanceof ApiError ? err.message : 'No se pudo iniciar sesión';
+        setErrors({ form: message });
+      }
     } finally {
       setLoading(false);
+    }
+  }
+
+  async function handleResendVerification() {
+    if (!values.email) return;
+    setResending(true);
+    try {
+      await authService.resendVerification(values.email);
+    } finally {
+      setResending(false);
     }
   }
 
@@ -52,8 +67,10 @@ export function LoginContainer() {
       values={values}
       errors={errors}
       loading={loading}
+      resending={resending}
       onChange={handleChange}
       onSubmit={handleSubmit}
+      onResendVerification={handleResendVerification}
     />
   );
 }

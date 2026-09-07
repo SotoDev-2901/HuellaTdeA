@@ -4,6 +4,10 @@ import { ProtectedRoute } from './components/molecules/ProtectedRoute';
 import { GuestRoute } from './components/molecules/GuestRoute';
 import { LoginPage } from './pages/LoginPage';
 import { RegisterPage } from './pages/RegisterPage';
+import { CheckEmailPage } from './pages/CheckEmailPage';
+import { VerifyEmailPage } from './pages/VerifyEmailPage';
+import { ForgotPasswordPage } from './pages/ForgotPasswordPage';
+import { ResetPasswordPage } from './pages/ResetPasswordPage';
 import { DashboardPlaceholderPage } from './pages/DashboardPlaceholderPage';
 
 function DefaultRedirect() {
@@ -30,6 +34,10 @@ function AppRoutes() {
           </GuestRoute>
         }
       />
+      <Route path="/revisa-tu-correo" element={<CheckEmailPage />} />
+      <Route path="/verificar-correo" element={<VerifyEmailPage />} />
+      <Route path="/olvide-mi-contrasena" element={<ForgotPasswordPage />} />
+      <Route path="/restablecer-contrasena" element={<ResetPasswordPage />} />
       <Route
         path="/dashboard"
         element={
