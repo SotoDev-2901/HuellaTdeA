@@ -7,6 +7,7 @@ import { router as questionnaireRouter } from './modules/questionnaire/questionn
 import { router as consumptionRouter } from './modules/consumption/consumption.routes.js';
 import { router as footprintRouter } from './modules/footprint/footprint.routes.js';
 import { router as reportsRouter } from './modules/reports/reports.routes.js';
+import { errorHandler } from './shared/middlewares/errorHandler.js';
 
 export const app = express();
 
@@ -21,3 +22,5 @@ app.use('/api/questionnaire', questionnaireRouter);
 app.use('/api/consumption', consumptionRouter);
 app.use('/api/footprint', footprintRouter);
 app.use('/api/reports', reportsRouter);
+
+app.use(errorHandler);
