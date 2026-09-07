@@ -82,7 +82,8 @@ test('HU-04/HU-08: caminar y dieta vegana no generan emisión de transporte, y e
   assert.equal(Number(r.transport_kg_co2e), 0);
   assert.ok(Number(r.devices_kg_co2e) > 0);
   assert.ok(Number(r.waste_kg_co2e) > 0);
-  assert.equal(Number(r.diet_kg_co2e), 500);
+  // 500 kg/año (banda vegano) prorrateado a 5 días/semana de asistencia, no el año completo
+  assert.equal(Number(r.diet_kg_co2e), Math.round(((500 / 365) * 5 * 52) * 100) / 100);
 
   const expectedTotal =
     Number(r.transport_kg_co2e) +
@@ -130,6 +131,30 @@ test('HU-08: mayor frecuencia de residuos genera mayor huella de residuos', asyn
   const low = await post('/api/questionnaire', studentToken, { ...basePayload, wasteFrequency: 'baja' });
   const high = await post('/api/questionnaire', studentToken, { ...basePayload, wasteFrequency: 'alta' });
   assert.ok(Number(high.data.response.waste_kg_co2e) > Number(low.data.response.waste_kg_co2e));
+});
+
+test('HU-08: asistir menos días reduce proporcionalmente alimentación y residuos (no solo transporte/dispositivos)', async () => {
+  const oneDay = await post('/api/questionnaire', studentToken, {
+    ...basePayload,
+    transportDaysPerWeek: 1,
+    dietType: 'carne_frecuente',
+    wasteFrequency: 'alta',
+  });
+  const fiveDays = await post('/api/questionnaire', studentToken, {
+    ...basePayload,
+    transportDaysPerWeek: 5,
+    dietType: 'carne_frecuente',
+    wasteFrequency: 'alta',
+  });
+
+  assert.ok(
+    Number(fiveDays.data.response.diet_kg_co2e) > Number(oneDay.data.response.diet_kg_co2e),
+    'la alimentación debe escalar con los días de asistencia',
+  );
+  assert.ok(
+    Number(fiveDays.data.response.waste_kg_co2e) > Number(oneDay.data.response.waste_kg_co2e),
+    'los residuos deben escalar con los días de asistencia',
+  );
 });
 
 test('HU-05 (historial): el usuario ve sus propias respuestas guardadas', async () => {

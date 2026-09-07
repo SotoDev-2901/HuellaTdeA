@@ -1,6 +1,12 @@
 /**
  * Factores de emisión usados para el cálculo de huella de carbono individual (HU-08).
  * Cada valor cita su fuente para que sea verificable en el informe técnico.
+ *
+ * Regla general: todo lo que se pregunta es sobre hábitos DENTRO del campus, así que toda
+ * categoría (transporte, dispositivos, residuos, alimentación) se escala por
+ * `transportDaysPerWeek` — los días que la persona realmente asiste. Si alguien va 1 día a la
+ * semana, su huella atribuible a la universidad en cada categoría debe ser proporcionalmente
+ * menor que la de alguien que va 5 días, sin excepciones.
  */
 
 export type TransportMode = 'caminar' | 'bicicleta' | 'moto' | 'carro' | 'transporte_publico';
@@ -51,19 +57,23 @@ const WASTE_KG_CO2E_PER_KG = 1.54;
 
 /**
  * Los residuos se reportan por frecuencia percibida (baja/media/alta), no en kg exactos, porque
- * nadie sabe de memoria cuántos kg genera — se convierte a un kg/semana asumido, documentado aquí,
- * antes de aplicar el factor real de emisión por kg.
+ * nadie sabe de memoria cuántos kg genera. Se asume un kg POR DÍA que la persona asiste al campus
+ * (no por semana fija), para que alguien que va 1 día no cargue con la misma huella que alguien
+ * que va 5 días con la misma frecuencia percibida.
  */
-const WASTE_FREQUENCY_KG_PER_WEEK: Record<WasteFrequency, number> = {
-  baja: 0.5,
-  media: 1.5,
-  alta: 3,
+const WASTE_FREQUENCY_KG_PER_DAY: Record<WasteFrequency, number> = {
+  baja: 0.15,
+  media: 0.4,
+  alta: 0.8,
 };
 
 /**
  * Fuente: Poore & Nemecek (2018), "Reducing food's environmental impacts through producers and
- * consumers", Science 360(6392). Valores anuales aproximados por banda de dieta, derivados de las
- * medianas de huella por tipo de dieta reportadas en el estudio.
+ * consumers", Science 360(6392). Estos valores representan la huella ANUAL de dieta completa según
+ * banda (vegano/vegetariano/mixto/carne frecuente). Como el cuestionario solo pregunta por hábitos
+ * dentro del campus, se dividen entre 365 para obtener un valor diario, y luego se escalan por los
+ * días reales que la persona asiste — igual que las demás categorías — en vez de aplicar la huella
+ * anual completa sin importar cuánto tiempo pasa en la universidad.
  */
 const DIET_KG_CO2E_PER_YEAR: Record<DietType, number> = {
   vegano: 500,
@@ -71,6 +81,7 @@ const DIET_KG_CO2E_PER_YEAR: Record<DietType, number> = {
   mixto_moderado: 1200,
   carne_frecuente: 2000,
 };
+const DAYS_PER_YEAR = 365;
 
 const WEEKS_PER_YEAR = 52;
 
@@ -109,14 +120,15 @@ export function calculateDeviceEmissions(
   return kwhPerYear * ELECTRICITY_KG_CO2E_PER_KWH;
 }
 
-export function wasteFrequencyToKgPerWeek(frequency: WasteFrequency): number {
-  return WASTE_FREQUENCY_KG_PER_WEEK[frequency];
+export function wasteFrequencyToKgPerWeek(frequency: WasteFrequency, daysPerWeek: number): number {
+  return WASTE_FREQUENCY_KG_PER_DAY[frequency] * daysPerWeek;
 }
 
 export function calculateWasteEmissions(kgPerWeek: number): number {
   return kgPerWeek * WEEKS_PER_YEAR * WASTE_KG_CO2E_PER_KG;
 }
 
-export function calculateDietEmissions(dietType: DietType): number {
-  return DIET_KG_CO2E_PER_YEAR[dietType];
+export function calculateDietEmissions(dietType: DietType, daysPerWeek: number): number {
+  const dailyFootprint = DIET_KG_CO2E_PER_YEAR[dietType] / DAYS_PER_YEAR;
+  return dailyFootprint * daysPerWeek * WEEKS_PER_YEAR;
 }

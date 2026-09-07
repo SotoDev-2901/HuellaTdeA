@@ -45,9 +45,9 @@ export function calculateFootprint(input: FootprintInput): FootprintResult {
       input.transportDaysPerWeek,
     ),
   );
-  const wasteKgPerWeek = wasteFrequencyToKgPerWeek(input.wasteFrequency);
+  const wasteKgPerWeek = wasteFrequencyToKgPerWeek(input.wasteFrequency, input.transportDaysPerWeek);
   const wasteKgCo2e = round2(calculateWasteEmissions(wasteKgPerWeek));
-  const dietKgCo2e = round2(calculateDietEmissions(input.dietType));
+  const dietKgCo2e = round2(calculateDietEmissions(input.dietType, input.transportDaysPerWeek));
 
   return {
     transportKgCo2e,
