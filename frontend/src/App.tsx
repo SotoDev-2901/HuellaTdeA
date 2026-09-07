@@ -11,6 +11,7 @@ import { ForgotPasswordPage } from './pages/ForgotPasswordPage';
 import { ResetPasswordPage } from './pages/ResetPasswordPage';
 import { DashboardPlaceholderPage } from './pages/DashboardPlaceholderPage';
 import { ZonesPage } from './pages/ZonesPage';
+import { QuestionnairePage } from './pages/QuestionnairePage';
 
 function DefaultRedirect() {
   const { token, user } = useAuth();
@@ -54,6 +55,14 @@ function AppRoutes() {
         element={
           <ProtectedRoute>
             <DashboardEntry />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/cuestionario"
+        element={
+          <ProtectedRoute>
+            <QuestionnairePage />
           </ProtectedRoute>
         }
       />

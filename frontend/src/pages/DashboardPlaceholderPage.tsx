@@ -1,3 +1,4 @@
+import { Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 
 export function DashboardPlaceholderPage() {
@@ -12,6 +13,12 @@ export function DashboardPlaceholderPage() {
         Sesión iniciada como <span className="font-medium capitalize">{user?.role}</span>. El
         dashboard se construye en el Sprint 4 (HU-09).
       </p>
+      <Link
+        to="/cuestionario"
+        className="rounded-button bg-tdea-green px-4 py-2 text-sm font-bold text-white hover:bg-tdea-green-dark"
+      >
+        Responder cuestionario de huella individual
+      </Link>
       <button
         onClick={clearSession}
         className="rounded-button border border-tdea-blush-border bg-white px-4 py-2 text-sm font-medium text-graphite hover:bg-tdea-blush"
