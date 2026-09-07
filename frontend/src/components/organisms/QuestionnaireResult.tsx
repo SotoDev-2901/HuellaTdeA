@@ -48,6 +48,7 @@ function ComingSoonCard({ icon: Icon, title, description }: { icon: typeof FiGif
 export function QuestionnaireResult({ result, onRestart }: QuestionnaireResultProps) {
   const breakdown = {
     transporte: Number(result.transport_kg_co2e),
+    instalaciones: Number(result.facilities_kg_co2e),
     dispositivos: Number(result.devices_kg_co2e),
     residuos: Number(result.waste_kg_co2e),
     alimentacion: Number(result.diet_kg_co2e),
@@ -75,6 +76,7 @@ export function QuestionnaireResult({ result, onRestart }: QuestionnaireResultPr
 
       <div className="rounded-input bg-tdea-blush p-4">
         <Row label="Transporte" value={breakdown.transporte} max={max} />
+        <Row label="Instalaciones" value={breakdown.instalaciones} max={max} />
         <Row label="Dispositivos" value={breakdown.dispositivos} max={max} />
         <Row label="Residuos" value={breakdown.residuos} max={max} />
         <Row label="Alimentación" value={breakdown.alimentacion} max={max} />

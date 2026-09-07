@@ -12,6 +12,7 @@
 export type TransportMode = 'caminar' | 'bicicleta' | 'moto' | 'carro' | 'transporte_publico';
 export type DietType = 'vegano' | 'vegetariano' | 'mixto_moderado' | 'carne_frecuente';
 export type WasteFrequency = 'baja' | 'media' | 'alta';
+export type CampusSpace = 'aulas' | 'biblioteca' | 'laboratorios' | 'cafeteria' | 'auditorio' | 'zonas_verdes';
 
 /**
  * Fuente: FECOC 2016 (Factores de Emisión de los Combustibles Colombianos), UPME / MVC Colombia.
@@ -42,11 +43,30 @@ const BUS_KG_CO2E_PER_PASSENGER_KM = 0.089;
  */
 const ELECTRICITY_KG_CO2E_PER_KWH = 0.199;
 
-/** Potencia promedio asumida de un laptop en uso activo. Supuesto declarado. */
+/** Potencia promedio asumida de un laptop personal en uso activo. Supuesto declarado. */
 const LAPTOP_POWER_KW = 0.065;
 
 /** Energía asumida de una carga completa de celular (batería típica ~15 Wh). Supuesto declarado. */
 const PHONE_CHARGE_KWH = 0.015;
+
+/**
+ * "Instalaciones" es distinto de "Dispositivos": representa la electricidad del EDIFICIO
+ * (iluminación, aire acondicionado/ventilación, equipos compartidos como computadores de sala o
+ * proyectores) que se consume por la sola presencia de la persona en el campus, exista o no un
+ * dispositivo personal de por medio. Son estimaciones de ingeniería tipo ASHRAE (carga eléctrica
+ * típica por ocupante en edificios académicos), no un factor oficial citado — declarado aquí para
+ * poder ajustarse si se consigue una medición real del campus. Aulas se estimó más alto que
+ * biblioteca porque suelen tener computadores de sala y/o proyectores de uso compartido.
+ */
+const FACILITY_KW_PER_PERSON_BY_SPACE: Record<CampusSpace, number> = {
+  aulas: 0.18,
+  laboratorios: 0.35,
+  auditorio: 0.15,
+  cafeteria: 0.12,
+  biblioteca: 0.1,
+  zonas_verdes: 0.02,
+};
+const DEFAULT_FACILITY_KW_PER_PERSON = 0.12;
 
 /**
  * Fuente: Directrices del IPCC 2006 para Inventarios Nacionales de GEI, Volumen 5 (Desechos),
@@ -117,6 +137,21 @@ export function calculateDeviceEmissions(
     kwhPerYear += daysPerWeek * WEEKS_PER_YEAR * PHONE_CHARGE_KWH;
   }
 
+  return kwhPerYear * ELECTRICITY_KG_CO2E_PER_KWH;
+}
+
+export function calculateFacilitiesEmissions(
+  campusSpaces: CampusSpace[],
+  campusHoursPerDay: number,
+  daysPerWeek: number,
+): number {
+  const kwPerPerson =
+    campusSpaces.length > 0
+      ? campusSpaces.reduce((sum, space) => sum + FACILITY_KW_PER_PERSON_BY_SPACE[space], 0) /
+        campusSpaces.length
+      : DEFAULT_FACILITY_KW_PER_PERSON;
+
+  const kwhPerYear = campusHoursPerDay * daysPerWeek * WEEKS_PER_YEAR * kwPerPerson;
   return kwhPerYear * ELECTRICITY_KG_CO2E_PER_KWH;
 }
 

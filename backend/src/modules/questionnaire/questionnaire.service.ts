@@ -7,7 +7,7 @@ export async function submitQuestionnaire(
   userId: string,
   input: SubmitQuestionnaireInput,
 ): Promise<QuestionnaireResponse> {
-  const result = calculateFootprint(input);
+  const result = calculateFootprint({ ...input, campusSpaces: input.campusSpaces ?? [] });
   return questionnaireRepository.createResponse(
     userId,
     input,

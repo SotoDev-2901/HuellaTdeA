@@ -74,12 +74,13 @@ test('HU-04: rechaza el envío si falta un campo obligatorio', async () => {
   assert.ok(data.message);
 });
 
-test('HU-04/HU-08: caminar y dieta vegana no generan emisión de transporte, y el total suma las 4 categorías', async () => {
+test('HU-04/HU-08: caminar y dieta vegana no generan emisión de transporte, y el total suma las 5 categorías', async () => {
   const { status, data } = await post('/api/questionnaire', studentToken, basePayload);
 
   assert.equal(status, 201);
   const r = data.response;
   assert.equal(Number(r.transport_kg_co2e), 0);
+  assert.ok(Number(r.facilities_kg_co2e) > 0, 'instalaciones debe ser > 0 solo por asistir, sin depender de dispositivos');
   assert.ok(Number(r.devices_kg_co2e) > 0);
   assert.ok(Number(r.waste_kg_co2e) > 0);
   // 500 kg/año (banda vegano) prorrateado a 5 días/semana de asistencia, no el año completo
@@ -87,10 +88,34 @@ test('HU-04/HU-08: caminar y dieta vegana no generan emisión de transporte, y e
 
   const expectedTotal =
     Number(r.transport_kg_co2e) +
+    Number(r.facilities_kg_co2e) +
     Number(r.devices_kg_co2e) +
     Number(r.waste_kg_co2e) +
     Number(r.diet_kg_co2e);
   assert.equal(Number(r.total_kg_co2e), Math.round(expectedTotal * 100) / 100);
+});
+
+test('HU-08: instalaciones no depende de laptop/carga — sigue siendo > 0 aunque ambos sean No', async () => {
+  const { data } = await post('/api/questionnaire', studentToken, {
+    ...basePayload,
+    usesLaptop: false,
+    chargesDevices: false,
+    campusHoursPerDay: 6,
+  });
+  assert.equal(Number(data.response.devices_kg_co2e), 0);
+  assert.ok(Number(data.response.facilities_kg_co2e) > 0);
+});
+
+test('HU-08: un laboratorio pesa más en instalaciones que una zona verde con las mismas horas', async () => {
+  const lab = await post('/api/questionnaire', studentToken, {
+    ...basePayload,
+    campusSpaces: ['laboratorios'],
+  });
+  const green = await post('/api/questionnaire', studentToken, {
+    ...basePayload,
+    campusSpaces: ['zonas_verdes'],
+  });
+  assert.ok(Number(lab.data.response.facilities_kg_co2e) > Number(green.data.response.facilities_kg_co2e));
 });
 
 test('HU-08: un usuario que va en carro tiene más huella de transporte que uno en bicicleta con el mismo recorrido', async () => {

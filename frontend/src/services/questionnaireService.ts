@@ -29,6 +29,7 @@ export interface QuestionnairePayload {
 export interface QuestionnaireResponse {
   id: string;
   transport_kg_co2e: string;
+  facilities_kg_co2e: string;
   devices_kg_co2e: string;
   waste_kg_co2e: string;
   diet_kg_co2e: string;

@@ -1,9 +1,11 @@
 import {
   calculateDeviceEmissions,
   calculateDietEmissions,
+  calculateFacilitiesEmissions,
   calculateTransportEmissions,
   calculateWasteEmissions,
   wasteFrequencyToKgPerWeek,
+  type CampusSpace,
   type DietType,
   type TransportMode,
   type WasteFrequency,
@@ -14,6 +16,7 @@ export interface FootprintInput {
   transportKmPerTrip: number;
   transportDaysPerWeek: number;
   campusHoursPerDay: number;
+  campusSpaces: CampusSpace[];
   usesLaptop: boolean;
   chargesDevices: boolean;
   wasteFrequency: WasteFrequency;
@@ -22,6 +25,7 @@ export interface FootprintInput {
 
 export interface FootprintResult {
   transportKgCo2e: number;
+  facilitiesKgCo2e: number;
   devicesKgCo2e: number;
   wasteKgCo2e: number;
   wasteKgPerWeek: number;
@@ -37,6 +41,9 @@ export function calculateFootprint(input: FootprintInput): FootprintResult {
   const transportKgCo2e = round2(
     calculateTransportEmissions(input.transportMode, input.transportKmPerTrip, input.transportDaysPerWeek),
   );
+  const facilitiesKgCo2e = round2(
+    calculateFacilitiesEmissions(input.campusSpaces, input.campusHoursPerDay, input.transportDaysPerWeek),
+  );
   const devicesKgCo2e = round2(
     calculateDeviceEmissions(
       input.usesLaptop,
@@ -51,10 +58,13 @@ export function calculateFootprint(input: FootprintInput): FootprintResult {
 
   return {
     transportKgCo2e,
+    facilitiesKgCo2e,
     devicesKgCo2e,
     wasteKgCo2e,
     wasteKgPerWeek,
     dietKgCo2e,
-    totalKgCo2e: round2(transportKgCo2e + devicesKgCo2e + wasteKgCo2e + dietKgCo2e),
+    totalKgCo2e: round2(
+      transportKgCo2e + facilitiesKgCo2e + devicesKgCo2e + wasteKgCo2e + dietKgCo2e,
+    ),
   };
 }

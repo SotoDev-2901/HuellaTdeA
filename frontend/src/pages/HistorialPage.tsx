@@ -44,6 +44,7 @@ export function HistorialPage() {
                 <tr className="border-b border-tdea-blush-border text-xs uppercase text-silver">
                   <th className="py-2 pr-4 font-medium">Fecha</th>
                   <th className="py-2 pr-4 font-medium">Transporte</th>
+                  <th className="py-2 pr-4 font-medium">Instalaciones</th>
                   <th className="py-2 pr-4 font-medium">Dispositivos</th>
                   <th className="py-2 pr-4 font-medium">Residuos</th>
                   <th className="py-2 pr-4 font-medium">Alimentación</th>
@@ -61,6 +62,7 @@ export function HistorialPage() {
                       })}
                     </td>
                     <td className="py-3 pr-4">{r.transport_kg_co2e} kg</td>
+                    <td className="py-3 pr-4">{r.facilities_kg_co2e} kg</td>
                     <td className="py-3 pr-4">{r.devices_kg_co2e} kg</td>
                     <td className="py-3 pr-4">{r.waste_kg_co2e} kg</td>
                     <td className="py-3 pr-4">{r.diet_kg_co2e} kg</td>
