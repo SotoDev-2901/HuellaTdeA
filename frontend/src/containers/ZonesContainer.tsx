@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState, type FormEvent } from 'react';
 import { ZonesTable } from '../components/organisms/ZonesTable';
 import { ZoneFormModal, type ZoneFormValues } from '../components/organisms/ZoneFormModal';
+import { ConfirmDialog } from '../components/molecules/ConfirmDialog';
 import { Button } from '../components/atoms/Button';
 import { ApiError } from '../lib/api';
 import * as zonesService from '../services/zonesService';
@@ -21,6 +22,8 @@ export function ZonesContainer() {
   const [formValues, setFormValues] = useState<ZoneFormValues>(emptyForm);
   const [formError, setFormError] = useState<string>();
   const [saving, setSaving] = useState(false);
+  const [zoneToDelete, setZoneToDelete] = useState<Zone | null>(null);
+  const [deleting, setDeleting] = useState(false);
 
   async function loadZones() {
     setLoading(true);
@@ -97,6 +100,18 @@ export function ZonesContainer() {
     }
   }
 
+  async function handleConfirmDelete() {
+    if (!zoneToDelete) return;
+    setDeleting(true);
+    try {
+      await zonesService.deleteZone(zoneToDelete.id);
+      setZoneToDelete(null);
+      await loadZones();
+    } finally {
+      setDeleting(false);
+    }
+  }
+
   return (
     <div className="flex flex-col gap-6">
       <div className="flex items-center justify-between gap-4">
@@ -114,7 +129,12 @@ export function ZonesContainer() {
       </div>
 
       <div className="rounded-card bg-white p-6 shadow-soft">
-        <ZonesTable zones={filteredZones} loading={loading} onEdit={openEdit} />
+        <ZonesTable
+          zones={filteredZones}
+          loading={loading}
+          onEdit={openEdit}
+          onDelete={setZoneToDelete}
+        />
       </div>
 
       {modal ? (
@@ -126,6 +146,16 @@ export function ZonesContainer() {
           onChange={handleFormChange}
           onSubmit={handleSubmit}
           onClose={() => setModal(null)}
+        />
+      ) : null}
+
+      {zoneToDelete ? (
+        <ConfirmDialog
+          title="Eliminar zona"
+          message={`¿Seguro que quieres eliminar "${zoneToDelete.name}"? Esta acción no se puede deshacer.`}
+          loading={deleting}
+          onConfirm={handleConfirmDelete}
+          onCancel={() => setZoneToDelete(null)}
         />
       ) : null}
     </div>

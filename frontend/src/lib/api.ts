@@ -47,3 +47,7 @@ export function apiPost<TResponse>(path: string, body: unknown): Promise<TRespon
 export function apiPatch<TResponse>(path: string, body: unknown): Promise<TResponse> {
   return request<TResponse>('PATCH', path, body);
 }
+
+export function apiDelete<TResponse = void>(path: string): Promise<TResponse> {
+  return request<TResponse>('DELETE', path);
+}

@@ -61,7 +61,8 @@ async function api(path: string, token: string | null, init: RequestInit = {}) {
       ...init.headers,
     },
   });
-  return { status: res.status, data: await res.json() };
+  const data = await res.json().catch(() => ({}));
+  return { status: res.status, data };
 }
 
 let adminToken: string;
@@ -130,6 +131,28 @@ test('HU-03: el administrador edita una zona existente', async () => {
   assert.equal(updated.status, 200);
   assert.equal(updated.data.zone.status, 'inactiva');
   assert.equal(updated.data.zone.name, name);
+});
+
+test('HU-03: el administrador elimina una zona y deja de aparecer en el listado', async () => {
+  const name = uniqueZoneName('Cancha Deportiva');
+  const created = await api('/', adminToken, {
+    method: 'POST',
+    body: JSON.stringify({ name, type: 'administrativa' }),
+  });
+  const zoneId = created.data.zone.id;
+
+  const deleted = await api(`/${zoneId}`, adminToken, { method: 'DELETE' });
+  assert.equal(deleted.status, 204);
+
+  const list = await api('/', adminToken);
+  assert.ok(!list.data.zones.some((z: { id: string }) => z.id === zoneId));
+});
+
+test('HU-03: eliminar una zona inexistente devuelve 404', async () => {
+  const { status } = await api('/00000000-0000-0000-0000-000000000000', adminToken, {
+    method: 'DELETE',
+  });
+  assert.equal(status, 404);
 });
 
 after(async () => {

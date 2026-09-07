@@ -34,3 +34,10 @@ export async function updateZone(id: string, input: UpdateZoneInput): Promise<Zo
   }
   return updated;
 }
+
+export async function deleteZone(id: string): Promise<void> {
+  const deleted = await zonesRepository.deleteZone(id);
+  if (!deleted) {
+    throw new AppError('Zona no encontrada', 404);
+  }
+}

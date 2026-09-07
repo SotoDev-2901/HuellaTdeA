@@ -1,9 +1,11 @@
+import { FiEdit2, FiTrash2 } from 'react-icons/fi';
 import type { Zone } from '../../services/zonesService';
 
 interface ZonesTableProps {
   zones: Zone[];
   loading: boolean;
   onEdit: (zone: Zone) => void;
+  onDelete: (zone: Zone) => void;
 }
 
 const typeLabels: Record<Zone['type'], string> = {
@@ -24,7 +26,7 @@ function StatusPill({ status }: { status: Zone['status'] }) {
   );
 }
 
-export function ZonesTable({ zones, loading, onEdit }: ZonesTableProps) {
+export function ZonesTable({ zones, loading, onEdit, onDelete }: ZonesTableProps) {
   if (loading) {
     return <p className="py-8 text-center text-sm text-graphite">Cargando zonas...</p>;
   }
@@ -61,12 +63,22 @@ export function ZonesTable({ zones, loading, onEdit }: ZonesTableProps) {
                 })}
               </td>
               <td className="py-3 pr-4">
-                <button
-                  onClick={() => onEdit(zone)}
-                  className="text-sm font-medium text-tdea-green hover:underline"
-                >
-                  Editar
-                </button>
+                <div className="flex items-center gap-3">
+                  <button
+                    onClick={() => onEdit(zone)}
+                    title="Editar zona"
+                    className="text-tdea-green hover:text-tdea-green-dark"
+                  >
+                    <FiEdit2 size={16} />
+                  </button>
+                  <button
+                    onClick={() => onDelete(zone)}
+                    title="Eliminar zona"
+                    className="text-red-500 hover:text-red-700"
+                  >
+                    <FiTrash2 size={16} />
+                  </button>
+                </div>
               </td>
             </tr>
           ))}

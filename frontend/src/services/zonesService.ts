@@ -1,4 +1,4 @@
-import { apiGet, apiPatch, apiPost } from '../lib/api';
+import { apiDelete, apiGet, apiPatch, apiPost } from '../lib/api';
 
 export type ZoneType = 'academica' | 'administrativa';
 export type ZoneStatus = 'activa' | 'inactiva';
@@ -38,4 +38,8 @@ export async function createZone(payload: CreateZonePayload): Promise<Zone> {
 export async function updateZone(id: string, payload: UpdateZonePayload): Promise<Zone> {
   const res = await apiPatch<{ zone: Zone }>(`/zones/${id}`, payload);
   return res.zone;
+}
+
+export function deleteZone(id: string): Promise<void> {
+  return apiDelete(`/zones/${id}`);
 }

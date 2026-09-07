@@ -30,3 +30,12 @@ export async function updateZoneHandler(req: Request, res: Response, next: NextF
     next(err);
   }
 }
+
+export async function deleteZoneHandler(req: Request, res: Response, next: NextFunction) {
+  try {
+    await zonesService.deleteZone(req.params.id);
+    res.status(204).send();
+  } catch (err) {
+    next(err);
+  }
+}

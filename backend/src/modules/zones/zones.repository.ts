@@ -17,6 +17,11 @@ export async function findZoneByName(name: string): Promise<Zone | null> {
   return rows[0] ?? null;
 }
 
+export async function deleteZone(id: string): Promise<boolean> {
+  const { rowCount } = await pool.query('DELETE FROM zones WHERE id = $1', [id]);
+  return (rowCount ?? 0) > 0;
+}
+
 export async function createZone(input: CreateZoneInput): Promise<Zone> {
   const { rows } = await pool.query<Zone>(
     `INSERT INTO zones (name, description, type)
