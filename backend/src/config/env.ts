@@ -1,7 +1,11 @@
 import 'dotenv/config';
 
+if (!process.env.JWT_SECRET) {
+  throw new Error('JWT_SECRET no está definido');
+}
+
 export const env = {
-  port: process.env.PORT || 4000,
+  port: Number(process.env.PORT) || 4000,
   nodeEnv: process.env.NODE_ENV || 'development',
   jwtSecret: process.env.JWT_SECRET,
   db: {

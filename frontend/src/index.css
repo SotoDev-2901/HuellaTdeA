@@ -1,0 +1,35 @@
+@import url('https://fonts.googleapis.com/css2?family=Manrope:wght@400;700;800&family=Inter:wght@400;500;600;700&display=swap');
+@import 'tailwindcss';
+
+@theme {
+  /* TdeA brand palette — verde y verde-lima tomados del logo oficial (tdea.edu.co/identidad-corporativa),
+     el resto (crema, blush) sigue aproximado de los mockups hasta tener el manual de marca completo. */
+  --color-tdea-green: #00652e;
+  --color-tdea-green-dark: #004a21;
+  --color-tdea-green-light: #92bd24;
+  --color-tdea-cream: #f4efe4;
+  --color-tdea-blush: #fbeae2;
+  --color-tdea-blush-border: #ecd9cd;
+  --color-tdea-panel: #fbeee7;
+
+  --color-ink: #1a1a1a;
+  --color-graphite: #57534e;
+  --color-silver: #9a9591;
+
+  --font-display: 'Manrope', ui-sans-serif, system-ui, sans-serif;
+  --font-body: 'Inter', ui-sans-serif, system-ui, sans-serif;
+
+  --radius-card: 16px;
+  --radius-button: 12px;
+  --radius-input: 8px;
+  --radius-pill: 9999px;
+  --radius-chip: 4px;
+
+  --shadow-soft: 0 3px 12px 0 rgba(0, 0, 0, 0.08), 0 0 2px 0 rgba(0, 0, 0, 0.12);
+}
+
+body {
+  background-color: var(--color-tdea-cream);
+  color: var(--color-ink);
+  font-family: var(--font-body);
+}
