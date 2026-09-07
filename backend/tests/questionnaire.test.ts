@@ -39,6 +39,17 @@ async function get(path: string, token: string) {
 
 let studentToken: string;
 
+const basePayload = {
+  transportMode: 'caminar',
+  transportKmPerTrip: 2,
+  transportDaysPerWeek: 5,
+  campusHoursPerDay: 4,
+  usesLaptop: true,
+  chargesDevices: false,
+  wasteFrequency: 'baja',
+  dietType: 'vegano',
+} as const;
+
 before(async () => {
   const passwordHash = await bcrypt.hash('password123', 10);
   await pool.query(
@@ -64,15 +75,7 @@ test('HU-04: rechaza el envío si falta un campo obligatorio', async () => {
 });
 
 test('HU-04/HU-08: caminar y dieta vegana no generan emisión de transporte, y el total suma las 4 categorías', async () => {
-  const { status, data } = await post('/api/questionnaire', studentToken, {
-    transportMode: 'caminar',
-    transportKmPerTrip: 2,
-    transportTripsPerWeek: 10,
-    deviceHoursPerDay: 3,
-    deviceDaysPerWeek: 5,
-    wasteKgPerWeek: 1,
-    dietType: 'vegano',
-  });
+  const { status, data } = await post('/api/questionnaire', studentToken, basePayload);
 
   assert.equal(status, 201);
   const r = data.response;
@@ -91,25 +94,42 @@ test('HU-04/HU-08: caminar y dieta vegana no generan emisión de transporte, y e
 
 test('HU-08: un usuario que va en carro tiene más huella de transporte que uno en bicicleta con el mismo recorrido', async () => {
   const bike = await post('/api/questionnaire', studentToken, {
+    ...basePayload,
     transportMode: 'bicicleta',
     transportKmPerTrip: 20,
-    transportTripsPerWeek: 5,
-    deviceHoursPerDay: 1,
-    deviceDaysPerWeek: 1,
-    wasteKgPerWeek: 1,
-    dietType: 'vegano',
   });
   const car = await post('/api/questionnaire', studentToken, {
+    ...basePayload,
     transportMode: 'carro',
     transportKmPerTrip: 20,
-    transportTripsPerWeek: 5,
-    deviceHoursPerDay: 1,
-    deviceDaysPerWeek: 1,
-    wasteKgPerWeek: 1,
-    dietType: 'vegano',
   });
 
   assert.ok(Number(car.data.response.transport_kg_co2e) > Number(bike.data.response.transport_kg_co2e));
+});
+
+test('HU-08: si no usa laptop, la huella de dispositivos es 0 aunque tenga horas en campus', async () => {
+  const { data } = await post('/api/questionnaire', studentToken, {
+    ...basePayload,
+    usesLaptop: false,
+    chargesDevices: false,
+    campusHoursPerDay: 8,
+  });
+  assert.equal(Number(data.response.devices_kg_co2e), 0);
+});
+
+test('HU-08: cargar dispositivos suma una pequeña huella adicional aunque no use laptop', async () => {
+  const { data } = await post('/api/questionnaire', studentToken, {
+    ...basePayload,
+    usesLaptop: false,
+    chargesDevices: true,
+  });
+  assert.ok(Number(data.response.devices_kg_co2e) > 0);
+});
+
+test('HU-08: mayor frecuencia de residuos genera mayor huella de residuos', async () => {
+  const low = await post('/api/questionnaire', studentToken, { ...basePayload, wasteFrequency: 'baja' });
+  const high = await post('/api/questionnaire', studentToken, { ...basePayload, wasteFrequency: 'alta' });
+  assert.ok(Number(high.data.response.waste_kg_co2e) > Number(low.data.response.waste_kg_co2e));
 });
 
 test('HU-05 (historial): el usuario ve sus propias respuestas guardadas', async () => {

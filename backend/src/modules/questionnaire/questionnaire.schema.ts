@@ -5,10 +5,19 @@ export const submitQuestionnaireSchema = z.object({
     errorMap: () => ({ message: 'Selecciona un medio de transporte válido' }),
   }),
   transportKmPerTrip: z.number().min(0, 'La distancia no puede ser negativa').max(500),
-  transportTripsPerWeek: z.number().int().min(0).max(28),
-  deviceHoursPerDay: z.number().min(0, 'Las horas no pueden ser negativas').max(24),
-  deviceDaysPerWeek: z.number().int().min(0).max(7),
-  wasteKgPerWeek: z.number().min(0, 'El peso no puede ser negativo').max(200),
+  transportMinutesPerTrip: z.number().min(0).max(600).optional(),
+  transportDaysPerWeek: z.number().int().min(1, 'Selecciona al menos 1 día').max(7),
+
+  campusHoursPerDay: z.number().min(0, 'Las horas no pueden ser negativas').max(24),
+  campusSpaces: z.array(z.enum(['aulas', 'biblioteca', 'laboratorios'])).optional(),
+  usesLaptop: z.boolean(),
+  chargesDevices: z.boolean(),
+
+  wasteFrequency: z.enum(['baja', 'media', 'alta'], {
+    errorMap: () => ({ message: 'Selecciona una frecuencia de residuos válida' }),
+  }),
+  wasteComposition: z.array(z.enum(['plastico', 'papel', 'organico'])).optional(),
+
   dietType: z.enum(['vegano', 'vegetariano', 'mixto_moderado', 'carne_frecuente'], {
     errorMap: () => ({ message: 'Selecciona un tipo de dieta válido' }),
   }),

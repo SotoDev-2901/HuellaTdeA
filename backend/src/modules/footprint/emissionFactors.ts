@@ -5,6 +5,7 @@
 
 export type TransportMode = 'caminar' | 'bicicleta' | 'moto' | 'carro' | 'transporte_publico';
 export type DietType = 'vegano' | 'vegetariano' | 'mixto_moderado' | 'carne_frecuente';
+export type WasteFrequency = 'baja' | 'media' | 'alta';
 
 /**
  * Fuente: FECOC 2016 (Factores de Emisión de los Combustibles Colombianos), UPME / MVC Colombia.
@@ -38,12 +39,26 @@ const ELECTRICITY_KG_CO2E_PER_KWH = 0.199;
 /** Potencia promedio asumida de un laptop en uso activo. Supuesto declarado. */
 const LAPTOP_POWER_KW = 0.065;
 
+/** Energía asumida de una carga completa de celular (batería típica ~15 Wh). Supuesto declarado. */
+const PHONE_CHARGE_KWH = 0.015;
+
 /**
  * Fuente: Directrices del IPCC 2006 para Inventarios Nacionales de GEI, Volumen 5 (Desechos),
  * vía MVC Colombia (2016) Tabla 11: relleno sanitario gestionado anaeróbico,
  * 0.055 kgCH4/kg de residuo × PCG del metano (28, IPCC AR5) = 1.54 kgCO2e/kg.
  */
 const WASTE_KG_CO2E_PER_KG = 1.54;
+
+/**
+ * Los residuos se reportan por frecuencia percibida (baja/media/alta), no en kg exactos, porque
+ * nadie sabe de memoria cuántos kg genera — se convierte a un kg/semana asumido, documentado aquí,
+ * antes de aplicar el factor real de emisión por kg.
+ */
+const WASTE_FREQUENCY_KG_PER_WEEK: Record<WasteFrequency, number> = {
+  baja: 0.5,
+  media: 1.5,
+  alta: 3,
+};
 
 /**
  * Fuente: Poore & Nemecek (2018), "Reducing food's environmental impacts through producers and
@@ -62,11 +77,11 @@ const WEEKS_PER_YEAR = 52;
 export function calculateTransportEmissions(
   mode: TransportMode,
   kmPerTrip: number,
-  tripsPerWeek: number,
+  daysPerWeek: number,
 ): number {
   if (mode === 'caminar' || mode === 'bicicleta') return 0;
 
-  const kmPerYear = kmPerTrip * tripsPerWeek * WEEKS_PER_YEAR;
+  const kmPerYear = kmPerTrip * daysPerWeek * WEEKS_PER_YEAR;
 
   if (mode === 'transporte_publico') {
     return kmPerYear * BUS_KG_CO2E_PER_PASSENGER_KM;
@@ -76,10 +91,26 @@ export function calculateTransportEmissions(
   return galPerYear * GASOLINE_KG_CO2_PER_GAL;
 }
 
-export function calculateDeviceEmissions(hoursPerDay: number, daysPerWeek: number): number {
-  const hoursPerYear = hoursPerDay * daysPerWeek * WEEKS_PER_YEAR;
-  const kwhPerYear = hoursPerYear * LAPTOP_POWER_KW;
+export function calculateDeviceEmissions(
+  usesLaptop: boolean,
+  chargesDevices: boolean,
+  campusHoursPerDay: number,
+  daysPerWeek: number,
+): number {
+  let kwhPerYear = 0;
+
+  if (usesLaptop) {
+    kwhPerYear += campusHoursPerDay * daysPerWeek * WEEKS_PER_YEAR * LAPTOP_POWER_KW;
+  }
+  if (chargesDevices) {
+    kwhPerYear += daysPerWeek * WEEKS_PER_YEAR * PHONE_CHARGE_KWH;
+  }
+
   return kwhPerYear * ELECTRICITY_KG_CO2E_PER_KWH;
+}
+
+export function wasteFrequencyToKgPerWeek(frequency: WasteFrequency): number {
+  return WASTE_FREQUENCY_KG_PER_WEEK[frequency];
 }
 
 export function calculateWasteEmissions(kgPerWeek: number): number {

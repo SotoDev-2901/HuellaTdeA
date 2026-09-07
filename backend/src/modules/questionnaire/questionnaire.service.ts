@@ -8,7 +8,16 @@ export async function submitQuestionnaire(
   input: SubmitQuestionnaireInput,
 ): Promise<QuestionnaireResponse> {
   const result = calculateFootprint(input);
-  return questionnaireRepository.createResponse(userId, input, result);
+  return questionnaireRepository.createResponse(
+    userId,
+    input,
+    {
+      transportMinutesPerTrip: input.transportMinutesPerTrip,
+      campusSpaces: input.campusSpaces,
+      wasteComposition: input.wasteComposition,
+    },
+    result,
+  );
 }
 
 export function listMyResponses(userId: string): Promise<QuestionnaireResponse[]> {

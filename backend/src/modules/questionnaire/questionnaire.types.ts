@@ -1,14 +1,19 @@
-import type { DietType, TransportMode } from '../footprint/emissionFactors.js';
+import type { DietType, TransportMode, WasteFrequency } from '../footprint/emissionFactors.js';
 
 export interface QuestionnaireResponse {
   id: string;
   user_id: string;
   transport_mode: TransportMode;
   transport_km_per_trip: string;
-  transport_trips_per_week: number;
-  device_hours_per_day: string;
-  device_days_per_week: number;
+  transport_minutes_per_trip: string | null;
+  transport_days_per_week: number;
+  campus_hours_per_day: string;
+  campus_spaces: string[] | null;
+  uses_laptop: boolean;
+  charges_devices: boolean;
+  waste_frequency: WasteFrequency;
   waste_kg_per_week: string;
+  waste_composition: string[] | null;
   diet_type: DietType;
   transport_kg_co2e: string;
   devices_kg_co2e: string;

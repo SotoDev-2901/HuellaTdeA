@@ -12,10 +12,14 @@ import type { QuestionnaireResponse } from '../services/questionnaireService';
 const initialValues: QuestionnaireFormValues = {
   transportMode: '',
   transportKmPerTrip: '',
-  transportTripsPerWeek: '',
-  deviceHoursPerDay: '',
-  deviceDaysPerWeek: '',
-  wasteKgPerWeek: '',
+  transportMinutesPerTrip: '',
+  transportDaysPerWeek: 5,
+  campusHoursPerDay: '',
+  campusSpaces: [],
+  usesLaptop: null,
+  chargesDevices: null,
+  wasteFrequency: '',
+  wasteComposition: [],
   dietType: '',
 };
 
@@ -27,28 +31,19 @@ function validateStep(step: number, values: QuestionnaireFormValues): Questionna
     if (values.transportKmPerTrip === '' || Number(values.transportKmPerTrip) < 0) {
       errors.transportKmPerTrip = 'Ingresa una distancia válida';
     }
-    if (values.transportTripsPerWeek === '' || Number(values.transportTripsPerWeek) < 0) {
-      errors.transportTripsPerWeek = 'Ingresa un número válido';
-    }
   }
 
   if (step === 1) {
-    if (values.deviceHoursPerDay === '' || Number(values.deviceHoursPerDay) < 0) {
-      errors.deviceHoursPerDay = 'Ingresa un número de horas válido';
+    if (values.campusHoursPerDay === '' || Number(values.campusHoursPerDay) < 0) {
+      errors.campusHoursPerDay = 'Ingresa un número de horas válido';
     }
-    if (values.deviceDaysPerWeek === '' || Number(values.deviceDaysPerWeek) < 0) {
-      errors.deviceDaysPerWeek = 'Ingresa un número de días válido';
-    }
+    if (values.usesLaptop === null) errors.usesLaptop = 'Selecciona una opción';
+    if (values.chargesDevices === null) errors.chargesDevices = 'Selecciona una opción';
   }
 
   if (step === 2) {
-    if (values.wasteKgPerWeek === '' || Number(values.wasteKgPerWeek) < 0) {
-      errors.wasteKgPerWeek = 'Ingresa un peso válido';
-    }
-  }
-
-  if (step === 3) {
     if (!values.dietType) errors.dietType = 'Selecciona una opción';
+    if (!values.wasteFrequency) errors.wasteFrequency = 'Selecciona una frecuencia';
   }
 
   return errors;
@@ -92,10 +87,15 @@ export function QuestionnaireContainer() {
       const response = await questionnaireService.submitQuestionnaire({
         transportMode: values.transportMode as never,
         transportKmPerTrip: Number(values.transportKmPerTrip),
-        transportTripsPerWeek: Number(values.transportTripsPerWeek),
-        deviceHoursPerDay: Number(values.deviceHoursPerDay),
-        deviceDaysPerWeek: Number(values.deviceDaysPerWeek),
-        wasteKgPerWeek: Number(values.wasteKgPerWeek),
+        transportMinutesPerTrip:
+          values.transportMinutesPerTrip === '' ? undefined : Number(values.transportMinutesPerTrip),
+        transportDaysPerWeek: values.transportDaysPerWeek,
+        campusHoursPerDay: Number(values.campusHoursPerDay),
+        campusSpaces: values.campusSpaces,
+        usesLaptop: values.usesLaptop ?? false,
+        chargesDevices: values.chargesDevices ?? false,
+        wasteFrequency: values.wasteFrequency as never,
+        wasteComposition: values.wasteComposition,
         dietType: values.dietType as never,
       });
       setResult(response);

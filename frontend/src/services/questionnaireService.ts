@@ -2,14 +2,21 @@ import { apiGet, apiPost } from '../lib/api';
 
 export type TransportMode = 'caminar' | 'bicicleta' | 'moto' | 'carro' | 'transporte_publico';
 export type DietType = 'vegano' | 'vegetariano' | 'mixto_moderado' | 'carne_frecuente';
+export type WasteFrequency = 'baja' | 'media' | 'alta';
+export type CampusSpace = 'aulas' | 'biblioteca' | 'laboratorios';
+export type WasteComponent = 'plastico' | 'papel' | 'organico';
 
 export interface QuestionnairePayload {
   transportMode: TransportMode;
   transportKmPerTrip: number;
-  transportTripsPerWeek: number;
-  deviceHoursPerDay: number;
-  deviceDaysPerWeek: number;
-  wasteKgPerWeek: number;
+  transportMinutesPerTrip?: number;
+  transportDaysPerWeek: number;
+  campusHoursPerDay: number;
+  campusSpaces?: CampusSpace[];
+  usesLaptop: boolean;
+  chargesDevices: boolean;
+  wasteFrequency: WasteFrequency;
+  wasteComposition?: WasteComponent[];
   dietType: DietType;
 }
 
