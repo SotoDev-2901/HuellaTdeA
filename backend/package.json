@@ -13,6 +13,7 @@
     "migrate": "node-pg-migrate -m /database/migrations",
     "migrate:up": "node-pg-migrate -m /database/migrations up",
     "migrate:down": "node-pg-migrate -m /database/migrations down",
+    "seed:admin": "tsx scripts/seed-admin.ts",
     "test": "tsx --test tests/**/*.test.ts"
   },
   "dependencies": {
