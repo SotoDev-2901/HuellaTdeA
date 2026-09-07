@@ -1,10 +1,11 @@
-import { AppShell } from '../components/organisms/AppShell';
+import { FiClipboard, FiGrid, FiBarChart2 } from 'react-icons/fi';
+import { AppShell, type NavItem } from '../components/organisms/AppShell';
 import { ZonesContainer } from '../containers/ZonesContainer';
 
-const navItems = [
-  { label: 'Panel Administrativo', active: true },
-  { label: 'Registro de Emisiones' },
-  { label: 'Reportes' },
+const navItems: NavItem[] = [
+  { label: 'Panel Administrativo', icon: FiGrid, active: true },
+  { label: 'Registro de Emisiones', icon: FiClipboard },
+  { label: 'Reportes', icon: FiBarChart2 },
 ];
 
 export function ZonesPage() {
