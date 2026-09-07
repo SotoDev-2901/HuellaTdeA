@@ -1,5 +1,6 @@
 import { createContext, useContext, useMemo, useState, type ReactNode } from 'react';
 import type { AuthUser } from '../services/authService';
+import { SESSION_STORAGE_KEY } from '../lib/session';
 
 interface AuthContextValue {
   user: AuthUser | null;
@@ -12,11 +13,10 @@ interface AuthContextValue {
 
 const AuthContext = createContext<AuthContextValue | null>(null);
 
-const STORAGE_KEY = 'huellatdea.session';
 
 function readStoredSession(): { user: AuthUser; token: string } | null {
   try {
-    const raw = localStorage.getItem(STORAGE_KEY) ?? sessionStorage.getItem(STORAGE_KEY);
+    const raw = localStorage.getItem(SESSION_STORAGE_KEY) ?? sessionStorage.getItem(SESSION_STORAGE_KEY);
     return raw ? JSON.parse(raw) : null;
   } catch {
     return null;
@@ -37,18 +37,18 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         setToken(nextToken);
         const payload = JSON.stringify({ user: nextUser, token: nextToken });
         if (remember) {
-          localStorage.setItem(STORAGE_KEY, payload);
-          sessionStorage.removeItem(STORAGE_KEY);
+          localStorage.setItem(SESSION_STORAGE_KEY, payload);
+          sessionStorage.removeItem(SESSION_STORAGE_KEY);
         } else {
-          sessionStorage.setItem(STORAGE_KEY, payload);
-          localStorage.removeItem(STORAGE_KEY);
+          sessionStorage.setItem(SESSION_STORAGE_KEY, payload);
+          localStorage.removeItem(SESSION_STORAGE_KEY);
         }
       },
       clearSession: () => {
         setUser(null);
         setToken(null);
-        localStorage.removeItem(STORAGE_KEY);
-        sessionStorage.removeItem(STORAGE_KEY);
+        localStorage.removeItem(SESSION_STORAGE_KEY);
+        sessionStorage.removeItem(SESSION_STORAGE_KEY);
       },
     }),
     [user, token],
