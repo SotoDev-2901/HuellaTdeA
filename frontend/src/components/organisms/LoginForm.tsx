@@ -14,21 +14,44 @@ export interface LoginFormErrors {
   email?: string;
   password?: string;
   form?: string;
+  unverified?: boolean;
 }
 
 interface LoginFormProps {
   values: LoginFormValues;
   errors: LoginFormErrors;
   loading: boolean;
+  resending: boolean;
   onChange: <K extends keyof LoginFormValues>(field: K, value: LoginFormValues[K]) => void;
   onSubmit: (event: FormEvent<HTMLFormElement>) => void;
+  onResendVerification: () => void;
 }
 
-export function LoginForm({ values, errors, loading, onChange, onSubmit }: LoginFormProps) {
+export function LoginForm({
+  values,
+  errors,
+  loading,
+  resending,
+  onChange,
+  onSubmit,
+  onResendVerification,
+}: LoginFormProps) {
   return (
     <form className="flex flex-col gap-4" onSubmit={onSubmit} noValidate>
       {errors.form ? (
-        <p className="rounded-input bg-red-50 px-3 py-2 text-sm text-red-600">{errors.form}</p>
+        <div className="rounded-input bg-red-50 px-3 py-2 text-sm text-red-600">
+          <p>{errors.form}</p>
+          {errors.unverified ? (
+            <button
+              type="button"
+              onClick={onResendVerification}
+              disabled={resending}
+              className="mt-1 font-medium underline disabled:opacity-60"
+            >
+              {resending ? 'Enviando...' : 'Reenviar correo de verificación'}
+            </button>
+          ) : null}
+        </div>
       ) : null}
 
       <Input
@@ -57,9 +80,9 @@ export function LoginForm({ values, errors, loading, onChange, onSubmit }: Login
           checked={values.remember}
           onChange={(e) => onChange('remember', e.target.checked)}
         />
-        <a href="#" className="text-xs font-medium text-tdea-green hover:underline">
+        <Link to="/olvide-mi-contrasena" className="text-xs font-medium text-tdea-green hover:underline">
           Olvidé mi contraseña
-        </a>
+        </Link>
       </div>
 
       <Button type="submit" loading={loading}>

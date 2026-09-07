@@ -16,6 +16,13 @@ services:
       timeout: 5s
       retries: 5
 
+  mailpit:
+    image: axllent/mailpit:latest
+    restart: unless-stopped
+    ports:
+      - '8025:8025' # interfaz web para ver los correos capturados
+      - '1025:1025' # puerto SMTP
+
   backend:
     build: ./backend
     restart: unless-stopped
@@ -31,6 +38,11 @@ services:
       DB_PASSWORD: ${DB_PASSWORD:-postgres}
       JWT_SECRET: ${JWT_SECRET:-changeme}
       DATABASE_URL: postgres://${DB_USER:-postgres}:${DB_PASSWORD:-postgres}@db:5432/${DB_NAME:-huellatdea}
+      MAIL_HOST: mailpit
+      MAIL_PORT: 1025
+      MAIL_FROM: "Huella TdeA <no-reply@tdea.edu.co>"
+      FRONTEND_URL: http://localhost:5173
+      MAILPIT_URL: http://mailpit:8025
     ports:
       - '4000:4000'
     volumes:

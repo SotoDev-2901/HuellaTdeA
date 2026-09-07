@@ -1,19 +1,21 @@
 import { describe, expect, it, vi, beforeEach } from 'vitest';
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { MemoryRouter } from 'react-router-dom';
+import { MemoryRouter, Route, Routes } from 'react-router-dom';
 import { RegisterContainer } from './RegisterContainer';
-import { AuthProvider } from '../context/AuthContext';
 import * as authService from '../services/authService';
 
 vi.mock('../services/authService');
 
+const routerFuture = { v7_startTransition: true, v7_relativeSplatPath: true } as const;
+
 function renderRegister() {
   return render(
-    <MemoryRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
-      <AuthProvider>
-        <RegisterContainer />
-      </AuthProvider>
+    <MemoryRouter initialEntries={['/register']} future={routerFuture}>
+      <Routes>
+        <Route path="/register" element={<RegisterContainer />} />
+        <Route path="/revisa-tu-correo" element={<div>pantalla de revisa tu correo</div>} />
+      </Routes>
     </MemoryRouter>,
   );
 }
@@ -78,10 +80,10 @@ describe('RegisterContainer', () => {
     expect(authService.register).not.toHaveBeenCalled();
   });
 
-  it('envía el formulario y guarda la sesión cuando los datos son válidos', async () => {
+  it('envía el formulario y redirige a "revisa tu correo" sin iniciar sesión', async () => {
     vi.mocked(authService.register).mockResolvedValue({
       user: { id: '1', name: 'Carlos Ruiz', email: 'carlos@correo.tdea.edu.co', role: 'estudiante' },
-      token: 'fake-token',
+      message: 'Cuenta creada.',
     });
 
     const user = userEvent.setup();
@@ -98,8 +100,7 @@ describe('RegisterContainer', () => {
         role: 'estudiante',
       });
     });
-    await waitFor(() => {
-      expect(localStorage.getItem('huellatdea.session')).toContain('fake-token');
-    });
+    expect(await screen.findByText('pantalla de revisa tu correo')).toBeInTheDocument();
+    expect(localStorage.getItem('huellatdea.session')).toBeNull();
   });
 });
