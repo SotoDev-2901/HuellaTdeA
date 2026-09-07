@@ -7,6 +7,7 @@ import {
   wasteFrequencyToKgPerWeek,
   type CampusSpace,
   type DietType,
+  type EatingFrequency,
   type TransportMode,
   type WasteFrequency,
 } from './emissionFactors.js';
@@ -21,7 +22,7 @@ export interface FootprintInput {
   chargesDevices: boolean;
   wasteFrequency: WasteFrequency;
   dietType: DietType;
-  eatsOnCampus: boolean;
+  eatingFrequency: EatingFrequency;
 }
 
 export interface FootprintResult {
@@ -56,7 +57,7 @@ export function calculateFootprint(input: FootprintInput): FootprintResult {
   const wasteKgPerWeek = wasteFrequencyToKgPerWeek(input.wasteFrequency, input.transportDaysPerWeek);
   const wasteKgCo2e = round2(calculateWasteEmissions(wasteKgPerWeek));
   const dietKgCo2e = round2(
-    calculateDietEmissions(input.dietType, input.transportDaysPerWeek, input.eatsOnCampus),
+    calculateDietEmissions(input.dietType, input.transportDaysPerWeek, input.eatingFrequency),
   );
 
   return {

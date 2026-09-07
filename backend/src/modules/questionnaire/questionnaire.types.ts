@@ -1,4 +1,9 @@
-import type { DietType, TransportMode, WasteFrequency } from '../footprint/emissionFactors.js';
+import type {
+  DietType,
+  EatingFrequency,
+  TransportMode,
+  WasteFrequency,
+} from '../footprint/emissionFactors.js';
 
 export interface QuestionnaireResponse {
   id: string;
@@ -14,7 +19,7 @@ export interface QuestionnaireResponse {
   waste_frequency: WasteFrequency;
   waste_kg_per_week: string;
   waste_composition: string[] | null;
-  eats_on_campus: boolean;
+  eating_frequency: EatingFrequency;
   diet_type: DietType;
   transport_kg_co2e: string;
   facilities_kg_co2e: string;

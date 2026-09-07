@@ -11,6 +11,7 @@
 
 export type TransportMode = 'caminar' | 'bicicleta' | 'moto' | 'carro' | 'transporte_publico';
 export type DietType = 'vegano' | 'vegetariano' | 'mixto_moderado' | 'carne_frecuente';
+export type EatingFrequency = 'nunca' | 'ocasional' | 'mayoria' | 'siempre';
 export type WasteFrequency = 'baja' | 'media' | 'alta';
 export type CampusSpace = 'aulas' | 'biblioteca' | 'laboratorios' | 'cafeteria' | 'auditorio' | 'zonas_verdes';
 
@@ -103,6 +104,19 @@ const DIET_KG_CO2E_PER_YEAR: Record<DietType, number> = {
 };
 const DAYS_PER_YEAR = 365;
 
+/**
+ * Fracción de los días asistidos en que la persona realmente come en la universidad.
+ * Supuesto declarado (no hay fuente oficial para "cuánto es ocasional/la mayoría") — se pidió como
+ * frecuencia percibida en vez de un conteo exacto de días porque nadie lleva la cuenta exacta,
+ * igual que WASTE_FREQUENCY_KG_PER_DAY.
+ */
+const EATING_FREQUENCY_RATIO: Record<EatingFrequency, number> = {
+  nunca: 0,
+  ocasional: 0.25,
+  mayoria: 0.75,
+  siempre: 1,
+};
+
 const WEEKS_PER_YEAR = 52;
 
 export function calculateTransportEmissions(
@@ -166,9 +180,8 @@ export function calculateWasteEmissions(kgPerWeek: number): number {
 export function calculateDietEmissions(
   dietType: DietType,
   daysPerWeek: number,
-  eatsOnCampus: boolean,
+  eatingFrequency: EatingFrequency,
 ): number {
-  if (!eatsOnCampus) return 0;
   const dailyFootprint = DIET_KG_CO2E_PER_YEAR[dietType] / DAYS_PER_YEAR;
-  return dailyFootprint * daysPerWeek * WEEKS_PER_YEAR;
+  return dailyFootprint * daysPerWeek * EATING_FREQUENCY_RATIO[eatingFrequency] * WEEKS_PER_YEAR;
 }

@@ -11,6 +11,7 @@ export type CampusSpace =
   | 'auditorio'
   | 'zonas_verdes';
 export type WasteComponent = 'plastico' | 'papel' | 'organico';
+export type EatingFrequency = 'nunca' | 'ocasional' | 'mayoria' | 'siempre';
 
 export interface QuestionnairePayload {
   transportMode: TransportMode;
@@ -23,7 +24,7 @@ export interface QuestionnairePayload {
   chargesDevices: boolean;
   wasteFrequency: WasteFrequency;
   wasteComposition?: WasteComponent[];
-  eatsOnCampus: boolean;
+  eatingFrequency: EatingFrequency;
   dietType: DietType;
 }
 

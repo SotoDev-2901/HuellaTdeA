@@ -24,6 +24,7 @@ import { Slider } from '../atoms/Slider';
 import type {
   CampusSpace,
   DietType,
+  EatingFrequency,
   TransportMode,
   WasteComponent,
   WasteFrequency,
@@ -40,7 +41,7 @@ export interface QuestionnaireFormValues {
   chargesDevices: boolean | null;
   wasteFrequency: WasteFrequency | '';
   wasteComposition: WasteComponent[];
-  eatsOnCampus: boolean | null;
+  eatingFrequency: EatingFrequency | '';
   dietType: DietType | '';
 }
 
@@ -86,6 +87,13 @@ const WASTE_COMPONENTS: { value: WasteComponent; label: string; icon: typeof PiB
   { value: 'plastico', label: 'Plástico', icon: PiRecycleBold },
   { value: 'papel', label: 'Papel', icon: PiNewspaperClippingBold },
   { value: 'organico', label: 'Orgánico', icon: PiLeafBold },
+];
+
+const EATING_FREQUENCIES: { value: EatingFrequency; label: string; description: string }[] = [
+  { value: 'nunca', label: 'Nunca', description: 'Siempre traigo comida de casa' },
+  { value: 'ocasional', label: 'Ocasional', description: 'Como en la U de vez en cuando' },
+  { value: 'mayoria', label: 'La mayoría', description: 'Casi todos los días que asisto' },
+  { value: 'siempre', label: 'Siempre', description: 'Todos los días que asisto' },
 ];
 
 const DIET_TYPES: { value: DietType; label: string }[] = [
@@ -304,26 +312,31 @@ export function QuestionnaireForm({
         <div className="flex flex-col gap-5">
           <div>
             <label className="mb-1.5 flex items-center gap-1.5 text-sm font-medium text-graphite">
-              <FiCoffee /> ¿Consumes alimentos dentro de la universidad?
+              <FiCoffee /> ¿Con qué frecuencia consumes alimentos dentro de la universidad?
             </label>
-            <div className="flex gap-3">
-              <OptionCard
-                label="Sí"
-                selected={values.eatsOnCampus === true}
-                onClick={() => onChange('eatsOnCampus', true)}
-              />
-              <OptionCard
-                label="No"
-                selected={values.eatsOnCampus === false}
-                onClick={() => onChange('eatsOnCampus', false)}
-              />
+            <div className="grid grid-cols-2 gap-2">
+              {EATING_FREQUENCIES.map((freq) => (
+                <button
+                  type="button"
+                  key={freq.value}
+                  onClick={() => onChange('eatingFrequency', freq.value)}
+                  className={`rounded-input border px-2.5 py-3 text-left text-xs transition-colors ${
+                    values.eatingFrequency === freq.value
+                      ? 'border-tdea-green bg-tdea-green/10'
+                      : 'border-tdea-blush-border bg-tdea-blush'
+                  }`}
+                >
+                  <p className="font-semibold text-ink">{freq.label}</p>
+                  <p className="mt-0.5 text-silver">{freq.description}</p>
+                </button>
+              ))}
             </div>
-            {errors.eatsOnCampus ? (
-              <p className="mt-1 text-xs text-danger">{errors.eatsOnCampus}</p>
+            {errors.eatingFrequency ? (
+              <p className="mt-1 text-xs text-danger">{errors.eatingFrequency}</p>
             ) : null}
           </div>
 
-          {values.eatsOnCampus ? (
+          {values.eatingFrequency && values.eatingFrequency !== 'nunca' ? (
             <div>
               <label className="mb-1.5 flex items-center gap-1.5 text-sm font-medium text-graphite">
                 ¿Cómo describirías tu alimentación?

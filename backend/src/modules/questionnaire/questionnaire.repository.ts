@@ -18,7 +18,7 @@ export async function createResponse(
     `INSERT INTO questionnaire_responses (
        user_id, transport_mode, transport_km_per_trip, transport_minutes_per_trip,
        transport_days_per_week, campus_hours_per_day, campus_spaces, uses_laptop,
-       charges_devices, waste_frequency, waste_kg_per_week, waste_composition, eats_on_campus,
+       charges_devices, waste_frequency, waste_kg_per_week, waste_composition, eating_frequency,
        diet_type, transport_kg_co2e, facilities_kg_co2e, devices_kg_co2e, waste_kg_co2e,
        diet_kg_co2e, total_kg_co2e
      ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20)
@@ -36,7 +36,7 @@ export async function createResponse(
       input.wasteFrequency,
       result.wasteKgPerWeek,
       extras.wasteComposition ?? null,
-      input.eatsOnCampus,
+      input.eatingFrequency,
       input.dietType,
       result.transportKgCo2e,
       result.facilitiesKgCo2e,

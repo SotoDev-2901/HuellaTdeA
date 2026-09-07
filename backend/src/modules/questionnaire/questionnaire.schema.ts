@@ -20,7 +20,9 @@ export const submitQuestionnaireSchema = z.object({
   }),
   wasteComposition: z.array(z.enum(['plastico', 'papel', 'organico'])).optional(),
 
-  eatsOnCampus: z.boolean(),
+  eatingFrequency: z.enum(['nunca', 'ocasional', 'mayoria', 'siempre'], {
+    errorMap: () => ({ message: 'Selecciona una frecuencia de alimentación válida' }),
+  }),
   dietType: z.enum(['vegano', 'vegetariano', 'mixto_moderado', 'carne_frecuente'], {
     errorMap: () => ({ message: 'Selecciona un tipo de dieta válido' }),
   }),

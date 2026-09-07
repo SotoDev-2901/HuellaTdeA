@@ -47,7 +47,7 @@ const basePayload = {
   usesLaptop: true,
   chargesDevices: false,
   wasteFrequency: 'baja',
-  eatsOnCampus: true,
+  eatingFrequency: 'siempre',
   dietType: 'vegano',
 } as const;
 
@@ -183,13 +183,30 @@ test('HU-08: asistir menos días reduce proporcionalmente alimentación y residu
   );
 });
 
-test('HU-08: si no consume alimentos en la universidad, la huella de alimentación es 0 sin importar la dieta', async () => {
+test('HU-08: si nunca consume alimentos en la universidad, la huella de alimentación es 0 sin importar la dieta', async () => {
   const { data } = await post('/api/questionnaire', studentToken, {
     ...basePayload,
-    eatsOnCampus: false,
+    eatingFrequency: 'nunca',
     dietType: 'carne_frecuente',
   });
   assert.equal(Number(data.response.diet_kg_co2e), 0);
+});
+
+test('HU-08: comer "ocasionalmente" en la universidad genera menos huella de alimentación que "siempre"', async () => {
+  const occasional = await post('/api/questionnaire', studentToken, {
+    ...basePayload,
+    eatingFrequency: 'ocasional',
+    dietType: 'carne_frecuente',
+  });
+  const always = await post('/api/questionnaire', studentToken, {
+    ...basePayload,
+    eatingFrequency: 'siempre',
+    dietType: 'carne_frecuente',
+  });
+  assert.ok(Number(occasional.data.response.diet_kg_co2e) > 0);
+  assert.ok(
+    Number(occasional.data.response.diet_kg_co2e) < Number(always.data.response.diet_kg_co2e),
+  );
 });
 
 test('HU-05 (historial): el usuario ve sus propias respuestas guardadas', async () => {
