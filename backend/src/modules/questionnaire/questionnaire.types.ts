@@ -14,6 +14,7 @@ export interface QuestionnaireResponse {
   waste_frequency: WasteFrequency;
   waste_kg_per_week: string;
   waste_composition: string[] | null;
+  eats_on_campus: boolean;
   diet_type: DietType;
   transport_kg_co2e: string;
   facilities_kg_co2e: string;

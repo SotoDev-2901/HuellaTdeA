@@ -20,6 +20,7 @@ const initialValues: QuestionnaireFormValues = {
   chargesDevices: null,
   wasteFrequency: '',
   wasteComposition: [],
+  eatsOnCampus: null,
   dietType: '',
 };
 
@@ -42,7 +43,8 @@ function validateStep(step: number, values: QuestionnaireFormValues): Questionna
   }
 
   if (step === 2) {
-    if (!values.dietType) errors.dietType = 'Selecciona una opción';
+    if (values.eatsOnCampus === null) errors.eatsOnCampus = 'Selecciona una opción';
+    if (values.eatsOnCampus && !values.dietType) errors.dietType = 'Selecciona una opción';
     if (!values.wasteFrequency) errors.wasteFrequency = 'Selecciona una frecuencia';
   }
 
@@ -96,7 +98,8 @@ export function QuestionnaireContainer() {
         chargesDevices: values.chargesDevices ?? false,
         wasteFrequency: values.wasteFrequency as never,
         wasteComposition: values.wasteComposition,
-        dietType: values.dietType as never,
+        eatsOnCampus: values.eatsOnCampus ?? false,
+        dietType: (values.eatsOnCampus ? values.dietType : 'mixto_moderado') as never,
       });
       setResult(response);
     } catch (err) {

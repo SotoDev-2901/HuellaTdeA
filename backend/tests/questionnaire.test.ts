@@ -47,6 +47,7 @@ const basePayload = {
   usesLaptop: true,
   chargesDevices: false,
   wasteFrequency: 'baja',
+  eatsOnCampus: true,
   dietType: 'vegano',
 } as const;
 
@@ -180,6 +181,15 @@ test('HU-08: asistir menos días reduce proporcionalmente alimentación y residu
     Number(fiveDays.data.response.waste_kg_co2e) > Number(oneDay.data.response.waste_kg_co2e),
     'los residuos deben escalar con los días de asistencia',
   );
+});
+
+test('HU-08: si no consume alimentos en la universidad, la huella de alimentación es 0 sin importar la dieta', async () => {
+  const { data } = await post('/api/questionnaire', studentToken, {
+    ...basePayload,
+    eatsOnCampus: false,
+    dietType: 'carne_frecuente',
+  });
+  assert.equal(Number(data.response.diet_kg_co2e), 0);
 });
 
 test('HU-05 (historial): el usuario ve sus propias respuestas guardadas', async () => {

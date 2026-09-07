@@ -40,6 +40,7 @@ export interface QuestionnaireFormValues {
   chargesDevices: boolean | null;
   wasteFrequency: WasteFrequency | '';
   wasteComposition: WasteComponent[];
+  eatsOnCampus: boolean | null;
   dietType: DietType | '';
 }
 
@@ -303,20 +304,43 @@ export function QuestionnaireForm({
         <div className="flex flex-col gap-5">
           <div>
             <label className="mb-1.5 flex items-center gap-1.5 text-sm font-medium text-graphite">
-              <FiCoffee /> ¿Cómo describirías tu alimentación?
+              <FiCoffee /> ¿Consumes alimentos dentro de la universidad?
             </label>
-            <div className="flex flex-col gap-2">
-              {DIET_TYPES.map((diet) => (
-                <OptionCard
-                  key={diet.value}
-                  label={diet.label}
-                  selected={values.dietType === diet.value}
-                  onClick={() => onChange('dietType', diet.value)}
-                />
-              ))}
+            <div className="flex gap-3">
+              <OptionCard
+                label="Sí"
+                selected={values.eatsOnCampus === true}
+                onClick={() => onChange('eatsOnCampus', true)}
+              />
+              <OptionCard
+                label="No"
+                selected={values.eatsOnCampus === false}
+                onClick={() => onChange('eatsOnCampus', false)}
+              />
             </div>
-            {errors.dietType ? <p className="mt-1 text-xs text-danger">{errors.dietType}</p> : null}
+            {errors.eatsOnCampus ? (
+              <p className="mt-1 text-xs text-danger">{errors.eatsOnCampus}</p>
+            ) : null}
           </div>
+
+          {values.eatsOnCampus ? (
+            <div>
+              <label className="mb-1.5 flex items-center gap-1.5 text-sm font-medium text-graphite">
+                ¿Cómo describirías tu alimentación?
+              </label>
+              <div className="flex flex-col gap-2">
+                {DIET_TYPES.map((diet) => (
+                  <OptionCard
+                    key={diet.value}
+                    label={diet.label}
+                    selected={values.dietType === diet.value}
+                    onClick={() => onChange('dietType', diet.value)}
+                  />
+                ))}
+              </div>
+              {errors.dietType ? <p className="mt-1 text-xs text-danger">{errors.dietType}</p> : null}
+            </div>
+          ) : null}
 
           <div>
             <label className="mb-1.5 flex items-center gap-1.5 text-sm font-medium text-graphite">

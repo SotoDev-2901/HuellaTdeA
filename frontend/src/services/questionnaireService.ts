@@ -23,6 +23,7 @@ export interface QuestionnairePayload {
   chargesDevices: boolean;
   wasteFrequency: WasteFrequency;
   wasteComposition?: WasteComponent[];
+  eatsOnCampus: boolean;
   dietType: DietType;
 }
 

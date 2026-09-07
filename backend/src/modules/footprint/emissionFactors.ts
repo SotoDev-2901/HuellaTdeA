@@ -163,7 +163,12 @@ export function calculateWasteEmissions(kgPerWeek: number): number {
   return kgPerWeek * WEEKS_PER_YEAR * WASTE_KG_CO2E_PER_KG;
 }
 
-export function calculateDietEmissions(dietType: DietType, daysPerWeek: number): number {
+export function calculateDietEmissions(
+  dietType: DietType,
+  daysPerWeek: number,
+  eatsOnCampus: boolean,
+): number {
+  if (!eatsOnCampus) return 0;
   const dailyFootprint = DIET_KG_CO2E_PER_YEAR[dietType] / DAYS_PER_YEAR;
   return dailyFootprint * daysPerWeek * WEEKS_PER_YEAR;
 }
