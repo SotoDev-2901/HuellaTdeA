@@ -13,6 +13,7 @@ import { ResetPasswordPage } from './pages/ResetPasswordPage';
 import { DashboardPlaceholderPage } from './pages/DashboardPlaceholderPage';
 import { ZonesPage } from './pages/ZonesPage';
 import { QuestionnairePage } from './pages/QuestionnairePage';
+import { HistorialPage } from './pages/HistorialPage';
 
 function DefaultRedirect() {
   const { token, user } = useAuth();
@@ -64,6 +65,14 @@ function AppRoutes() {
         element={
           <ProtectedRoute>
             <QuestionnairePage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/historial"
+        element={
+          <ProtectedRoute>
+            <HistorialPage />
           </ProtectedRoute>
         }
       />

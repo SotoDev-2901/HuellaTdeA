@@ -1,18 +1,26 @@
 import { useState, type ReactNode } from 'react';
 import type { IconType } from 'react-icons';
+import { Link } from 'react-router-dom';
 import { Logo } from '../atoms/Logo';
 import { ThemeToggle } from '../atoms/ThemeToggle';
+import { NotificationBell } from '../atoms/NotificationBell';
+import { HelpButton } from '../atoms/HelpButton';
 import { useAuth } from '../../context/AuthContext';
 
 export interface NavItem {
   label: string;
   icon: IconType;
   active?: boolean;
+  to?: string;
 }
 
 interface AppShellProps {
   navItems: NavItem[];
   children: ReactNode;
+  /** Marca alterna para el sidebar (ej. "TDEA HUELLA" / "CARBON TRACKING"). Si no se pasa, se usa el logo institucional solo. */
+  brand?: { title: string; subtitle: string };
+  /** Si se pasa, muestra una barra superior con título + notificaciones/ayuda/tema, como en el wizard del cuestionario. */
+  topBarTitle?: string;
 }
 
 function CollapseIcon({ collapsed }: { collapsed: boolean }) {
@@ -36,7 +44,7 @@ function CollapseIcon({ collapsed }: { collapsed: boolean }) {
   );
 }
 
-export function AppShell({ navItems, children }: AppShellProps) {
+export function AppShell({ navItems, children, brand, topBarTitle }: AppShellProps) {
   const { user, clearSession } = useAuth();
   const [collapsed, setCollapsed] = useState(false);
 
@@ -56,22 +64,39 @@ export function AppShell({ navItems, children }: AppShellProps) {
         </button>
 
         <div>
-          <div className={`mb-8 flex ${collapsed ? 'justify-center px-0' : 'px-2'}`}>
-            <Logo compact={collapsed} />
+          <div className={`mb-8 flex items-center gap-2 ${collapsed ? 'justify-center px-0' : 'px-2'}`}>
+            <Logo compact={collapsed || Boolean(brand)} />
+            {!collapsed && brand ? (
+              <div className="leading-tight">
+                <p className="text-sm font-extrabold text-ink">{brand.title}</p>
+                <p className="text-[10px] font-medium uppercase tracking-wide text-silver">
+                  {brand.subtitle}
+                </p>
+              </div>
+            ) : null}
           </div>
           <nav className="flex flex-col gap-1">
-            {navItems.map((item) => (
-              <span
-                key={item.label}
-                title={collapsed ? item.label : undefined}
-                className={`flex items-center gap-2.5 truncate rounded-input px-3 py-2 text-sm font-medium ${
-                  collapsed ? 'justify-center' : ''
-                } ${item.active ? 'bg-tdea-green/10 text-tdea-green' : 'text-graphite'}`}
-              >
-                <item.icon size={18} className="shrink-0" />
-                {collapsed ? null : item.label}
-              </span>
-            ))}
+            {navItems.map((item) => {
+              const className = `flex items-center gap-2.5 truncate rounded-input px-3 py-2 text-sm font-medium ${
+                collapsed ? 'justify-center' : ''
+              } ${item.active ? 'bg-tdea-green/10 text-tdea-green' : 'text-graphite hover:bg-tdea-blush'}`;
+              const content = (
+                <>
+                  <item.icon size={18} className="shrink-0" />
+                  {collapsed ? null : item.label}
+                </>
+              );
+
+              return item.to ? (
+                <Link key={item.label} to={item.to} title={collapsed ? item.label : undefined} className={className}>
+                  {content}
+                </Link>
+              ) : (
+                <span key={item.label} title={collapsed ? item.label : undefined} className={className}>
+                  {content}
+                </span>
+              );
+            })}
           </nav>
         </div>
 
@@ -113,9 +138,26 @@ export function AppShell({ navItems, children }: AppShellProps) {
       </aside>
 
       <main className="flex-1 overflow-auto p-8">
-        <div className="mb-4 flex justify-end">
-          <ThemeToggle />
-        </div>
+        {topBarTitle ? (
+          <div className="mb-6 flex items-center justify-between border-b border-tdea-blush-border pb-4">
+            <h1 className="font-display text-lg font-bold text-ink">{topBarTitle}</h1>
+            <div className="flex items-center gap-2">
+              <NotificationBell />
+              <HelpButton />
+              <ThemeToggle />
+              <div
+                title={user?.name}
+                className="flex h-9 w-9 items-center justify-center rounded-full bg-tdea-green text-xs font-bold text-white"
+              >
+                {user?.name?.slice(0, 2).toUpperCase()}
+              </div>
+            </div>
+          </div>
+        ) : (
+          <div className="mb-4 flex justify-end">
+            <ThemeToggle />
+          </div>
+        )}
         {children}
       </main>
     </div>

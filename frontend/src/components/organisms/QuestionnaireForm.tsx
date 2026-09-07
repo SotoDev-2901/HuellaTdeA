@@ -144,7 +144,9 @@ export function QuestionnaireForm({
             Paso {step + 1} de {STEPS.length}
           </span>
         </div>
-        <h2 className="mt-1 font-display text-xl font-bold text-ink">{current.title}</h2>
+        <h2 className="mt-1 font-display text-xl font-bold text-ink">
+          Paso {step + 1}: {current.title}
+        </h2>
         <div className="mt-2 h-1.5 w-full rounded-pill bg-tdea-blush-border">
           <div
             className="h-1.5 rounded-pill bg-tdea-green transition-all"
@@ -350,9 +352,21 @@ export function QuestionnaireForm({
         </div>
       ) : null}
 
-      <div className="rounded-input bg-tdea-green-dark p-4 text-white">
-        <p className="text-sm font-semibold">{current.tip.heading}</p>
-        <p className="mt-1 text-xs text-white/80">{current.tip.body}</p>
+      <div className="relative overflow-hidden rounded-input bg-tdea-green-dark p-4 text-white">
+        <svg
+          aria-hidden="true"
+          viewBox="0 0 200 80"
+          preserveAspectRatio="xMidYMid slice"
+          className="pointer-events-none absolute inset-0 h-full w-full opacity-20"
+        >
+          <circle cx="20" cy="70" r="34" fill="white" />
+          <circle cx="150" cy="10" r="46" fill="white" />
+          <path d="M0 60 Q 50 20 100 55 T 200 45 V80 H0 Z" fill="white" opacity="0.6" />
+        </svg>
+        <div className="relative">
+          <p className="text-sm font-semibold">{current.tip.heading}</p>
+          <p className="mt-1 text-xs text-white/80">{current.tip.body}</p>
+        </div>
       </div>
 
       <div className="mt-1 flex gap-3">
