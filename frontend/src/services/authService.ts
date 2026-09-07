@@ -21,15 +21,40 @@ export interface RegisterPayload {
   role: 'estudiante' | 'docente';
 }
 
+export interface RegisterResponse {
+  user: AuthUser;
+  message: string;
+}
+
 export interface LoginPayload {
   email: string;
   password: string;
 }
 
-export function register(payload: RegisterPayload): Promise<AuthResponse> {
-  return apiPost<AuthResponse>('/auth/register', payload);
+export interface MessageResponse {
+  message: string;
+}
+
+export function register(payload: RegisterPayload): Promise<RegisterResponse> {
+  return apiPost<RegisterResponse>('/auth/register', payload);
 }
 
 export function login(payload: LoginPayload): Promise<AuthResponse> {
   return apiPost<AuthResponse>('/auth/login', payload);
+}
+
+export function verifyEmail(token: string): Promise<MessageResponse> {
+  return apiPost<MessageResponse>('/auth/verify-email', { token });
+}
+
+export function resendVerification(email: string): Promise<MessageResponse> {
+  return apiPost<MessageResponse>('/auth/resend-verification', { email });
+}
+
+export function forgotPassword(email: string): Promise<MessageResponse> {
+  return apiPost<MessageResponse>('/auth/forgot-password', { email });
+}
+
+export function resetPassword(token: string, password: string): Promise<MessageResponse> {
+  return apiPost<MessageResponse>('/auth/reset-password', { token, password });
 }

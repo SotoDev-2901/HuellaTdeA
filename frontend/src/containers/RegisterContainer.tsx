@@ -5,7 +5,6 @@ import {
   type RegisterFormErrors,
   type RegisterFormValues,
 } from '../components/organisms/RegisterForm';
-import { useAuth } from '../context/AuthContext';
 import { ApiError } from '../lib/api';
 import * as authService from '../services/authService';
 
@@ -48,7 +47,6 @@ export function RegisterContainer() {
   const [values, setValues] = useState<RegisterFormValues>(initialValues);
   const [errors, setErrors] = useState<RegisterFormErrors>({});
   const [loading, setLoading] = useState(false);
-  const { setSession } = useAuth();
   const navigate = useNavigate();
 
   function handleChange<K extends keyof RegisterFormValues>(field: K, value: RegisterFormValues[K]) {
@@ -64,14 +62,13 @@ export function RegisterContainer() {
 
     setLoading(true);
     try {
-      const { user, token } = await authService.register({
+      await authService.register({
         name: values.name,
         email: values.email,
         password: values.password,
         role: values.role,
       });
-      setSession(user, token);
-      navigate('/dashboard');
+      navigate('/revisa-tu-correo', { state: { email: values.email } });
     } catch (err) {
       const message = err instanceof ApiError ? err.message : 'No se pudo crear la cuenta';
       setErrors({ form: message });
