@@ -1,6 +1,7 @@
 import { useState, type ReactNode } from 'react';
 import type { IconType } from 'react-icons';
 import { Logo } from '../atoms/Logo';
+import { ThemeToggle } from '../atoms/ThemeToggle';
 import { useAuth } from '../../context/AuthContext';
 
 export interface NavItem {
@@ -42,14 +43,14 @@ export function AppShell({ navItems, children }: AppShellProps) {
   return (
     <div className="flex min-h-screen bg-tdea-cream">
       <aside
-        className={`relative flex flex-col justify-between border-r border-tdea-blush-border bg-white py-6 transition-all duration-200 ${
+        className={`relative flex flex-col justify-between border-r border-tdea-blush-border bg-surface py-6 transition-all duration-200 ${
           collapsed ? 'w-20 px-2' : 'w-60 px-4'
         }`}
       >
         <button
           onClick={() => setCollapsed((c) => !c)}
           title={collapsed ? 'Expandir menú' : 'Colapsar menú'}
-          className="absolute -right-3 top-8 flex h-6 w-6 items-center justify-center rounded-full border border-tdea-blush-border bg-white text-graphite shadow-soft hover:text-tdea-green"
+          className="absolute -right-3 top-8 flex h-6 w-6 items-center justify-center rounded-full border border-tdea-blush-border bg-surface text-graphite shadow-soft hover:text-tdea-green"
         >
           <CollapseIcon collapsed={collapsed} />
         </button>
@@ -111,7 +112,12 @@ export function AppShell({ navItems, children }: AppShellProps) {
         </div>
       </aside>
 
-      <main className="flex-1 overflow-auto p-8">{children}</main>
+      <main className="flex-1 overflow-auto p-8">
+        <div className="mb-4 flex justify-end">
+          <ThemeToggle />
+        </div>
+        {children}
+      </main>
     </div>
   );
 }

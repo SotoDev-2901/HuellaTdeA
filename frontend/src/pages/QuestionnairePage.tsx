@@ -11,7 +11,7 @@ export function QuestionnairePage() {
   return (
     <AppShell navItems={navItems}>
       <div className="mx-auto max-w-xl">
-        <div className="rounded-card bg-white p-6 shadow-soft">
+        <div className="rounded-card bg-surface p-6 shadow-soft">
           <QuestionnaireContainer />
         </div>
       </div>

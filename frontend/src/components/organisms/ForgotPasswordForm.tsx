@@ -46,7 +46,7 @@ export function ForgotPasswordForm({
   return (
     <form className="flex flex-col gap-4" onSubmit={onSubmit} noValidate>
       {errors.form ? (
-        <p className="rounded-input bg-red-50 px-3 py-2 text-sm text-red-600">{errors.form}</p>
+        <p className="rounded-input bg-danger-bg px-3 py-2 text-sm text-danger">{errors.form}</p>
       ) : null}
 
       <Input

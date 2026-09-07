@@ -1,4 +1,6 @@
 import type { FormEvent } from 'react';
+import { FiMonitor, FiTrash2, FiCoffee } from 'react-icons/fi';
+import { PiPersonSimpleWalkBold } from 'react-icons/pi';
 import { Button } from '../atoms/Button';
 import { Input } from '../atoms/Input';
 import { OptionCard } from '../atoms/OptionCard';
@@ -44,7 +46,40 @@ const DIET_TYPES: { value: DietType; label: string }[] = [
   { value: 'carne_frecuente', label: 'Carne frecuente' },
 ];
 
-const STEP_TITLES = ['Transporte', 'Dispositivos', 'Residuos', 'Alimentación'];
+const STEPS = [
+  {
+    title: 'Transporte',
+    icon: PiPersonSimpleWalkBold,
+    tip: {
+      heading: 'Tu movilidad impacta el campus',
+      body: 'Al elegir medios sostenibles, contribuyes directamente a reducir la huella institucional.',
+    },
+  },
+  {
+    title: 'Dispositivos',
+    icon: FiMonitor,
+    tip: {
+      heading: 'Eficiencia energética',
+      body: 'El tiempo que usas equipos electrónicos influye directamente en tu huella de carbono.',
+    },
+  },
+  {
+    title: 'Residuos',
+    icon: FiTrash2,
+    tip: {
+      heading: 'Cada kilo cuenta',
+      body: 'Reducir y separar tus residuos disminuye las emisiones generadas en su disposición final.',
+    },
+  },
+  {
+    title: 'Alimentación',
+    icon: FiCoffee,
+    tip: {
+      heading: 'Tus hábitos alimenticios',
+      body: 'El tipo de dieta es uno de los factores que más pesa en la huella de carbono individual.',
+    },
+  },
+];
 
 export function QuestionnaireForm({
   step,
@@ -56,7 +91,9 @@ export function QuestionnaireForm({
   onBack,
   onSubmit,
 }: QuestionnaireFormProps) {
-  const isLastStep = step === STEP_TITLES.length - 1;
+  const isLastStep = step === STEPS.length - 1;
+  const current = STEPS[step];
+  const StepIcon = current.icon;
 
   function handleFormSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -70,20 +107,28 @@ export function QuestionnaireForm({
   return (
     <form className="flex flex-col gap-5" onSubmit={handleFormSubmit}>
       <div>
-        <p className="text-xs font-semibold uppercase tracking-wide text-tdea-green">
-          Paso {step + 1} de {STEP_TITLES.length}
-        </p>
-        <h2 className="font-display text-xl font-bold text-ink">{STEP_TITLES[step]}</h2>
+        <div className="flex items-center justify-between">
+          <p className="text-xs font-semibold uppercase tracking-wide text-tdea-green">
+            Cuestionario
+          </p>
+          <span className="rounded-pill bg-tdea-blush px-2.5 py-0.5 text-xs font-medium text-graphite">
+            Paso {step + 1} de {STEPS.length}
+          </span>
+        </div>
+        <h2 className="mt-1 flex items-center gap-2 font-display text-xl font-bold text-ink">
+          <StepIcon className="text-tdea-green" />
+          {current.title}
+        </h2>
         <div className="mt-2 h-1.5 w-full rounded-pill bg-tdea-blush-border">
           <div
             className="h-1.5 rounded-pill bg-tdea-green transition-all"
-            style={{ width: `${((step + 1) / STEP_TITLES.length) * 100}%` }}
+            style={{ width: `${((step + 1) / STEPS.length) * 100}%` }}
           />
         </div>
       </div>
 
       {errors.form ? (
-        <p className="rounded-input bg-red-50 px-3 py-2 text-sm text-red-600">{errors.form}</p>
+        <p className="rounded-input bg-danger-bg px-3 py-2 text-sm text-danger">{errors.form}</p>
       ) : null}
 
       {step === 0 ? (
@@ -103,7 +148,7 @@ export function QuestionnaireForm({
               ))}
             </div>
             {errors.transportMode ? (
-              <p className="mt-1 text-xs text-red-500">{errors.transportMode}</p>
+              <p className="mt-1 text-xs text-danger">{errors.transportMode}</p>
             ) : null}
           </div>
 
@@ -183,11 +228,16 @@ export function QuestionnaireForm({
               />
             ))}
           </div>
-          {errors.dietType ? <p className="mt-1 text-xs text-red-500">{errors.dietType}</p> : null}
+          {errors.dietType ? <p className="mt-1 text-xs text-danger">{errors.dietType}</p> : null}
         </div>
       ) : null}
 
-      <div className="mt-2 flex gap-3">
+      <div className="rounded-input bg-tdea-green-dark p-4 text-white">
+        <p className="text-sm font-semibold">{current.tip.heading}</p>
+        <p className="mt-1 text-xs text-white/80">{current.tip.body}</p>
+      </div>
+
+      <div className="mt-1 flex gap-3">
         {step > 0 ? (
           <button
             type="button"

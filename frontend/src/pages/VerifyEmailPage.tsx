@@ -34,7 +34,7 @@ export function VerifyEmailPage() {
   return (
     <AuthLayout title="Verificación de correo" subtitle="Activando tu cuenta">
       <div className="flex flex-col items-center gap-4 text-center">
-        <p className={`text-sm ${status === 'error' ? 'text-red-500' : 'text-graphite'}`}>{message}</p>
+        <p className={`text-sm ${status === 'error' ? 'text-danger' : 'text-graphite'}`}>{message}</p>
         {status !== 'loading' ? (
           <Link to="/login" className="font-medium text-tdea-green hover:underline">
             Ir a iniciar sesión
