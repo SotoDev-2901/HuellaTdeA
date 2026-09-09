@@ -34,7 +34,10 @@ export function ConsumptionTable({ records, loading, onEdit, onDelete }: Consump
         </thead>
         <tbody>
           {records.map((record) => (
-            <tr key={record.id} className="border-b border-tdea-blush-border/60">
+            <tr
+              key={record.id}
+              className="border-b border-tdea-blush-border/60 transition-colors hover:bg-tdea-blush"
+            >
               <td className="py-3 pr-4 font-medium text-ink">{record.zone_name}</td>
               <td className="py-3 pr-4 text-graphite">{Number(record.kwh).toFixed(2)} kWh</td>
               <td className="py-3 pr-4 text-graphite">

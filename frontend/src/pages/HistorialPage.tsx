@@ -54,7 +54,10 @@ export function HistorialPage() {
               </thead>
               <tbody>
                 {responses.map((r) => (
-                  <tr key={r.id} className="border-b border-tdea-blush-border/60">
+                  <tr
+                    key={r.id}
+                    className="border-b border-tdea-blush-border/60 transition-colors hover:bg-tdea-blush"
+                  >
                     <td className="py-3 pr-4 text-graphite">
                       {new Date(r.created_at).toLocaleDateString('es-CO', {
                         day: '2-digit',

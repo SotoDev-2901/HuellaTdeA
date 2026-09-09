@@ -49,7 +49,10 @@ export function ZonesTable({ zones, loading, onEdit, onDelete }: ZonesTableProps
         </thead>
         <tbody>
           {zones.map((zone) => (
-            <tr key={zone.id} className="border-b border-tdea-blush-border/60">
+            <tr
+              key={zone.id}
+              className="border-b border-tdea-blush-border/60 transition-colors hover:bg-tdea-blush"
+            >
               <td className="py-3 pr-4 font-medium text-ink">{zone.name}</td>
               <td className="py-3 pr-4 text-graphite">{typeLabels[zone.type]}</td>
               <td className="py-3 pr-4">

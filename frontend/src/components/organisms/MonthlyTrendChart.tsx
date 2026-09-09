@@ -58,7 +58,8 @@ export function MonthlyTrendChart({
   const hovered = hoverIndex !== null ? coords[hoverIndex] : null;
 
   return (
-    <div className="relative overflow-x-auto">
+    <div className="relative">
+      <div className="overflow-x-auto">
       <svg
         viewBox={`0 0 ${WIDTH} ${HEIGHT}`}
         width={WIDTH}
@@ -106,11 +107,19 @@ export function MonthlyTrendChart({
           </g>
         ))}
       </svg>
+      </div>
 
       {hovered ? (
         <div
-          className="print-hide pointer-events-none absolute z-10 -translate-x-1/2 rounded-input bg-[#1a1a1a] px-3 py-2 text-xs font-medium text-white shadow-soft"
-          style={{ left: hovered.x, top: hovered.y + 14 }}
+          className="print-hide pointer-events-none absolute z-10 rounded-input bg-[#1a1a1a] px-3 py-2 text-xs font-medium text-white shadow-soft"
+          style={{
+            left: hovered.x,
+            top: hovered.y + 14,
+            // Cerca de los bordes izquierdo/derecho, no centrar el tooltip en el punto —
+            // así nunca se sale del contenedor ni se recorta.
+            transform:
+              hovered.x < 50 ? 'translateX(0)' : hovered.x > WIDTH - 50 ? 'translateX(-100%)' : 'translateX(-50%)',
+          }}
         >
           <p className="font-semibold">
             {MONTH_LABELS[hovered.point.month.slice(5, 7)] ?? hovered.point.month}

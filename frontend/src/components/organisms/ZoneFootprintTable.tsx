@@ -29,7 +29,10 @@ export function ZoneFootprintTable({ zones, loading }: ZoneFootprintTableProps) 
         </thead>
         <tbody>
           {zones.map((zone) => (
-            <tr key={zone.zone_id} className="border-b border-tdea-blush-border/60">
+            <tr
+              key={zone.zone_id}
+              className="border-b border-tdea-blush-border/60 transition-colors hover:bg-tdea-blush"
+            >
               <td className="py-3 pr-4 font-medium text-ink">{zone.zone_name}</td>
               <td className="py-3 pr-4 text-graphite">{zone.total_kwh.toFixed(2)} kWh</td>
               <td className="py-3 pr-4 text-graphite">{zone.total_waste_kg.toFixed(2)} kg</td>
