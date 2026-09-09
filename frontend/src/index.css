@@ -69,16 +69,59 @@ body {
 }
 
 @media print {
+  /* El PDF siempre se imprime en paleta clara, sin importar si la pantalla estaba en modo
+     oscuro — de lo contrario el texto claro del modo oscuro queda invisible sobre el papel
+     blanco. Se redefinen los mismos tokens que .dark, con los valores claros de @theme. */
+  :root,
+  .dark {
+    --color-tdea-green: #00652e;
+    --color-tdea-green-dark: #004a21;
+    --color-tdea-green-light: #92bd24;
+    --color-tdea-cream: #ffffff;
+    --color-tdea-blush: #fbeae2;
+    --color-tdea-blush-border: #ecd9cd;
+    --color-tdea-panel: #fbeee7;
+    --color-ink: #1a1a1a;
+    --color-graphite: #57534e;
+    --color-silver: #9a9591;
+    --color-surface: #ffffff;
+    --color-surface-muted: rgba(0, 0, 0, 0.05);
+    --color-danger: #dc2626;
+    --color-danger-bg: #fef2f2;
+    --color-danger-border: #f87171;
+    --shadow-soft: none;
+  }
+
+  * {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
   .print-hide {
     display: none !important;
   }
+
+  html,
+  body,
+  #root,
+  .app-shell-root {
+    height: auto !important;
+    overflow: visible !important;
+  }
+
   main {
     overflow: visible !important;
     height: auto !important;
     padding: 0 !important;
+    flex: none !important;
+    width: 100% !important;
   }
-  body,
-  .print-page {
+
+  .rounded-card {
+    break-inside: avoid;
+  }
+
+  body {
     background-color: white !important;
   }
 }

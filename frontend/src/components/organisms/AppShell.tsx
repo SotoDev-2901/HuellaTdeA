@@ -49,7 +49,7 @@ export function AppShell({ navItems, children, brand, topBarTitle }: AppShellPro
   const [collapsed, setCollapsed] = useState(false);
 
   return (
-    <div className="flex h-screen overflow-hidden bg-tdea-cream">
+    <div className="app-shell-root flex h-screen overflow-hidden bg-tdea-cream">
       <div
         className={`print-hide relative h-screen shrink-0 transition-all duration-200 ${collapsed ? 'w-20' : 'w-60'}`}
       >

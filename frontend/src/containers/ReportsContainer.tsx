@@ -86,7 +86,7 @@ export function ReportsContainer() {
       <div className="flex flex-col gap-4">
         <h2 className="font-display text-lg font-bold text-ink">Detalle por Zona</h2>
 
-        <div className="flex flex-wrap items-end gap-3">
+        <div className="print-hide flex flex-wrap items-end gap-3">
           <div className="flex flex-col gap-1.5">
             <label className="text-sm font-medium text-graphite" htmlFor="report-from">
               Desde
@@ -128,6 +128,10 @@ export function ReportsContainer() {
             </button>
           ) : null}
         </div>
+
+        <p className="hidden text-sm text-graphite print:block">
+          Periodo: {from || to ? `${from || 'inicio'} a ${to || 'hoy'}` : 'histórico completo'}
+        </p>
 
         <div className="rounded-card bg-surface p-6 shadow-soft">
           <div className="mb-1 flex items-baseline justify-between">
