@@ -4,7 +4,7 @@ import { ZonesContainer } from '../containers/ZonesContainer';
 
 const navItems: NavItem[] = [
   { label: 'Panel Administrativo', icon: FiGrid, active: true },
-  { label: 'Registro de Emisiones', icon: FiClipboard },
+  { label: 'Registro de Emisiones', icon: FiClipboard, to: '/consumo' },
   { label: 'Reportes', icon: FiBarChart2 },
 ];
 

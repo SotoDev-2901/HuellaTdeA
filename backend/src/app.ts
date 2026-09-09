@@ -5,6 +5,7 @@ import { router as authRouter } from './modules/auth/auth.routes.js';
 import { router as zonesRouter } from './modules/zones/zones.routes.js';
 import { router as questionnaireRouter } from './modules/questionnaire/questionnaire.routes.js';
 import { router as consumptionRouter } from './modules/consumption/consumption.routes.js';
+import { router as wasteRouter } from './modules/consumption/waste.routes.js';
 import { router as footprintRouter } from './modules/footprint/footprint.routes.js';
 import { router as reportsRouter } from './modules/reports/reports.routes.js';
 import { errorHandler } from './shared/middlewares/errorHandler.js';
@@ -20,6 +21,7 @@ app.use('/api/auth', authRouter);
 app.use('/api/zones', zonesRouter);
 app.use('/api/questionnaire', questionnaireRouter);
 app.use('/api/consumption', consumptionRouter);
+app.use('/api/waste', wasteRouter);
 app.use('/api/footprint', footprintRouter);
 app.use('/api/reports', reportsRouter);
 

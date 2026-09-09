@@ -12,6 +12,7 @@ import { ForgotPasswordPage } from './pages/ForgotPasswordPage';
 import { ResetPasswordPage } from './pages/ResetPasswordPage';
 import { DashboardPlaceholderPage } from './pages/DashboardPlaceholderPage';
 import { ZonesPage } from './pages/ZonesPage';
+import { ConsumptionPage } from './pages/ConsumptionPage';
 import { QuestionnairePage } from './pages/QuestionnairePage';
 import { HistorialPage } from './pages/HistorialPage';
 
@@ -81,6 +82,14 @@ function AppRoutes() {
         element={
           <RoleRoute roles={['administrador']}>
             <ZonesPage />
+          </RoleRoute>
+        }
+      />
+      <Route
+        path="/consumo"
+        element={
+          <RoleRoute roles={['administrador']}>
+            <ConsumptionPage />
           </RoleRoute>
         }
       />
