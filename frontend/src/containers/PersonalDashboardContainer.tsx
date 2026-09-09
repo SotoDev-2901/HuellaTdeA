@@ -126,7 +126,11 @@ export function PersonalDashboardContainer() {
         <div className="rounded-card bg-surface p-6 shadow-soft">
           <h2 className="font-display text-lg font-bold text-ink">Evolución Mensual</h2>
           <div className="mt-4">
-            <MonthlyTrendChart points={monthly} />
+            <MonthlyTrendChart
+              points={monthly}
+              emptyMessage="Todavía no hay suficientes respuestas para mostrar una tendencia."
+              singlePointMessage="Responde el cuestionario en más de un mes para ver tu evolución en el tiempo."
+            />
           </div>
         </div>
       </div>

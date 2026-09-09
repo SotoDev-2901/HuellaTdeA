@@ -2,6 +2,8 @@ import type { MonthlyFootprintPoint } from '../../services/dashboardService';
 
 interface MonthlyTrendChartProps {
   points: MonthlyFootprintPoint[];
+  emptyMessage?: string;
+  singlePointMessage?: string;
 }
 
 const WIDTH = 420;
@@ -23,21 +25,17 @@ const MONTH_LABELS: Record<string, string> = {
   '12': 'Dic',
 };
 
-export function MonthlyTrendChart({ points }: MonthlyTrendChartProps) {
+export function MonthlyTrendChart({
+  points,
+  emptyMessage = 'Todavía no hay suficientes datos para mostrar una tendencia.',
+  singlePointMessage = 'Se necesita más de un mes de datos para ver la evolución en el tiempo.',
+}: MonthlyTrendChartProps) {
   if (points.length === 0) {
-    return (
-      <p className="py-8 text-center text-sm text-graphite">
-        Todavía no hay suficientes respuestas para mostrar una tendencia.
-      </p>
-    );
+    return <p className="py-8 text-center text-sm text-graphite">{emptyMessage}</p>;
   }
 
   if (points.length === 1) {
-    return (
-      <p className="py-8 text-center text-sm text-graphite">
-        Responde el cuestionario en más de un mes para ver tu evolución en el tiempo.
-      </p>
-    );
+    return <p className="py-8 text-center text-sm text-graphite">{singlePointMessage}</p>;
   }
 
   const maxValue = Math.max(...points.map((p) => p.total_kg_co2e), 1);

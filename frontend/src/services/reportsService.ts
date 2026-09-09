@@ -28,3 +28,32 @@ export async function getInstitutionalReport(
   );
   return res.zones;
 }
+
+export interface MonthlyInstitutionalPoint {
+  month: string;
+  kg_co2e: number;
+}
+
+export interface TopZone {
+  zone_name: string;
+  kg_co2e: number;
+}
+
+export interface InstitutionalSummary {
+  totalKgCo2e: number;
+  yearOverYearPct: number | null;
+  totalKwh: number;
+  totalWasteKg: number;
+  transportKgCo2e: number;
+  averagePerPersonKgCo2e: number;
+  registeredUsers: number;
+  zonesMonitored: number;
+  monthly: MonthlyInstitutionalPoint[];
+  distribution: { transporte: number; energia: number; residuos: number };
+  topZones: TopZone[];
+  insight: string | null;
+}
+
+export async function getInstitutionalSummary(): Promise<InstitutionalSummary> {
+  return apiGet<InstitutionalSummary>('/reports/institutional-summary');
+}

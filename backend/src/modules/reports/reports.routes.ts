@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import { requireAuth } from '../../shared/middlewares/auth.js';
-import { getInstitutionalReportHandler } from './reports.controller.js';
+import { getInstitutionalReportHandler, getInstitutionalSummaryHandler } from './reports.controller.js';
 
 export const router = Router();
 
@@ -9,3 +9,4 @@ export const router = Router();
 router.use(requireAuth);
 
 router.get('/institutional', getInstitutionalReportHandler);
+router.get('/institutional-summary', getInstitutionalSummaryHandler);
