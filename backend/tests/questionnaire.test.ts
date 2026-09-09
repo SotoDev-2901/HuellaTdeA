@@ -1,4 +1,4 @@
-import { test, after, before } from 'node:test';
+import { test, after } from 'node:test';
 import assert from 'node:assert/strict';
 import bcrypt from 'bcrypt';
 import { app } from '../src/app.js';
@@ -8,8 +8,7 @@ const server = app.listen(0);
 const { port } = server.address() as { port: number };
 const baseUrl = `http://localhost:${port}`;
 
-const studentEmail = `cuestionario.${Date.now()}@correo.tdea.edu.co`;
-const createdEmails: string[] = [studentEmail];
+const createdEmails: string[] = [];
 
 async function login(email: string, password: string): Promise<string> {
   const res = await fetch(`${baseUrl}/api/auth/login`, {
@@ -19,6 +18,18 @@ async function login(email: string, password: string): Promise<string> {
   });
   const data = await res.json();
   return data.token;
+}
+
+async function createStudent(label: string): Promise<string> {
+  const email = `cuestionario-${label}.${Date.now()}-${Math.random().toString(36).slice(2, 6)}@correo.tdea.edu.co`;
+  createdEmails.push(email);
+  const passwordHash = await bcrypt.hash('password123', 10);
+  await pool.query(
+    `INSERT INTO users (name, email, password_hash, role, email_verified)
+     VALUES ('Estudiante Cuestionario', $1, $2, 'estudiante', true)`,
+    [email, passwordHash],
+  );
+  return login(email, 'password123');
 }
 
 async function post(path: string, token: string, body: Record<string, unknown>) {
@@ -37,8 +48,6 @@ async function get(path: string, token: string) {
   return { status: res.status, data: await res.json() };
 }
 
-let studentToken: string;
-
 const basePayload = {
   transportMode: 'caminar',
   transportKmPerTrip: 2,
@@ -51,23 +60,14 @@ const basePayload = {
   dietType: 'vegano',
 } as const;
 
-before(async () => {
-  const passwordHash = await bcrypt.hash('password123', 10);
-  await pool.query(
-    `INSERT INTO users (name, email, password_hash, role, email_verified)
-     VALUES ('Estudiante Cuestionario', $1, $2, 'estudiante', true)`,
-    [studentEmail, passwordHash],
-  );
-  studentToken = await login(studentEmail, 'password123');
-});
-
 test('HU-04: rechaza el acceso sin token', async () => {
   const res = await fetch(`${baseUrl}/api/questionnaire`, { method: 'POST' });
   assert.equal(res.status, 401);
 });
 
 test('HU-04: rechaza el envío si falta un campo obligatorio', async () => {
-  const { status, data } = await post('/api/questionnaire', studentToken, {
+  const token = await createStudent('campo-faltante');
+  const { status, data } = await post('/api/questionnaire', token, {
     transportMode: 'carro',
     transportKmPerTrip: 10,
   });
@@ -76,7 +76,8 @@ test('HU-04: rechaza el envío si falta un campo obligatorio', async () => {
 });
 
 test('HU-04/HU-08: caminar y dieta vegana no generan emisión de transporte, y el total suma las 5 categorías', async () => {
-  const { status, data } = await post('/api/questionnaire', studentToken, basePayload);
+  const token = await createStudent('base');
+  const { status, data } = await post('/api/questionnaire', token, basePayload);
 
   assert.equal(status, 201);
   const r = data.response;
@@ -97,7 +98,8 @@ test('HU-04/HU-08: caminar y dieta vegana no generan emisión de transporte, y e
 });
 
 test('HU-08: instalaciones no depende de laptop/carga — sigue siendo > 0 aunque ambos sean No', async () => {
-  const { data } = await post('/api/questionnaire', studentToken, {
+  const token = await createStudent('instalaciones');
+  const { data } = await post('/api/questionnaire', token, {
     ...basePayload,
     usesLaptop: false,
     chargesDevices: false,
@@ -108,11 +110,14 @@ test('HU-08: instalaciones no depende de laptop/carga — sigue siendo > 0 aunqu
 });
 
 test('HU-08: un laboratorio pesa más en instalaciones que una zona verde con las mismas horas', async () => {
-  const lab = await post('/api/questionnaire', studentToken, {
+  const labToken = await createStudent('lab');
+  const greenToken = await createStudent('zona-verde');
+
+  const lab = await post('/api/questionnaire', labToken, {
     ...basePayload,
     campusSpaces: ['laboratorios'],
   });
-  const green = await post('/api/questionnaire', studentToken, {
+  const green = await post('/api/questionnaire', greenToken, {
     ...basePayload,
     campusSpaces: ['zonas_verdes'],
   });
@@ -120,12 +125,15 @@ test('HU-08: un laboratorio pesa más en instalaciones que una zona verde con la
 });
 
 test('HU-08: un usuario que va en carro tiene más huella de transporte que uno en bicicleta con el mismo recorrido', async () => {
-  const bike = await post('/api/questionnaire', studentToken, {
+  const bikeToken = await createStudent('bici');
+  const carToken = await createStudent('carro');
+
+  const bike = await post('/api/questionnaire', bikeToken, {
     ...basePayload,
     transportMode: 'bicicleta',
     transportKmPerTrip: 20,
   });
-  const car = await post('/api/questionnaire', studentToken, {
+  const car = await post('/api/questionnaire', carToken, {
     ...basePayload,
     transportMode: 'carro',
     transportKmPerTrip: 20,
@@ -135,7 +143,8 @@ test('HU-08: un usuario que va en carro tiene más huella de transporte que uno 
 });
 
 test('HU-08: si no usa laptop, la huella de dispositivos es 0 aunque tenga horas en campus', async () => {
-  const { data } = await post('/api/questionnaire', studentToken, {
+  const token = await createStudent('sin-laptop');
+  const { data } = await post('/api/questionnaire', token, {
     ...basePayload,
     usesLaptop: false,
     chargesDevices: false,
@@ -145,7 +154,8 @@ test('HU-08: si no usa laptop, la huella de dispositivos es 0 aunque tenga horas
 });
 
 test('HU-08: cargar dispositivos suma una pequeña huella adicional aunque no use laptop', async () => {
-  const { data } = await post('/api/questionnaire', studentToken, {
+  const token = await createStudent('carga-dispositivos');
+  const { data } = await post('/api/questionnaire', token, {
     ...basePayload,
     usesLaptop: false,
     chargesDevices: true,
@@ -154,19 +164,25 @@ test('HU-08: cargar dispositivos suma una pequeña huella adicional aunque no us
 });
 
 test('HU-08: mayor frecuencia de residuos genera mayor huella de residuos', async () => {
-  const low = await post('/api/questionnaire', studentToken, { ...basePayload, wasteFrequency: 'baja' });
-  const high = await post('/api/questionnaire', studentToken, { ...basePayload, wasteFrequency: 'alta' });
+  const lowToken = await createStudent('residuos-baja');
+  const highToken = await createStudent('residuos-alta');
+
+  const low = await post('/api/questionnaire', lowToken, { ...basePayload, wasteFrequency: 'baja' });
+  const high = await post('/api/questionnaire', highToken, { ...basePayload, wasteFrequency: 'alta' });
   assert.ok(Number(high.data.response.waste_kg_co2e) > Number(low.data.response.waste_kg_co2e));
 });
 
 test('HU-08: asistir menos días reduce proporcionalmente alimentación y residuos (no solo transporte/dispositivos)', async () => {
-  const oneDay = await post('/api/questionnaire', studentToken, {
+  const oneDayToken = await createStudent('1-dia');
+  const fiveDaysToken = await createStudent('5-dias');
+
+  const oneDay = await post('/api/questionnaire', oneDayToken, {
     ...basePayload,
     transportDaysPerWeek: 1,
     dietType: 'carne_frecuente',
     wasteFrequency: 'alta',
   });
-  const fiveDays = await post('/api/questionnaire', studentToken, {
+  const fiveDays = await post('/api/questionnaire', fiveDaysToken, {
     ...basePayload,
     transportDaysPerWeek: 5,
     dietType: 'carne_frecuente',
@@ -184,7 +200,8 @@ test('HU-08: asistir menos días reduce proporcionalmente alimentación y residu
 });
 
 test('HU-08: si nunca consume alimentos en la universidad, la huella de alimentación es 0 sin importar la dieta', async () => {
-  const { data } = await post('/api/questionnaire', studentToken, {
+  const token = await createStudent('nunca-come');
+  const { data } = await post('/api/questionnaire', token, {
     ...basePayload,
     eatingFrequency: 'nunca',
     dietType: 'carne_frecuente',
@@ -193,12 +210,15 @@ test('HU-08: si nunca consume alimentos en la universidad, la huella de alimenta
 });
 
 test('HU-08: comer "ocasionalmente" en la universidad genera menos huella de alimentación que "siempre"', async () => {
-  const occasional = await post('/api/questionnaire', studentToken, {
+  const occasionalToken = await createStudent('ocasional');
+  const alwaysToken = await createStudent('siempre');
+
+  const occasional = await post('/api/questionnaire', occasionalToken, {
     ...basePayload,
     eatingFrequency: 'ocasional',
     dietType: 'carne_frecuente',
   });
-  const always = await post('/api/questionnaire', studentToken, {
+  const always = await post('/api/questionnaire', alwaysToken, {
     ...basePayload,
     eatingFrequency: 'siempre',
     dietType: 'carne_frecuente',
@@ -210,10 +230,40 @@ test('HU-08: comer "ocasionalmente" en la universidad genera menos huella de ali
 });
 
 test('HU-05 (historial): el usuario ve sus propias respuestas guardadas', async () => {
-  const { status, data } = await get('/api/questionnaire', studentToken);
+  const token = await createStudent('historial');
+  await post('/api/questionnaire', token, basePayload);
+
+  const { status, data } = await get('/api/questionnaire', token);
   assert.equal(status, 200);
   assert.ok(Array.isArray(data.responses));
-  assert.ok(data.responses.length >= 3);
+  assert.ok(data.responses.length >= 1);
+});
+
+test('HU-04-cadencia: un usuario nuevo puede responder (canSubmit=true, sin fecha de espera)', async () => {
+  const token = await createStudent('elegible-nuevo');
+  const { status, data } = await get('/api/questionnaire/eligibility', token);
+  assert.equal(status, 200);
+  assert.equal(data.canSubmit, true);
+  assert.equal(data.nextEligibleDate, null);
+});
+
+test('HU-04-cadencia: tras responder, el usuario deja de ser elegible hasta el próximo mes', async () => {
+  const token = await createStudent('elegible-tras-envio');
+  await post('/api/questionnaire', token, basePayload);
+
+  const { data } = await get('/api/questionnaire/eligibility', token);
+  assert.equal(data.canSubmit, false);
+  assert.match(data.nextEligibleDate, /^\d{4}-\d{2}-\d{2}$/);
+});
+
+test('HU-04-cadencia: un segundo envío en el mismo mes calendario es rechazado con 409', async () => {
+  const token = await createStudent('doble-envio');
+  const first = await post('/api/questionnaire', token, basePayload);
+  assert.equal(first.status, 201);
+
+  const second = await post('/api/questionnaire', token, basePayload);
+  assert.equal(second.status, 409);
+  assert.match(second.data.message, /este mes/);
 });
 
 after(async () => {

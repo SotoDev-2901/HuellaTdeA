@@ -102,7 +102,15 @@ test('HU-personal-dashboard: el promedio TdeA usa solo la última respuesta de c
   const userA = await createUser('promedio-a');
   const userB = await createUser('promedio-b');
 
-  await submitQuestionnaire(userA.token, { transportKmPerTrip: 5 });
+  const firstA = await submitQuestionnaire(userA.token, { transportKmPerTrip: 5 });
+  // El cuestionario solo permite una respuesta por mes calendario — se retrocede la fecha de la
+  // primera respuesta un mes para poder enviar la "actual" sin chocar con esa restricción, y así
+  // seguir probando que el promedio usa la ÚLTIMA respuesta, no todas.
+  await pool.query(
+    `UPDATE questionnaire_responses SET created_at = created_at - interval '1 month' WHERE id = $1`,
+    [firstA.response.id],
+  );
+
   const secondA = await submitQuestionnaire(userA.token, { transportKmPerTrip: 50 });
   await submitQuestionnaire(userB.token, { transportKmPerTrip: 5 });
 
