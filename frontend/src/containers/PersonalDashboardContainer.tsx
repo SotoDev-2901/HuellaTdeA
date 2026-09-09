@@ -21,7 +21,7 @@ function StatCard({
 }) {
   return (
     <div
-      className={`rounded-card p-5 shadow-soft ${
+      className={`card-hover rounded-card p-5 shadow-soft ${
         highlight ? 'bg-tdea-green text-white' : 'bg-surface text-ink'
       }`}
     >
@@ -109,7 +109,7 @@ export function PersonalDashboardContainer() {
       ) : null}
 
       <div className="grid gap-4 lg:grid-cols-2">
-        <div className="rounded-card bg-surface p-6 shadow-soft">
+        <div className="rounded-card bg-surface p-6 shadow-soft card-hover">
           <h2 className="font-display text-lg font-bold text-ink">Distribución de Emisiones</h2>
           <div className="mt-4">
             <EmissionsDonutChart
@@ -124,7 +124,7 @@ export function PersonalDashboardContainer() {
           </div>
         </div>
 
-        <div className="rounded-card bg-surface p-6 shadow-soft">
+        <div className="rounded-card bg-surface p-6 shadow-soft card-hover">
           <h2 className="font-display text-lg font-bold text-ink">Evolución Mensual</h2>
           <div className="mt-4">
             <MonthlyTrendChart
@@ -136,12 +136,12 @@ export function PersonalDashboardContainer() {
         </div>
       </div>
 
-      <div className="rounded-card bg-surface p-6 shadow-soft">
+      <div className="rounded-card bg-surface p-6 shadow-soft card-hover">
         <h2 className="mb-3 font-display text-lg font-bold text-ink">Tú vs Promedio TdeA</h2>
         <TdeaComparisonBar personalKgCo2e={latest.total_kg_co2e} averageKgCo2e={tdeaAverageKgCo2e} />
       </div>
 
-      <div className="rounded-card bg-surface p-6 shadow-soft">
+      <div className="rounded-card bg-surface p-6 shadow-soft card-hover">
         <RecommendationsPanel breakdown={latest} />
       </div>
     </div>

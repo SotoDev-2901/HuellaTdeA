@@ -81,9 +81,13 @@ export function AppShell({ navItems, children, brand, topBarTitle }: AppShellPro
           </div>
           <nav className="flex flex-col gap-1">
             {navItems.map((item) => {
-              const className = `flex items-center gap-2.5 truncate rounded-input px-3 py-2 text-sm font-medium ${
+              const className = `flex items-center gap-2.5 truncate rounded-input px-3 py-2 text-sm font-medium transition-all duration-150 ${
                 collapsed ? 'justify-center' : ''
-              } ${item.active ? 'bg-tdea-green/10 text-tdea-green' : 'text-graphite hover:bg-tdea-blush'}`;
+              } ${
+                item.active
+                  ? 'bg-tdea-green/10 text-tdea-green'
+                  : 'text-graphite hover:translate-x-0.5 hover:bg-tdea-blush'
+              }`;
               const content = (
                 <>
                   <item.icon size={18} className="shrink-0" />

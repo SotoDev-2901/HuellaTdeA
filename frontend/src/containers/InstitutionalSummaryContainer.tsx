@@ -16,7 +16,7 @@ function StatCard({
   value: string;
 }) {
   return (
-    <div className="rounded-card bg-surface p-5 shadow-soft">
+    <div className="rounded-card bg-surface p-5 shadow-soft card-hover">
       <div className="flex items-center gap-2">
         <Icon size={16} className="text-tdea-green" />
         <p className="text-xs font-semibold uppercase tracking-wide text-silver">{label}</p>
@@ -48,7 +48,7 @@ export function InstitutionalSummaryContainer() {
   return (
     <div className="flex flex-col gap-4">
       <div className="grid gap-4 lg:grid-cols-[1.4fr_1fr]">
-        <div className="rounded-card bg-tdea-green p-6 text-white shadow-soft">
+        <div className="rounded-card bg-tdea-green p-6 text-white shadow-soft card-hover">
           <p className="text-xs font-semibold uppercase tracking-wide text-white/70">Métrica principal</p>
           <h2 className="mt-1 font-display text-lg font-bold">Huella Total del Campus</h2>
           <div className="mt-3 flex items-end gap-3">
@@ -68,7 +68,7 @@ export function InstitutionalSummaryContainer() {
           <p className="mt-1 text-xs text-white/70">Últimos 12 meses (energía + residuos + transporte reportado)</p>
         </div>
 
-        <div className="rounded-card bg-tdea-green-dark p-6 text-white shadow-soft">
+        <div className="rounded-card bg-tdea-green-dark p-6 text-white shadow-soft card-hover">
           <div className="flex items-center gap-2">
             <FiInfo size={16} />
             <p className="text-xs font-semibold uppercase tracking-wide text-white/70">Insight Clave</p>
@@ -91,14 +91,14 @@ export function InstitutionalSummaryContainer() {
       </div>
 
       <div className="grid gap-4 lg:grid-cols-2">
-        <div className="rounded-card bg-surface p-6 shadow-soft">
+        <div className="rounded-card bg-surface p-6 shadow-soft card-hover">
           <h2 className="font-display text-lg font-bold text-ink">Evolución Institucional</h2>
           <div className="mt-4">
             <MonthlyTrendChart points={monthlyPoints} />
           </div>
         </div>
 
-        <div className="rounded-card bg-surface p-6 shadow-soft">
+        <div className="rounded-card bg-surface p-6 shadow-soft card-hover">
           <h2 className="font-display text-lg font-bold text-ink">Distribución por Categoría</h2>
           <div className="mt-4">
             <EmissionsDonutChart
@@ -119,14 +119,14 @@ export function InstitutionalSummaryContainer() {
       </div>
 
       <div className="grid gap-4 lg:grid-cols-2">
-        <div className="rounded-card bg-surface p-6 shadow-soft">
+        <div className="rounded-card bg-surface p-6 shadow-soft card-hover">
           <h2 className="font-display text-lg font-bold text-ink">Top Zonas con Mayor Huella</h2>
           <div className="mt-4">
             <ZoneRankingList zones={summary.topZones} />
           </div>
         </div>
 
-        <div className="rounded-card bg-surface p-6 shadow-soft">
+        <div className="rounded-card bg-surface p-6 shadow-soft card-hover">
           <h2 className="font-display text-lg font-bold text-ink">Composición de Residuos</h2>
           <div className="mt-4">
             {summary.wasteComposition.plastico + summary.wasteComposition.papel + summary.wasteComposition.organico >

@@ -145,7 +145,7 @@ export function ReportsContainer() {
           Periodo: {from || to ? `${from || 'inicio'} a ${to || 'hoy'}` : 'histórico completo'}
         </p>
 
-        <div className="rounded-card bg-surface p-6 shadow-soft">
+        <div className="rounded-card bg-surface p-6 shadow-soft card-hover">
           <div className="mb-1 flex items-baseline justify-between">
             <p className="text-sm text-graphite">Huella por zona (electricidad + residuos)</p>
             <p className="text-sm text-graphite">

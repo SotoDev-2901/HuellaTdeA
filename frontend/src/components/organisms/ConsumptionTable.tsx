@@ -53,14 +53,14 @@ export function ConsumptionTable({ records, loading, onEdit, onDelete }: Consump
                   <button
                     onClick={() => onEdit(record)}
                     title="Editar registro"
-                    className="text-tdea-green hover:text-tdea-green-dark"
+                    className="text-tdea-green transition-transform hover:scale-125 hover:text-tdea-green-dark"
                   >
                     <FiEdit2 size={16} />
                   </button>
                   <button
                     onClick={() => onDelete(record)}
                     title="Eliminar registro"
-                    className="text-danger hover:brightness-90"
+                    className="text-danger transition-transform hover:scale-125 hover:brightness-90"
                   >
                     <FiTrash2 size={16} />
                   </button>
