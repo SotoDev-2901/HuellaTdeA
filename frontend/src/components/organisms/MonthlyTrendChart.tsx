@@ -109,8 +109,8 @@ export function MonthlyTrendChart({
 
       {hovered ? (
         <div
-          className="print-hide pointer-events-none absolute z-10 -translate-x-1/2 -translate-y-full rounded-input bg-ink px-3 py-2 text-xs font-medium text-tdea-cream shadow-soft"
-          style={{ left: hovered.x, top: hovered.y - 12 }}
+          className="print-hide pointer-events-none absolute z-10 -translate-x-1/2 rounded-input bg-[#1a1a1a] px-3 py-2 text-xs font-medium text-white shadow-soft"
+          style={{ left: hovered.x, top: hovered.y + 14 }}
         >
           <p className="font-semibold">
             {MONTH_LABELS[hovered.point.month.slice(5, 7)] ?? hovered.point.month}

@@ -123,8 +123,8 @@ export function EmissionsDonutChart({ segments, totalLabel, unit = 'kg' }: Emiss
 
       {hover !== null ? (
         <div
-          className="print-hide pointer-events-none absolute z-10 -translate-x-1/2 -translate-y-full rounded-input bg-ink px-3 py-2 text-xs font-medium text-tdea-cream shadow-soft"
-          style={{ left: hover.x, top: hover.y - 10 }}
+          className="print-hide pointer-events-none absolute z-10 -translate-x-1/2 rounded-input bg-[#1a1a1a] px-3 py-2 text-xs font-medium text-white shadow-soft"
+          style={{ left: hover.x, top: hover.y + 14 }}
         >
           <p className="font-semibold">{segments[hover.index].label}</p>
           <p>
