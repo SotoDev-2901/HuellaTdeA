@@ -42,7 +42,7 @@ const BUS_KG_CO2E_PER_PASSENGER_KM = 0.089;
  * Fuente: UPME, factor de emisión del Sistema Interconectado Nacional (FECOC 2016 / MVC Colombia,
  * Tabla 6, valor 2015): 0.199 kgCO2e/kWh.
  */
-const ELECTRICITY_KG_CO2E_PER_KWH = 0.199;
+export const ELECTRICITY_KG_CO2E_PER_KWH = 0.199;
 
 /** Potencia promedio asumida de un laptop personal en uso activo. Supuesto declarado. */
 const LAPTOP_POWER_KW = 0.065;
@@ -74,7 +74,7 @@ const DEFAULT_FACILITY_KW_PER_PERSON = 0.12;
  * vía MVC Colombia (2016) Tabla 11: relleno sanitario gestionado anaeróbico,
  * 0.055 kgCH4/kg de residuo × PCG del metano (28, IPCC AR5) = 1.54 kgCO2e/kg.
  */
-const WASTE_KG_CO2E_PER_KG = 1.54;
+export const WASTE_KG_CO2E_PER_KG = 1.54;
 
 /**
  * Los residuos se reportan por frecuencia percibida (baja/media/alta), no en kg exactos, porque

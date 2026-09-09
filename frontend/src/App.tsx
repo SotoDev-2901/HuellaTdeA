@@ -13,6 +13,7 @@ import { ResetPasswordPage } from './pages/ResetPasswordPage';
 import { DashboardPlaceholderPage } from './pages/DashboardPlaceholderPage';
 import { ZonesPage } from './pages/ZonesPage';
 import { ConsumptionPage } from './pages/ConsumptionPage';
+import { ReportsPage } from './pages/ReportsPage';
 import { QuestionnairePage } from './pages/QuestionnairePage';
 import { HistorialPage } from './pages/HistorialPage';
 
@@ -90,6 +91,14 @@ function AppRoutes() {
         element={
           <RoleRoute roles={['administrador']}>
             <ConsumptionPage />
+          </RoleRoute>
+        }
+      />
+      <Route
+        path="/reportes"
+        element={
+          <RoleRoute roles={['administrador']}>
+            <ReportsPage />
           </RoleRoute>
         }
       />
