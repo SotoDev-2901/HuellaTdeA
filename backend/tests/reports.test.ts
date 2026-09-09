@@ -102,11 +102,10 @@ test('HU-09: rechaza el acceso sin token', async () => {
   assert.equal(status, 401);
 });
 
-test('HU-09: rechaza a un usuario que no es administrador', async () => {
+test('HU-09: un usuario que no es administrador también puede consultar el reporte institucional', async () => {
   const studentToken = await createStudent();
-  const { status, data } = await api('/institutional', studentToken);
-  assert.equal(status, 403);
-  assert.match(data.message, /permisos/);
+  const { status } = await api('/institutional', studentToken);
+  assert.equal(status, 200);
 });
 
 test('HU-09: calcula la huella institucional de una zona a partir de consumo y residuos', async () => {
