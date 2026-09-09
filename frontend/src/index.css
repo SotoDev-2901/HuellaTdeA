@@ -67,3 +67,18 @@ body {
   color: var(--color-ink);
   font-family: var(--font-body);
 }
+
+@media print {
+  .print-hide {
+    display: none !important;
+  }
+  main {
+    overflow: visible !important;
+    height: auto !important;
+    padding: 0 !important;
+  }
+  body,
+  .print-page {
+    background-color: white !important;
+  }
+}

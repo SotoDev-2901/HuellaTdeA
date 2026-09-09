@@ -117,9 +117,38 @@ export function InstitutionalSummaryContainer() {
         </div>
       </div>
 
-      <div className="rounded-card bg-surface p-6 shadow-soft">
-        <h2 className="mb-3 font-display text-lg font-bold text-ink">Top Zonas con Mayor Huella</h2>
-        <ZoneRankingList zones={summary.topZones} />
+      <div className="grid gap-4 lg:grid-cols-2">
+        <div className="rounded-card bg-surface p-6 shadow-soft">
+          <h2 className="font-display text-lg font-bold text-ink">Top Zonas con Mayor Huella</h2>
+          <div className="mt-4">
+            <ZoneRankingList zones={summary.topZones} />
+          </div>
+        </div>
+
+        <div className="rounded-card bg-surface p-6 shadow-soft">
+          <h2 className="font-display text-lg font-bold text-ink">Composición de Residuos</h2>
+          <div className="mt-4">
+            {summary.wasteComposition.plastico + summary.wasteComposition.papel + summary.wasteComposition.organico >
+            0 ? (
+              <EmissionsDonutChart
+                totalLabel={`${(
+                  summary.wasteComposition.plastico +
+                  summary.wasteComposition.papel +
+                  summary.wasteComposition.organico
+                ).toFixed(0)}`}
+                segments={[
+                  { label: 'Plástico', value: summary.wasteComposition.plastico, colorVar: 'var(--color-tdea-green-dark)' },
+                  { label: 'Papel', value: summary.wasteComposition.papel, colorVar: 'var(--color-tdea-green)' },
+                  { label: 'Orgánico', value: summary.wasteComposition.organico, colorVar: 'var(--color-tdea-green-light)' },
+                ]}
+              />
+            ) : (
+              <p className="py-8 text-center text-sm text-graphite">
+                Todavía no hay residuos clasificados por tipo en los últimos 12 meses.
+              </p>
+            )}
+          </div>
+        </div>
       </div>
     </div>
   );

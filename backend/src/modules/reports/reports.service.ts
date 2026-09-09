@@ -66,16 +66,32 @@ export async function getInstitutionalSummary(): Promise<InstitutionalSummary> {
   const previousFrom = toIsoDate(monthsAgo(now, 24));
   const previousTo = currentFrom;
 
-  const [currentTotals, previousTotals, monthlyRows, zoneTotals, latestResponses, registeredUsers, zonesMonitored] =
-    await Promise.all([
-      reportsRepository.getAggregateTotals(currentFrom, currentTo),
-      reportsRepository.getAggregateTotals(previousFrom, previousTo),
-      reportsRepository.getMonthlyInstitutionalTotals(currentFrom, currentTo),
-      reportsRepository.getZoneTotals(currentFrom, currentTo),
-      getLatestResponsePerUser(),
-      reportsRepository.getRegisteredUsersCount(),
-      reportsRepository.getZoneCount(),
-    ]);
+  const [
+    currentTotals,
+    previousTotals,
+    monthlyRows,
+    zoneTotals,
+    latestResponses,
+    registeredUsers,
+    zonesMonitored,
+    wasteCompositionRows,
+  ] = await Promise.all([
+    reportsRepository.getAggregateTotals(currentFrom, currentTo),
+    reportsRepository.getAggregateTotals(previousFrom, previousTo),
+    reportsRepository.getMonthlyInstitutionalTotals(currentFrom, currentTo),
+    reportsRepository.getZoneTotals(currentFrom, currentTo),
+    getLatestResponsePerUser(),
+    reportsRepository.getRegisteredUsersCount(),
+    reportsRepository.getZoneCount(),
+    reportsRepository.getWasteCompositionTotals(currentFrom, currentTo),
+  ]);
+
+  const wasteComposition = { plastico: 0, papel: 0, organico: 0 };
+  for (const row of wasteCompositionRows) {
+    if (row.waste_type in wasteComposition) {
+      wasteComposition[row.waste_type as keyof typeof wasteComposition] = round2(Number(row.total_kg));
+    }
+  }
 
   const transportKgCo2e = round2(
     latestResponses.reduce((sum, r) => sum + Number(r.transport_kg_co2e), 0),
@@ -133,6 +149,7 @@ export async function getInstitutionalSummary(): Promise<InstitutionalSummary> {
       energia: round2(Number(currentTotals.total_kwh) * ELECTRICITY_KG_CO2E_PER_KWH),
       residuos: round2(Number(currentTotals.total_waste_kg) * WASTE_KG_CO2E_PER_KG),
     },
+    wasteComposition,
     topZones,
     insight,
   };

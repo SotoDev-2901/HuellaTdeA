@@ -1,6 +1,8 @@
 import { useEffect, useState } from 'react';
+import { FiDownload, FiPrinter } from 'react-icons/fi';
 import { InstitutionalSummaryContainer } from './InstitutionalSummaryContainer';
 import { ZoneFootprintTable } from '../components/organisms/ZoneFootprintTable';
+import { downloadCsv } from '../lib/csv';
 import * as reportsService from '../services/reportsService';
 import type { ZoneFootprintSummary } from '../services/reportsService';
 
@@ -41,8 +43,44 @@ export function ReportsContainer() {
 
   const totalKgCo2e = zones.reduce((sum, z) => sum + z.total_kg_co2e, 0);
 
+  function handleExportCsv() {
+    downloadCsv(
+      `huella-tdea-por-zona-${new Date().toISOString().slice(0, 10)}.csv`,
+      ['Zona', 'Consumo (kWh)', 'Residuos (kg)', 'Huella electricidad (kg CO2e)', 'Huella residuos (kg CO2e)', 'Huella total (kg CO2e)'],
+      zones.map((z) => [
+        z.zone_name,
+        z.total_kwh.toFixed(2),
+        z.total_waste_kg.toFixed(2),
+        z.electricity_kg_co2e.toFixed(2),
+        z.waste_kg_co2e.toFixed(2),
+        z.total_kg_co2e.toFixed(2),
+      ]),
+    );
+  }
+
+  function handleExportPdf() {
+    window.print();
+  }
+
   return (
     <div className="flex flex-col gap-8">
+      <div className="print-hide flex justify-end gap-3">
+        <button
+          type="button"
+          onClick={handleExportCsv}
+          className="flex items-center gap-2 rounded-button border border-tdea-blush-border px-4 py-2 text-sm font-medium text-graphite hover:bg-tdea-blush"
+        >
+          <FiDownload size={16} /> Exportar CSV
+        </button>
+        <button
+          type="button"
+          onClick={handleExportPdf}
+          className="flex items-center gap-2 rounded-button border border-tdea-blush-border px-4 py-2 text-sm font-medium text-graphite hover:bg-tdea-blush"
+        >
+          <FiPrinter size={16} /> Exportar PDF
+        </button>
+      </div>
+
       <InstitutionalSummaryContainer />
 
       <div className="flex flex-col gap-4">

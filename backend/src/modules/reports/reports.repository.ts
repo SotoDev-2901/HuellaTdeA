@@ -61,6 +61,22 @@ export async function getMonthlyInstitutionalTotals(from: string, to: string): P
   return rows;
 }
 
+export interface WasteCompositionRow {
+  waste_type: string;
+  total_kg: string;
+}
+
+export async function getWasteCompositionTotals(from: string, to: string): Promise<WasteCompositionRow[]> {
+  const { rows } = await pool.query<WasteCompositionRow>(
+    `SELECT waste_type, SUM(kg) AS total_kg
+     FROM waste_records
+     WHERE recorded_at BETWEEN $1 AND $2
+     GROUP BY waste_type`,
+    [from, to],
+  );
+  return rows;
+}
+
 export async function getZoneTotals(from?: string, to?: string): Promise<ZoneTotals[]> {
   const rangeFrom = from ?? DEFAULT_FROM;
   const rangeTo = to ?? DEFAULT_TO;

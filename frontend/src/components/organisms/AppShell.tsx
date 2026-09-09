@@ -50,7 +50,9 @@ export function AppShell({ navItems, children, brand, topBarTitle }: AppShellPro
 
   return (
     <div className="flex h-screen overflow-hidden bg-tdea-cream">
-      <div className={`relative h-screen shrink-0 transition-all duration-200 ${collapsed ? 'w-20' : 'w-60'}`}>
+      <div
+        className={`print-hide relative h-screen shrink-0 transition-all duration-200 ${collapsed ? 'w-20' : 'w-60'}`}
+      >
         <button
           onClick={() => setCollapsed((c) => !c)}
           title={collapsed ? 'Expandir menú' : 'Colapsar menú'}
@@ -142,7 +144,7 @@ export function AppShell({ navItems, children, brand, topBarTitle }: AppShellPro
 
       <main className="flex-1 overflow-auto p-8">
         {topBarTitle ? (
-          <div className="mb-6 flex items-center justify-between border-b border-tdea-blush-border pb-4">
+          <div className="print-hide mb-6 flex items-center justify-between border-b border-tdea-blush-border pb-4">
             <h1 className="font-display text-lg font-bold text-ink">{topBarTitle}</h1>
             <div className="flex items-center gap-2">
               <NotificationBell />
@@ -157,7 +159,7 @@ export function AppShell({ navItems, children, brand, topBarTitle }: AppShellPro
             </div>
           </div>
         ) : (
-          <div className="mb-4 flex justify-end">
+          <div className="print-hide mb-4 flex justify-end">
             <ThemeToggle />
           </div>
         )}

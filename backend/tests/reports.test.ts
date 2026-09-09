@@ -232,6 +232,21 @@ test('HU-summary: registeredUsers y zonesMonitored aumentan al crear usuarios/zo
   assert.ok(after1.data.zonesMonitored >= before.data.zonesMonitored + 1);
 });
 
+test('HU-summary: wasteComposition suma el kg de residuos por tipo (medido por delta)', async () => {
+  const before = await api('/institutional-summary', adminToken);
+
+  const zoneId = await createZone(adminToken, 'Bloque Composición');
+  await addWaste(adminToken, zoneId, 'plastico', 12, isoDateMonthsAgo(0));
+  await addWaste(adminToken, zoneId, 'papel', 5, isoDateMonthsAgo(0));
+
+  const after1 = await api('/institutional-summary', adminToken);
+
+  const plasticoDelta = after1.data.wasteComposition.plastico - before.data.wasteComposition.plastico;
+  const papelDelta = after1.data.wasteComposition.papel - before.data.wasteComposition.papel;
+  assert.equal(Math.round(plasticoDelta * 100) / 100, 12);
+  assert.equal(Math.round(papelDelta * 100) / 100, 5);
+});
+
 test('HU-summary: yearOverYearPct es un número cuando existen datos del período anterior (12-24 meses)', async () => {
   const zoneId = await createZone(adminToken, 'Bloque YoY');
   // 18 meses atrás cae en la ventana "año anterior" (12-24 meses), no en la actual.

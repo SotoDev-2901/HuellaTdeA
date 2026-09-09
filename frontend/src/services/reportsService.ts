@@ -50,6 +50,7 @@ export interface InstitutionalSummary {
   zonesMonitored: number;
   monthly: MonthlyInstitutionalPoint[];
   distribution: { transporte: number; energia: number; residuos: number };
+  wasteComposition: { plastico: number; papel: number; organico: number };
   topZones: TopZone[];
   insight: string | null;
 }
