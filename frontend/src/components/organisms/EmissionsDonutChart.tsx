@@ -1,3 +1,5 @@
+import { useRef, useState } from 'react';
+
 interface Segment {
   label: string;
   value: number;
@@ -7,6 +9,14 @@ interface Segment {
 interface EmissionsDonutChartProps {
   segments: Segment[];
   totalLabel: string;
+  /** Unidad mostrada en el tooltip al pasar el mouse (ej. "kgCO2e", "kg"). */
+  unit?: string;
+}
+
+interface HoverState {
+  index: number;
+  x: number;
+  y: number;
 }
 
 const SIZE = 160;
@@ -14,12 +24,30 @@ const STROKE = 22;
 const RADIUS = (SIZE - STROKE) / 2;
 const CIRCUMFERENCE = 2 * Math.PI * RADIUS;
 
-export function EmissionsDonutChart({ segments, totalLabel }: EmissionsDonutChartProps) {
+export function EmissionsDonutChart({ segments, totalLabel, unit = 'kg' }: EmissionsDonutChartProps) {
   const total = segments.reduce((sum, s) => sum + s.value, 0);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const [hover, setHover] = useState<HoverState | null>(null);
   let offset = 0;
 
+  function handleEnter(index: number) {
+    return (event: React.MouseEvent) => {
+      const rect = containerRef.current?.getBoundingClientRect();
+      if (!rect) return;
+      setHover({ index, x: event.clientX - rect.left, y: event.clientY - rect.top });
+    };
+  }
+
+  function handleMove(index: number) {
+    return (event: React.MouseEvent) => {
+      const rect = containerRef.current?.getBoundingClientRect();
+      if (!rect) return;
+      setHover({ index, x: event.clientX - rect.left, y: event.clientY - rect.top });
+    };
+  }
+
   return (
-    <div className="flex items-center gap-6">
+    <div ref={containerRef} className="relative flex items-center gap-6">
       <svg width={SIZE} height={SIZE} viewBox={`0 0 ${SIZE} ${SIZE}`}>
         <circle
           cx={SIZE / 2}
@@ -30,9 +58,11 @@ export function EmissionsDonutChart({ segments, totalLabel }: EmissionsDonutChar
           strokeWidth={STROKE}
         />
         {total > 0
-          ? segments.map((segment) => {
+          ? segments.map((segment, index) => {
               const fraction = segment.value / total;
               const dash = fraction * CIRCUMFERENCE;
+              const isHovered = hover?.index === index;
+              const isDimmed = hover !== null && !isHovered;
               const circle = (
                 <circle
                   key={segment.label}
@@ -41,10 +71,15 @@ export function EmissionsDonutChart({ segments, totalLabel }: EmissionsDonutChar
                   r={RADIUS}
                   fill="none"
                   stroke={segment.colorVar}
-                  strokeWidth={STROKE}
+                  strokeWidth={isHovered ? STROKE + 4 : STROKE}
+                  strokeOpacity={isDimmed ? 0.35 : 1}
                   strokeDasharray={`${dash} ${CIRCUMFERENCE - dash}`}
                   strokeDashoffset={-offset}
                   transform={`rotate(-90 ${SIZE / 2} ${SIZE / 2})`}
+                  className="cursor-pointer transition-all duration-150"
+                  onMouseEnter={handleEnter(index)}
+                  onMouseMove={handleMove(index)}
+                  onMouseLeave={() => setHover(null)}
                 />
               );
               offset += dash;
@@ -57,16 +92,26 @@ export function EmissionsDonutChart({ segments, totalLabel }: EmissionsDonutChar
           textAnchor="middle"
           className="fill-silver text-[9px] font-semibold uppercase tracking-wide"
         >
-          Total
+          {hover !== null ? segments[hover.index].label : 'Total'}
         </text>
         <text x={SIZE / 2} y={SIZE / 2 + 14} textAnchor="middle" className="fill-ink text-base font-bold">
-          {totalLabel}
+          {hover !== null
+            ? `${total > 0 ? Math.round((segments[hover.index].value / total) * 100) : 0}%`
+            : totalLabel}
         </text>
       </svg>
 
       <div className="flex flex-col gap-2">
-        {segments.map((segment) => (
-          <div key={segment.label} className="flex items-center gap-2 text-sm">
+        {segments.map((segment, index) => (
+          <div
+            key={segment.label}
+            onMouseEnter={handleEnter(index)}
+            onMouseMove={handleMove(index)}
+            onMouseLeave={() => setHover(null)}
+            className={`flex cursor-pointer items-center gap-2 rounded-input px-1.5 py-1 text-sm transition-colors ${
+              hover?.index === index ? 'bg-tdea-blush' : ''
+            }`}
+          >
             <span className="h-2.5 w-2.5 rounded-full" style={{ backgroundColor: segment.colorVar }} />
             <span className="text-graphite">{segment.label}</span>
             <span className="font-semibold text-ink">
@@ -75,6 +120,18 @@ export function EmissionsDonutChart({ segments, totalLabel }: EmissionsDonutChar
           </div>
         ))}
       </div>
+
+      {hover !== null ? (
+        <div
+          className="print-hide pointer-events-none absolute z-10 -translate-x-1/2 -translate-y-full rounded-input bg-ink px-3 py-2 text-xs font-medium text-tdea-cream shadow-soft"
+          style={{ left: hover.x, top: hover.y - 10 }}
+        >
+          <p className="font-semibold">{segments[hover.index].label}</p>
+          <p>
+            {segments[hover.index].value.toLocaleString('es-CO', { maximumFractionDigits: 2 })} {unit}
+          </p>
+        </div>
+      ) : null}
     </div>
   );
 }

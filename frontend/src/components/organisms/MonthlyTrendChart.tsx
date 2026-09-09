@@ -1,9 +1,12 @@
+import { useState } from 'react';
 import type { MonthlyFootprintPoint } from '../../services/dashboardService';
 
 interface MonthlyTrendChartProps {
   points: MonthlyFootprintPoint[];
   emptyMessage?: string;
   singlePointMessage?: string;
+  /** Unidad mostrada en el tooltip al pasar el mouse (ej. "kgCO2e"). */
+  unit?: string;
 }
 
 const WIDTH = 420;
@@ -29,7 +32,10 @@ export function MonthlyTrendChart({
   points,
   emptyMessage = 'Todavía no hay suficientes datos para mostrar una tendencia.',
   singlePointMessage = 'Se necesita más de un mes de datos para ver la evolución en el tiempo.',
+  unit = 'kgCO2e',
 }: MonthlyTrendChartProps) {
+  const [hoverIndex, setHoverIndex] = useState<number | null>(null);
+
   if (points.length === 0) {
     return <p className="py-8 text-center text-sm text-graphite">{emptyMessage}</p>;
   }
@@ -49,21 +55,71 @@ export function MonthlyTrendChart({
 
   const linePath = coords.map((c, i) => `${i === 0 ? 'M' : 'L'} ${c.x} ${c.y}`).join(' ');
   const areaPath = `${linePath} L ${coords[coords.length - 1].x} ${HEIGHT - PADDING} L ${coords[0].x} ${HEIGHT - PADDING} Z`;
+  const hovered = hoverIndex !== null ? coords[hoverIndex] : null;
 
   return (
-    <div className="overflow-x-auto">
-      <svg viewBox={`0 0 ${WIDTH} ${HEIGHT}`} width={WIDTH} height={HEIGHT} role="img" aria-label="Evolución mensual de tu huella">
+    <div className="relative overflow-x-auto">
+      <svg
+        viewBox={`0 0 ${WIDTH} ${HEIGHT}`}
+        width={WIDTH}
+        height={HEIGHT}
+        role="img"
+        aria-label="Evolución mensual de tu huella"
+        onMouseLeave={() => setHoverIndex(null)}
+      >
         <path d={areaPath} fill="var(--color-tdea-green)" opacity={0.12} />
         <path d={linePath} fill="none" stroke="var(--color-tdea-green)" strokeWidth={2.5} />
-        {coords.map((c) => (
+
+        {hovered ? (
+          <line
+            x1={hovered.x}
+            y1={PADDING / 2}
+            x2={hovered.x}
+            y2={HEIGHT - PADDING}
+            stroke="var(--color-tdea-blush-border)"
+            strokeWidth={1}
+            strokeDasharray="3 3"
+          />
+        ) : null}
+
+        {coords.map((c, i) => (
           <g key={c.point.month}>
-            <circle cx={c.x} cy={c.y} r={3.5} fill="var(--color-tdea-green)" />
+            <circle
+              cx={c.x}
+              cy={c.y}
+              r={hoverIndex === i ? 6 : 3.5}
+              fill="var(--color-tdea-green)"
+              className="transition-all duration-150"
+            />
             <text x={c.x} y={HEIGHT - 6} textAnchor="middle" className="fill-silver text-[10px]">
               {MONTH_LABELS[c.point.month.slice(5, 7)] ?? c.point.month.slice(5, 7)}
             </text>
+            {/* Área invisible más grande para facilitar el hover sobre el punto */}
+            <circle
+              cx={c.x}
+              cy={c.y}
+              r={12}
+              fill="transparent"
+              className="cursor-pointer"
+              onMouseEnter={() => setHoverIndex(i)}
+            />
           </g>
         ))}
       </svg>
+
+      {hovered ? (
+        <div
+          className="print-hide pointer-events-none absolute z-10 -translate-x-1/2 -translate-y-full rounded-input bg-ink px-3 py-2 text-xs font-medium text-tdea-cream shadow-soft"
+          style={{ left: hovered.x, top: hovered.y - 12 }}
+        >
+          <p className="font-semibold">
+            {MONTH_LABELS[hovered.point.month.slice(5, 7)] ?? hovered.point.month}
+          </p>
+          <p>
+            {hovered.point.total_kg_co2e.toLocaleString('es-CO', { maximumFractionDigits: 2 })} {unit}
+          </p>
+        </div>
+      ) : null}
     </div>
   );
 }

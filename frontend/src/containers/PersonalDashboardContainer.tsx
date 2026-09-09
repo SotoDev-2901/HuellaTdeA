@@ -114,6 +114,7 @@ export function PersonalDashboardContainer() {
           <div className="mt-4">
             <EmissionsDonutChart
               totalLabel={`${(latest.total_kg_co2e / 1000).toFixed(1)}`}
+              unit="kgCO2e"
               segments={[
                 { label: 'Transporte', value: latest.transporte_kg_co2e, colorVar: 'var(--color-tdea-green-dark)' },
                 { label: 'Energía', value: latest.energia_kg_co2e, colorVar: 'var(--color-tdea-green)' },

@@ -103,6 +103,7 @@ export function InstitutionalSummaryContainer() {
           <div className="mt-4">
             <EmissionsDonutChart
               totalLabel={`${(summary.totalKgCo2e / 1000).toFixed(1)}`}
+              unit="kgCO2e"
               segments={[
                 { label: 'Transporte', value: summary.distribution.transporte, colorVar: 'var(--color-tdea-green-dark)' },
                 { label: 'Energía', value: summary.distribution.energia, colorVar: 'var(--color-tdea-green)' },
@@ -136,6 +137,7 @@ export function InstitutionalSummaryContainer() {
                   summary.wasteComposition.papel +
                   summary.wasteComposition.organico
                 ).toFixed(0)}`}
+                unit="kg"
                 segments={[
                   { label: 'Plástico', value: summary.wasteComposition.plastico, colorVar: 'var(--color-tdea-green-dark)' },
                   { label: 'Papel', value: summary.wasteComposition.papel, colorVar: 'var(--color-tdea-green)' },
