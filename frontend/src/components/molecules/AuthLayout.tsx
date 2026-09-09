@@ -1,5 +1,6 @@
 import type { ReactNode } from 'react';
 import { Logo } from '../atoms/Logo';
+import { ThemeToggle } from '../atoms/ThemeToggle';
 
 interface AuthLayoutProps {
   title: string;
@@ -19,6 +20,8 @@ export function AuthLayout({ title, subtitle, children }: AuthLayoutProps) {
         className="pointer-events-none absolute -right-24 bottom-10 h-80 w-80 rounded-full bg-tdea-green/10 blur-3xl"
       />
 
+      <ThemeToggle className="absolute right-4 top-4" />
+
       <div className="relative w-full max-w-md">
         <div className="mb-8 flex flex-col items-center gap-4 text-center">
           <Logo />
@@ -28,7 +31,7 @@ export function AuthLayout({ title, subtitle, children }: AuthLayoutProps) {
           </div>
         </div>
 
-        <div className="rounded-card bg-white p-8 shadow-soft">{children}</div>
+        <div className="rounded-card bg-surface p-8 shadow-soft">{children}</div>
 
         <p className="mt-8 text-center text-xs text-silver">
           © {new Date().getFullYear()} Tecnológico de Antioquia. Sistema de Gestión de Huella de

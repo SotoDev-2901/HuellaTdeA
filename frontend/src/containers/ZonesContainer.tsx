@@ -119,7 +119,7 @@ export function ZonesContainer() {
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           placeholder="Buscar zona por nombre..."
-          className="w-full max-w-xs rounded-input border border-tdea-blush-border bg-white px-3.5 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-tdea-green/40"
+          className="w-full max-w-xs rounded-input border border-tdea-blush-border bg-surface px-3.5 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-tdea-green/40"
         />
         <div className="w-40">
           <Button type="button" onClick={openCreate}>
@@ -128,7 +128,7 @@ export function ZonesContainer() {
         </div>
       </div>
 
-      <div className="rounded-card bg-white p-6 shadow-soft">
+      <div className="rounded-card bg-surface p-6 shadow-soft">
         <ZonesTable
           zones={filteredZones}
           loading={loading}

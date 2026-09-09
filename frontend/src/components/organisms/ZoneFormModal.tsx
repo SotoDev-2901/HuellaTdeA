@@ -31,14 +31,14 @@ export function ZoneFormModal({
 }: ZoneFormModalProps) {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30 px-4">
-      <div className="w-full max-w-md rounded-card bg-white p-6 shadow-soft">
+      <div className="w-full max-w-md rounded-card bg-surface p-6 shadow-soft">
         <h2 className="mb-4 font-display text-xl font-bold text-ink">
           {mode === 'create' ? 'Nueva zona' : 'Editar zona'}
         </h2>
 
         <form className="flex flex-col gap-4" onSubmit={onSubmit}>
           {error ? (
-            <p className="rounded-input bg-red-50 px-3 py-2 text-sm text-red-600">{error}</p>
+            <p className="rounded-input bg-danger-bg px-3 py-2 text-sm text-danger">{error}</p>
           ) : null}
 
           <Input

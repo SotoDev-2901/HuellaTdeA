@@ -1,5 +1,6 @@
 import { Navigate, Route, Routes } from 'react-router-dom';
 import { AuthProvider, useAuth } from './context/AuthContext';
+import { ThemeProvider } from './context/ThemeContext';
 import { ProtectedRoute } from './components/molecules/ProtectedRoute';
 import { GuestRoute } from './components/molecules/GuestRoute';
 import { RoleRoute } from './components/molecules/RoleRoute';
@@ -11,6 +12,8 @@ import { ForgotPasswordPage } from './pages/ForgotPasswordPage';
 import { ResetPasswordPage } from './pages/ResetPasswordPage';
 import { DashboardPlaceholderPage } from './pages/DashboardPlaceholderPage';
 import { ZonesPage } from './pages/ZonesPage';
+import { QuestionnairePage } from './pages/QuestionnairePage';
+import { HistorialPage } from './pages/HistorialPage';
 
 function DefaultRedirect() {
   const { token, user } = useAuth();
@@ -58,6 +61,22 @@ function AppRoutes() {
         }
       />
       <Route
+        path="/cuestionario"
+        element={
+          <ProtectedRoute>
+            <QuestionnairePage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/historial"
+        element={
+          <ProtectedRoute>
+            <HistorialPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
         path="/panel-administrativo"
         element={
           <RoleRoute roles={['administrador']}>
@@ -72,8 +91,10 @@ function AppRoutes() {
 
 export function App() {
   return (
-    <AuthProvider>
-      <AppRoutes />
-    </AuthProvider>
+    <ThemeProvider>
+      <AuthProvider>
+        <AppRoutes />
+      </AuthProvider>
+    </ThemeProvider>
   );
 }

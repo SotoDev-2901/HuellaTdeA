@@ -18,7 +18,7 @@ function StatusPill({ status }: { status: Zone['status'] }) {
   return (
     <span
       className={`rounded-pill px-2.5 py-0.5 text-xs font-semibold ${
-        isActive ? 'bg-tdea-green/15 text-tdea-green' : 'bg-black/5 text-silver'
+        isActive ? 'bg-tdea-green/15 text-tdea-green' : 'bg-surface-muted text-silver'
       }`}
     >
       {isActive ? 'ACTIVA' : 'INACTIVA'}
@@ -74,7 +74,7 @@ export function ZonesTable({ zones, loading, onEdit, onDelete }: ZonesTableProps
                   <button
                     onClick={() => onDelete(zone)}
                     title="Eliminar zona"
-                    className="text-red-500 hover:text-red-700"
+                    className="text-danger hover:brightness-90"
                   >
                     <FiTrash2 size={16} />
                   </button>

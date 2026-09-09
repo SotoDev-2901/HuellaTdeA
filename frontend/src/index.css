@@ -16,6 +16,14 @@
   --color-graphite: #57534e;
   --color-silver: #9a9591;
 
+  /* Tokens semánticos de superficie/estado — permiten que el modo oscuro solo redefina
+     estos valores (ver bloque .dark más abajo) sin tocar cada componente. */
+  --color-surface: #ffffff;
+  --color-surface-muted: rgba(0, 0, 0, 0.05);
+  --color-danger: #dc2626;
+  --color-danger-bg: #fef2f2;
+  --color-danger-border: #f87171;
+
   --font-display: 'Manrope', ui-sans-serif, system-ui, sans-serif;
   --font-body: 'Inter', ui-sans-serif, system-ui, sans-serif;
 
@@ -26,6 +34,32 @@
   --radius-chip: 4px;
 
   --shadow-soft: 0 3px 12px 0 rgba(0, 0, 0, 0.08), 0 0 2px 0 rgba(0, 0, 0, 0.12);
+}
+
+/* Modo oscuro: redefine los mismos tokens: los componentes no necesitan clases dark: propias. */
+.dark {
+  /* El verde institucional oscuro no tiene suficiente contraste como texto sobre fondo casi negro;
+     se usa un verde más claro solo para modo oscuro (los botones, que llevan texto blanco encima,
+     no se ven afectados). */
+  --color-tdea-green: #3fb374;
+  --color-tdea-green-dark: #2e9b5d;
+
+  --color-tdea-cream: #14140f;
+  --color-tdea-blush: #1f1d18;
+  --color-tdea-blush-border: #34302a;
+  --color-tdea-panel: #201c17;
+
+  --color-ink: #f2efe9;
+  --color-graphite: #c9c3ba;
+  --color-silver: #8b857c;
+
+  --color-surface: #221f1a;
+  --color-surface-muted: rgba(255, 255, 255, 0.08);
+  --color-danger: #f87171;
+  --color-danger-bg: #3a1a1a;
+  --color-danger-border: #7f1d1d;
+
+  --shadow-soft: 0 3px 12px 0 rgba(0, 0, 0, 0.4), 0 0 2px 0 rgba(0, 0, 0, 0.5);
 }
 
 body {
