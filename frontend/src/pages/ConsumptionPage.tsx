@@ -7,7 +7,7 @@ import { WasteContainer } from '../containers/WasteContainer';
 const navItems: NavItem[] = [
   { label: 'Panel Administrativo', icon: FiGrid, to: '/panel-administrativo' },
   { label: 'Registro de Emisiones', icon: FiClipboard, active: true },
-  { label: 'Reportes', icon: FiBarChart2 },
+  { label: 'Reportes', icon: FiBarChart2, to: '/reportes' },
 ];
 
 type Tab = 'consumo' | 'residuos';
