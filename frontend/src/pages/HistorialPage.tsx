@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { FiClock, FiEdit3, FiHome } from 'react-icons/fi';
+import { FiBarChart2, FiClock, FiEdit3, FiHome } from 'react-icons/fi';
 import { AppShell, type NavItem } from '../components/organisms/AppShell';
 import * as questionnaireService from '../services/questionnaireService';
 import type { QuestionnaireResponse } from '../services/questionnaireService';
@@ -8,6 +8,7 @@ const navItems: NavItem[] = [
   { label: 'Dashboard', icon: FiHome, to: '/dashboard' },
   { label: 'Cuestionario', icon: FiEdit3, to: '/cuestionario' },
   { label: 'Historial', icon: FiClock, active: true },
+  { label: 'Huella TdeA', icon: FiBarChart2, to: '/reportes' },
 ];
 
 const brand = { title: 'TDEA HUELLA', subtitle: 'Carbon Tracking' };
