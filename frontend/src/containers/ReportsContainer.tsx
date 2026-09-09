@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { FiDownload, FiPrinter } from 'react-icons/fi';
 import { InstitutionalSummaryContainer } from './InstitutionalSummaryContainer';
 import { ZoneFootprintTable } from '../components/organisms/ZoneFootprintTable';
+import { Logo } from '../components/atoms/Logo';
 import { downloadCsv } from '../lib/csv';
 import * as reportsService from '../services/reportsService';
 import type { ZoneFootprintSummary } from '../services/reportsService';
@@ -81,6 +82,17 @@ export function ReportsContainer() {
         </button>
       </div>
 
+      <div className="hidden print:mb-6 print:flex print:items-center print:gap-3 print:border-b print:border-tdea-blush-border print:pb-4">
+        <Logo compact />
+        <div>
+          <p className="font-display text-base font-bold text-ink">Huella de Carbono de TdeA — Reporte Institucional</p>
+          <p className="text-xs text-graphite">
+            Generado el{' '}
+            {new Date().toLocaleDateString('es-CO', { day: '2-digit', month: 'long', year: 'numeric' })}
+          </p>
+        </div>
+      </div>
+
       <InstitutionalSummaryContainer />
 
       <div className="flex flex-col gap-4">
@@ -142,6 +154,15 @@ export function ReportsContainer() {
           </div>
           <ZoneFootprintTable zones={zones} loading={loading} />
         </div>
+
+        <p className="hidden print:block print:mt-4 print:border-t print:border-tdea-blush-border print:pt-4 print:text-xs print:text-silver">
+          Metodología: factor eléctrico UPME (0.199 kgCO2e/kWh, Sistema Interconectado Nacional). Residuos
+          según Directrices del IPCC (2006) para Inventarios Nacionales de GEI, vía MVC Colombia (1.54
+          kgCO2e/kg, relleno sanitario gestionado anaeróbico). El transporte institucional se estima como la
+          suma del transporte reportado en la última respuesta del cuestionario individual de cada usuario
+          (supuesto de alcance mixto, declarado). Sistema de Gestión de Huella de Carbono — Tecnológico de
+          Antioquia.
+        </p>
       </div>
     </div>
   );

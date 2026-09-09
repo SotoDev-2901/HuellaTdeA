@@ -8,6 +8,7 @@ import * as wasteService from '../services/wasteService';
 import type { WasteRecord } from '../services/wasteService';
 import * as zonesService from '../services/zonesService';
 import type { Zone } from '../services/zonesService';
+import { useToast } from '../context/ToastContext';
 
 const emptyForm: WasteFormValues = {
   zoneId: '',
@@ -17,6 +18,7 @@ const emptyForm: WasteFormValues = {
 };
 
 export function WasteContainer() {
+  const { showToast } = useToast();
   const [records, setRecords] = useState<WasteRecord[]>([]);
   const [zones, setZones] = useState<Zone[]>([]);
   const [loading, setLoading] = useState(true);
@@ -97,6 +99,7 @@ export function WasteContainer() {
           kg: Number(formValues.kg),
           recordedAt: formValues.recordedAt,
         });
+        showToast('Registro de residuos creado exitosamente');
       } else if (modal.recordId) {
         await wasteService.updateWasteRecord(modal.recordId, {
           zoneId: formValues.zoneId,
@@ -104,6 +107,7 @@ export function WasteContainer() {
           kg: Number(formValues.kg),
           recordedAt: formValues.recordedAt,
         });
+        showToast('Registro de residuos actualizado exitosamente');
       }
       setModal(null);
       await loadData();
@@ -120,6 +124,7 @@ export function WasteContainer() {
     try {
       await wasteService.deleteWasteRecord(recordToDelete.id);
       setRecordToDelete(null);
+      showToast('Registro de residuos eliminado exitosamente');
       await loadData();
     } finally {
       setDeleting(false);

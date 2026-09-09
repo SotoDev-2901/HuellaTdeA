@@ -6,6 +6,7 @@ import { Button } from '../components/atoms/Button';
 import { ApiError } from '../lib/api';
 import * as zonesService from '../services/zonesService';
 import type { Zone } from '../services/zonesService';
+import { useToast } from '../context/ToastContext';
 
 const emptyForm: ZoneFormValues = {
   name: '',
@@ -15,6 +16,7 @@ const emptyForm: ZoneFormValues = {
 };
 
 export function ZonesContainer() {
+  const { showToast } = useToast();
   const [zones, setZones] = useState<Zone[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
@@ -83,6 +85,7 @@ export function ZonesContainer() {
           description: formValues.description || undefined,
           type: formValues.type,
         });
+        showToast('Zona creada exitosamente');
       } else if (modal.zoneId) {
         await zonesService.updateZone(modal.zoneId, {
           name: formValues.name,
@@ -90,6 +93,7 @@ export function ZonesContainer() {
           type: formValues.type,
           status: formValues.status,
         });
+        showToast('Zona actualizada exitosamente');
       }
       setModal(null);
       await loadZones();
@@ -106,6 +110,7 @@ export function ZonesContainer() {
     try {
       await zonesService.deleteZone(zoneToDelete.id);
       setZoneToDelete(null);
+      showToast('Zona eliminada exitosamente');
       await loadZones();
     } finally {
       setDeleting(false);

@@ -1,6 +1,8 @@
-import { createContext, useContext, useMemo, useState, type ReactNode } from 'react';
+import { createContext, useContext, useEffect, useMemo, useState, type ReactNode } from 'react';
+import { useNavigate } from 'react-router-dom';
 import type { AuthUser } from '../services/authService';
-import { SESSION_STORAGE_KEY } from '../lib/session';
+import { SESSION_EXPIRED_EVENT, SESSION_STORAGE_KEY } from '../lib/session';
+import { useToast } from './ToastContext';
 
 interface AuthContextValue {
   user: AuthUser | null;
@@ -27,6 +29,19 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const stored = readStoredSession();
   const [user, setUser] = useState<AuthUser | null>(stored?.user ?? null);
   const [token, setToken] = useState<string | null>(stored?.token ?? null);
+  const navigate = useNavigate();
+  const { showToast } = useToast();
+
+  useEffect(() => {
+    function handleSessionExpired() {
+      setUser(null);
+      setToken(null);
+      showToast('Tu sesión expiró. Inicia sesión de nuevo.', 'error');
+      navigate('/login', { replace: true });
+    }
+    window.addEventListener(SESSION_EXPIRED_EVENT, handleSessionExpired);
+    return () => window.removeEventListener(SESSION_EXPIRED_EVENT, handleSessionExpired);
+  }, [navigate, showToast]);
 
   const value = useMemo<AuthContextValue>(
     () => ({

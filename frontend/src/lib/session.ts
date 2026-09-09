@@ -8,3 +8,10 @@ export function getStoredToken(): string | null {
     return null;
   }
 }
+
+export function clearStoredSession(): void {
+  localStorage.removeItem(SESSION_STORAGE_KEY);
+  sessionStorage.removeItem(SESSION_STORAGE_KEY);
+}
+
+export const SESSION_EXPIRED_EVENT = 'huellatdea:session-expired';

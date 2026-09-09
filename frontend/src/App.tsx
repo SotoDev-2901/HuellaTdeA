@@ -1,6 +1,7 @@
 import { Navigate, Route, Routes } from 'react-router-dom';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { ThemeProvider } from './context/ThemeContext';
+import { ToastProvider } from './context/ToastContext';
 import { ProtectedRoute } from './components/molecules/ProtectedRoute';
 import { GuestRoute } from './components/molecules/GuestRoute';
 import { RoleRoute } from './components/molecules/RoleRoute';
@@ -110,9 +111,11 @@ function AppRoutes() {
 export function App() {
   return (
     <ThemeProvider>
-      <AuthProvider>
-        <AppRoutes />
-      </AuthProvider>
+      <ToastProvider>
+        <AuthProvider>
+          <AppRoutes />
+        </AuthProvider>
+      </ToastProvider>
     </ThemeProvider>
   );
 }
