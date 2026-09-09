@@ -142,28 +142,39 @@ export function AppShell({ navItems, children, brand, topBarTitle }: AppShellPro
         </aside>
       </div>
 
-      <main className="flex-1 overflow-auto p-8">
-        {topBarTitle ? (
-          <div className="print-hide mb-6 flex items-center justify-between border-b border-tdea-blush-border pb-4">
-            <h1 className="font-display text-lg font-bold text-ink">{topBarTitle}</h1>
-            <div className="flex items-center gap-2">
-              <NotificationBell />
-              <HelpButton />
-              <ThemeToggle />
-              <div
-                title={user?.name}
-                className="flex h-9 w-9 items-center justify-center rounded-full bg-tdea-green text-xs font-bold text-white"
-              >
-                {user?.name?.slice(0, 2).toUpperCase()}
+      <main className="relative flex-1 overflow-auto bg-gradient-to-br from-tdea-cream via-tdea-cream to-tdea-panel">
+        <div
+          aria-hidden="true"
+          className="print-hide pointer-events-none fixed -right-24 -top-24 h-96 w-96 rounded-full bg-tdea-green-light/10 blur-3xl"
+        />
+        <div
+          aria-hidden="true"
+          className="print-hide pointer-events-none fixed -left-24 bottom-0 h-96 w-96 rounded-full bg-tdea-green/10 blur-3xl"
+        />
+
+        <div className="relative p-8">
+          {topBarTitle ? (
+            <div className="print-hide mb-6 flex items-center justify-between border-b border-tdea-blush-border pb-4">
+              <h1 className="font-display text-lg font-bold text-ink">{topBarTitle}</h1>
+              <div className="flex items-center gap-2">
+                <NotificationBell />
+                <HelpButton />
+                <ThemeToggle />
+                <div
+                  title={user?.name}
+                  className="flex h-9 w-9 items-center justify-center rounded-full bg-tdea-green text-xs font-bold text-white"
+                >
+                  {user?.name?.slice(0, 2).toUpperCase()}
+                </div>
               </div>
             </div>
-          </div>
-        ) : (
-          <div className="print-hide mb-4 flex justify-end">
-            <ThemeToggle />
-          </div>
-        )}
-        {children}
+          ) : (
+            <div className="print-hide mb-4 flex justify-end">
+              <ThemeToggle />
+            </div>
+          )}
+          {children}
+        </div>
       </main>
     </div>
   );

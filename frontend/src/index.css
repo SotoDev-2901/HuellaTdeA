@@ -115,6 +115,7 @@ body {
     padding: 0 !important;
     flex: none !important;
     width: 100% !important;
+    background: white !important;
   }
 
   .rounded-card {
