@@ -11,6 +11,10 @@ interface EmissionsDonutChartProps {
   totalLabel: string;
   /** Unidad mostrada en el tooltip al pasar el mouse (ej. "kgCO2e", "kg"). */
   unit?: string;
+  /** Formatea el valor del tooltip (p. ej. para elegir kg o toneladas). Tiene prioridad sobre `unit`. */
+  formatValue?: (value: number) => string;
+  /** Unidad pequeña bajo el total del centro. */
+  totalUnit?: string;
 }
 
 interface HoverState {
@@ -24,7 +28,7 @@ const STROKE = 22;
 const RADIUS = (SIZE - STROKE) / 2;
 const CIRCUMFERENCE = 2 * Math.PI * RADIUS;
 
-export function EmissionsDonutChart({ segments, totalLabel, unit = 'kg' }: EmissionsDonutChartProps) {
+export function EmissionsDonutChart({ segments, totalLabel, unit = 'kg', formatValue, totalUnit }: EmissionsDonutChartProps) {
   const total = segments.reduce((sum, s) => sum + s.value, 0);
   const containerRef = useRef<HTMLDivElement>(null);
   const [hover, setHover] = useState<HoverState | null>(null);
@@ -99,6 +103,11 @@ export function EmissionsDonutChart({ segments, totalLabel, unit = 'kg' }: Emiss
             ? `${total > 0 ? Math.round((segments[hover.index].value / total) * 100) : 0}%`
             : totalLabel}
         </text>
+        {hover === null && totalUnit ? (
+          <text x={SIZE / 2} y={SIZE / 2 + 28} textAnchor="middle" className="fill-silver text-[8px] font-semibold">
+            {totalUnit}
+          </text>
+        ) : null}
       </svg>
 
       <div className="flex flex-col gap-2">
@@ -128,7 +137,9 @@ export function EmissionsDonutChart({ segments, totalLabel, unit = 'kg' }: Emiss
         >
           <p className="font-semibold">{segments[hover.index].label}</p>
           <p>
-            {segments[hover.index].value.toLocaleString('es-CO', { maximumFractionDigits: 2 })} {unit}
+            {formatValue
+              ? formatValue(segments[hover.index].value)
+              : `${segments[hover.index].value.toLocaleString('es-CO', { maximumFractionDigits: 2 })} ${unit}`}
           </p>
         </div>
       ) : null}

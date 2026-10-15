@@ -5,8 +5,8 @@ import * as questionnaireService from './questionnaire.service.js';
 export async function submitQuestionnaireHandler(req: Request, res: Response, next: NextFunction) {
   try {
     const input = submitQuestionnaireSchema.parse(req.body);
-    const response = await questionnaireService.submitQuestionnaire(req.auth!.sub, input);
-    res.status(201).json({ response });
+    const { response, replaced } = await questionnaireService.submitQuestionnaire(req.auth!.sub, input);
+    res.status(replaced ? 200 : 201).json({ response, replaced });
   } catch (err) {
     next(err);
   }

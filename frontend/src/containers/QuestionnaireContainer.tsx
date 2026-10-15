@@ -6,6 +6,7 @@ import {
   type QuestionnaireErrors,
   type QuestionnaireFormValues,
 } from '../components/organisms/QuestionnaireForm';
+import { Button } from '../components/atoms/Button';
 import { QuestionnaireResult } from '../components/organisms/QuestionnaireResult';
 import { ApiError } from '../lib/api';
 import * as questionnaireService from '../services/questionnaireService';
@@ -63,6 +64,8 @@ export function QuestionnaireContainer() {
   const [result, setResult] = useState<QuestionnaireResponse | null>(null);
   const [eligibility, setEligibility] = useState<QuestionnaireEligibility | null>(null);
   const [checkingEligibility, setCheckingEligibility] = useState(true);
+  // true cuando la persona ya respondió este mes y decide actualizar (reemplazar) esa respuesta.
+  const [editing, setEditing] = useState(false);
 
   useEffect(() => {
     questionnaireService
@@ -116,9 +119,6 @@ export function QuestionnaireContainer() {
       });
       setResult(response);
     } catch (err) {
-      if (err instanceof ApiError && err.status === 409) {
-        setEligibility({ canSubmit: false, nextEligibleDate: null });
-      }
       setErrors({ form: err instanceof ApiError ? err.message : 'No se pudo guardar el cuestionario' });
     } finally {
       setLoading(false);
@@ -130,6 +130,7 @@ export function QuestionnaireContainer() {
     setErrors({});
     setStep(0);
     setResult(null);
+    setEditing(true);
   }
 
   if (result) {
@@ -140,14 +141,14 @@ export function QuestionnaireContainer() {
     return <p className="py-8 text-center text-sm text-graphite">Cargando...</p>;
   }
 
-  if (eligibility && !eligibility.canSubmit) {
+  if (eligibility && !eligibility.canSubmit && !editing) {
     return (
       <div className="flex flex-col items-center gap-3 py-8 text-center">
         <FiCheckCircle className="text-tdea-green" size={40} />
         <h2 className="font-display text-xl font-bold text-ink">Ya respondiste este mes</h2>
         <p className="max-w-sm text-sm text-graphite">
           El cuestionario se responde una vez por mes para llevar un seguimiento real de tu huella
-          en el tiempo.
+          en el tiempo. Si tus hábitos cambiaron, puedes actualizar tu respuesta de este mes y reemplazará la anterior.
           {eligibility.nextEligibleDate ? (
             <>
               {' '}
@@ -163,6 +164,9 @@ export function QuestionnaireContainer() {
             </>
           ) : null}
         </p>
+        <Button type="button" onClick={() => setEditing(true)}>
+          Actualizar mis respuestas de este mes
+        </Button>
         <div className="mt-2 flex items-center gap-2 text-xs text-silver">
           <FiClock size={14} />
           Mientras tanto, revisa tu progreso en{' '}

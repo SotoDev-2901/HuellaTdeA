@@ -38,9 +38,17 @@ services:
       DB_PASSWORD: ${DB_PASSWORD:-postgres}
       JWT_SECRET: ${JWT_SECRET:-changeme}
       DATABASE_URL: postgres://${DB_USER:-postgres}:${DB_PASSWORD:-postgres}@db:5432/${DB_NAME:-huellatdea}
-      MAIL_HOST: mailpit
-      MAIL_PORT: 1025
-      MAIL_FROM: "Huella TdeA <no-reply@tdea.edu.co>"
+      # Por defecto los correos van a Mailpit. Para enviarlos de verdad, define en .env
+      # MAIL_HOST, MAIL_PORT, MAIL_USER, MAIL_PASSWORD, MAIL_SECURE y MAIL_FROM del proveedor SMTP.
+      MAIL_HOST: ${MAIL_HOST:-mailpit}
+      MAIL_PORT: ${MAIL_PORT:-1025}
+      MAIL_USER: ${MAIL_USER:-}
+      MAIL_PASSWORD: ${MAIL_PASSWORD:-}
+      MAIL_SECURE: ${MAIL_SECURE:-false}
+      MAIL_FROM: ${MAIL_FROM:-Huella TdeA <no-reply@tdea.edu.co>}
+      AI_API_KEY: ${AI_API_KEY:-}
+      AI_BASE_URL: ${AI_BASE_URL:-https://api.groq.com/openai/v1}
+      AI_MODEL: ${AI_MODEL:-openai/gpt-oss-120b}
       FRONTEND_URL: http://localhost:5173
       MAILPIT_URL: http://mailpit:8025
     ports:

@@ -1,3 +1,4 @@
+import { formatEmission, pickEmissionUnit } from '../../lib/format';
 import type { TopZone } from '../../services/reportsService';
 
 interface ZoneRankingListProps {
@@ -8,6 +9,8 @@ export function ZoneRankingList({ zones }: ZoneRankingListProps) {
   if (zones.length === 0) {
     return <p className="py-6 text-center text-sm text-graphite">Todavía no hay datos por zona.</p>;
   }
+
+  const rankUnit = pickEmissionUnit(...zones.map((z) => z.kg_co2e));
 
   return (
     <ol className="flex flex-col gap-3">
@@ -24,7 +27,7 @@ export function ZoneRankingList({ zones }: ZoneRankingListProps) {
             <p className="truncate text-sm font-semibold text-ink">{zone.zone_name}</p>
           </div>
           <p className="shrink-0 text-sm font-semibold text-tdea-green">
-            {(zone.kg_co2e / 1000).toFixed(2)} tCO2e
+            {formatEmission(zone.kg_co2e, rankUnit)}
           </p>
         </li>
       ))}

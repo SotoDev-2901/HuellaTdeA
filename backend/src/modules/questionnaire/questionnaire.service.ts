@@ -1,4 +1,3 @@
-import { AppError } from '../../shared/errors/AppError.js';
 import { calculateFootprint } from '../footprint/footprint.service.js';
 import * as questionnaireRepository from './questionnaire.repository.js';
 import type { SubmitQuestionnaireInput } from './questionnaire.schema.js';
@@ -19,8 +18,8 @@ export interface QuestionnaireEligibility {
 }
 
 /**
- * El cuestionario solo se puede responder una vez por mes calendario (decisión explícita del
- * usuario): coincide con la cadencia de "Evolución Mensual" del dashboard personal y con la
+ * `canSubmit` indica si se puede crear una respuesta NUEVA (una por mes calendario, decisión
+ * explícita del usuario). Si ya respondió este mes, aún puede reenviar para reemplazarla. Coincide con la cadencia de "Evolución Mensual" del dashboard personal y con la
  * facturación mensual de HU-06, y evita que alguien envíe varias veces seguidas para manipular
  * la comparación contra el promedio TdeA (que usa la última respuesta de cada usuario).
  */
@@ -42,29 +41,34 @@ export async function getEligibility(userId: string): Promise<QuestionnaireEligi
   };
 }
 
-export async function submitQuestionnaire(
-  userId: string,
-  input: SubmitQuestionnaireInput,
-): Promise<QuestionnaireResponse> {
-  const eligibility = await getEligibility(userId);
-  if (!eligibility.canSubmit) {
-    throw new AppError(
-      `Ya respondiste el cuestionario este mes. Podrás volver a hacerlo a partir del ${eligibility.nextEligibleDate}.`,
-      409,
-    );
+export interface SubmitResult {
+  response: QuestionnaireResponse;
+  /** true si se reemplazó la respuesta del mes en curso en lugar de crear una nueva. */
+  replaced: boolean;
+}
+
+/**
+ * Hay una sola respuesta por mes calendario. Si la persona ya respondió este mes, volver a
+ * enviar el cuestionario REEMPLAZA esa respuesta (conserva su fecha) en vez de crear otra o
+ * rechazar el envío: así puede corregir sus hábitos sin inflar el historial ni manipular el
+ * promedio TdeA con envíos repetidos.
+ */
+export async function submitQuestionnaire(userId: string, input: SubmitQuestionnaireInput): Promise<SubmitResult> {
+  const result = calculateFootprint({ ...input, campusSpaces: input.campusSpaces ?? [] });
+  const extras = {
+    transportMinutesPerTrip: input.transportMinutesPerTrip,
+    campusSpaces: input.campusSpaces,
+    wasteComposition: input.wasteComposition,
+  };
+
+  const latest = await questionnaireRepository.findLatestResponseForUser(userId);
+  if (latest && monthKey(new Date(latest.created_at)) === monthKey(new Date())) {
+    const response = await questionnaireRepository.replaceResponse(latest.id, userId, input, extras, result);
+    return { response, replaced: true };
   }
 
-  const result = calculateFootprint({ ...input, campusSpaces: input.campusSpaces ?? [] });
-  return questionnaireRepository.createResponse(
-    userId,
-    input,
-    {
-      transportMinutesPerTrip: input.transportMinutesPerTrip,
-      campusSpaces: input.campusSpaces,
-      wasteComposition: input.wasteComposition,
-    },
-    result,
-  );
+  const response = await questionnaireRepository.createResponse(userId, input, extras, result);
+  return { response, replaced: false };
 }
 
 export function listMyResponses(userId: string): Promise<QuestionnaireResponse[]> {
