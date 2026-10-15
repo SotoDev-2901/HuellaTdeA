@@ -20,5 +20,17 @@ export const env = {
     host: process.env.MAIL_HOST || 'localhost',
     port: Number(process.env.MAIL_PORT) || 1025,
     from: process.env.MAIL_FROM || 'Huella TdeA <no-reply@tdea.edu.co>',
+    // Credenciales del proveedor SMTP real (Gmail, Outlook/Office 365, SendGrid, etc.).
+    // Si MAIL_USER no está definido se asume un servidor local sin autenticación (Mailpit).
+    user: process.env.MAIL_USER || '',
+    password: process.env.MAIL_PASSWORD || '',
+    secure: process.env.MAIL_SECURE === 'true',
+  },
+  // Cualquier proveedor con API compatible con OpenAI (Groq, OpenRouter, Gemini, Ollama...).
+  // Por defecto Groq, que tiene un plan gratuito sin tarjeta.
+  ai: {
+    apiKey: process.env.AI_API_KEY || '',
+    baseUrl: (process.env.AI_BASE_URL || 'https://api.groq.com/openai/v1').replace(/\/$/, ''),
+    model: process.env.AI_MODEL || 'openai/gpt-oss-120b',
   },
 };

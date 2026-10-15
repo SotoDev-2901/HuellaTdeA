@@ -23,3 +23,19 @@ export interface PersonalDashboard {
 export async function getPersonalDashboard(): Promise<PersonalDashboard> {
   return apiGet<PersonalDashboard>('/questionnaire/dashboard');
 }
+
+export interface Recommendation {
+  category: 'transporte' | 'energia' | 'residuos';
+  title: string;
+  description: string;
+}
+
+export interface RecommendationsResult {
+  hasResponses: boolean;
+  source: 'ai' | 'rules';
+  items: Recommendation[];
+}
+
+export async function getRecommendations(): Promise<RecommendationsResult> {
+  return apiGet<RecommendationsResult>('/questionnaire/recommendations');
+}
