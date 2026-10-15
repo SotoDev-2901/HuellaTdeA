@@ -54,7 +54,8 @@ export interface SubmitResult {
  * promedio TdeA con envíos repetidos.
  */
 export async function submitQuestionnaire(userId: string, input: SubmitQuestionnaireInput): Promise<SubmitResult> {
-  const result = calculateFootprint({ ...input, campusSpaces: input.campusSpaces ?? [] });
+  const footprintInput = { ...input, campusSpaces: input.campusSpaces ?? [] };
+  const result = calculateFootprint(footprintInput);
   const extras = {
     transportMinutesPerTrip: input.transportMinutesPerTrip,
     campusSpaces: input.campusSpaces,
@@ -63,11 +64,11 @@ export async function submitQuestionnaire(userId: string, input: SubmitQuestionn
 
   const latest = await questionnaireRepository.findLatestResponseForUser(userId);
   if (latest && monthKey(new Date(latest.created_at)) === monthKey(new Date())) {
-    const response = await questionnaireRepository.replaceResponse(latest.id, userId, input, extras, result);
+    const response = await questionnaireRepository.replaceResponse(latest.id, userId, footprintInput, extras, result);
     return { response, replaced: true };
   }
 
-  const response = await questionnaireRepository.createResponse(userId, input, extras, result);
+  const response = await questionnaireRepository.createResponse(userId, footprintInput, extras, result);
   return { response, replaced: false };
 }
 
