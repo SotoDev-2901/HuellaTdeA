@@ -7,16 +7,25 @@ import { TdeaComparisonBar } from '../components/organisms/TdeaComparisonBar';
 import { RecommendationsPanel } from '../components/organisms/RecommendationsPanel';
 import * as dashboardService from '../services/dashboardService';
 import type { PersonalDashboard } from '../services/dashboardService';
+import {
+  emissionUnitLabel,
+  formatEmission,
+  formatEmissionNumber,
+  pickEmissionUnit,
+  type EmissionUnit,
+} from '../lib/format';
 
 function StatCard({
   icon: Icon,
   label,
   valueKg,
+  unit,
   highlight,
 }: {
   icon: typeof FiTruck;
   label: string;
   valueKg: number;
+  unit: EmissionUnit;
   highlight?: boolean;
 }) {
   return (
@@ -36,7 +45,7 @@ function StatCard({
         </p>
       </div>
       <p className="mt-2 text-2xl font-bold">
-        {(valueKg / 1000).toFixed(2)} <span className="text-sm font-medium">tCO2e</span>
+        {formatEmissionNumber(valueKg, unit)} <span className="text-sm font-medium">{emissionUnitLabel(unit)}</span>
       </p>
     </div>
   );
@@ -75,6 +84,7 @@ export function PersonalDashboardContainer() {
   }
 
   const { latest, previousTotalKgCo2e, monthly, tdeaAverageKgCo2e } = data;
+  const dashUnit = pickEmissionUnit(latest.total_kg_co2e);
   const deltaKg = previousTotalKgCo2e !== null ? latest.total_kg_co2e - previousTotalKgCo2e : null;
   const diffVsAveragePct =
     tdeaAverageKgCo2e > 0
@@ -96,14 +106,14 @@ export function PersonalDashboardContainer() {
       ) : null}
 
       <div className="grid gap-4 sm:grid-cols-4">
-        <StatCard icon={FiZap} label="Huella personal total" valueKg={latest.total_kg_co2e} highlight />
-        <StatCard icon={FiTruck} label="Transporte" valueKg={latest.transporte_kg_co2e} />
-        <StatCard icon={FiZap} label="Energía" valueKg={latest.energia_kg_co2e} />
-        <StatCard icon={FiTrash2} label="Residuos" valueKg={latest.residuos_kg_co2e} />
+        <StatCard icon={FiZap} label="Huella personal total" valueKg={latest.total_kg_co2e} unit={dashUnit} highlight />
+        <StatCard icon={FiTruck} label="Transporte" valueKg={latest.transporte_kg_co2e} unit={dashUnit} />
+        <StatCard icon={FiZap} label="Energía" valueKg={latest.energia_kg_co2e} unit={dashUnit} />
+        <StatCard icon={FiTrash2} label="Residuos" valueKg={latest.residuos_kg_co2e} unit={dashUnit} />
       </div>
       {deltaKg !== null ? (
         <p className="-mt-3 text-xs text-graphite">
-          {deltaKg <= 0 ? '↘' : '↗'} {(Math.abs(deltaKg) / 1000).toFixed(2)} tCO2e{' '}
+          {deltaKg <= 0 ? '↘' : '↗'} {formatEmission(Math.abs(deltaKg), pickEmissionUnit(Math.abs(deltaKg)))}{' '}
           {deltaKg <= 0 ? 'menos' : 'más'} que tu respuesta anterior
         </p>
       ) : null}
@@ -113,8 +123,9 @@ export function PersonalDashboardContainer() {
           <h2 className="font-display text-lg font-bold text-ink">Distribución de Emisiones</h2>
           <div className="mt-4">
             <EmissionsDonutChart
-              totalLabel={`${(latest.total_kg_co2e / 1000).toFixed(1)}`}
-              unit="kgCO2e"
+              totalLabel={formatEmissionNumber(latest.total_kg_co2e, dashUnit)}
+              totalUnit={emissionUnitLabel(dashUnit)}
+              formatValue={(v) => formatEmission(v, dashUnit)}
               segments={[
                 { label: 'Transporte', value: latest.transporte_kg_co2e, colorVar: 'var(--color-tdea-green-dark)' },
                 { label: 'Energía', value: latest.energia_kg_co2e, colorVar: 'var(--color-tdea-green)' },
@@ -129,6 +140,7 @@ export function PersonalDashboardContainer() {
           <div className="mt-4">
             <MonthlyTrendChart
               points={monthly}
+              formatValue={(v) => formatEmission(v, pickEmissionUnit(...monthly.map((m) => m.total_kg_co2e)))}
               emptyMessage="Todavía no hay suficientes respuestas para mostrar una tendencia."
               singlePointMessage="Responde el cuestionario en más de un mes para ver tu evolución en el tiempo."
             />

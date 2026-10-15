@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { FiCheck, FiClock, FiGift, FiAward } from 'react-icons/fi';
+import { FiCheck, FiClock } from 'react-icons/fi';
 import { Button } from '../atoms/Button';
 import type { QuestionnaireResponse } from '../../services/questionnaireService';
 
@@ -31,17 +31,6 @@ function LandscapeIllustration() {
       <path d="M0 90 L45 40 L80 75 L110 30 L150 80 L200 55 V120 H0 Z" fill="var(--color-tdea-green)" />
       <path d="M0 105 L60 70 L120 100 L200 80 V120 H0 Z" fill="var(--color-tdea-green-dark)" opacity="0.8" />
     </svg>
-  );
-}
-
-function ComingSoonCard({ icon: Icon, title, description }: { icon: typeof FiGift; title: string; description: string }) {
-  return (
-    <div className="rounded-input border border-tdea-blush-border bg-tdea-blush p-4 opacity-70">
-      <Icon className="text-tdea-green" size={18} />
-      <p className="mt-2 text-sm font-semibold text-ink">{title}</p>
-      <p className="mt-1 text-xs text-silver">{description}</p>
-      <p className="mt-2 text-[10px] font-semibold uppercase tracking-wide text-silver">Próximamente</p>
-    </div>
   );
 }
 
@@ -82,7 +71,7 @@ export function QuestionnaireResult({ result, onRestart }: QuestionnaireResultPr
         <Row label="Alimentación" value={breakdown.alimentacion} max={max} />
       </div>
 
-      <div className="grid grid-cols-3 gap-3">
+      <div className="grid grid-cols-1 gap-3">
         <Link
           to="/historial"
           className="rounded-input border border-tdea-blush-border bg-tdea-blush p-4 transition-colors hover:border-tdea-green"
@@ -91,21 +80,14 @@ export function QuestionnaireResult({ result, onRestart }: QuestionnaireResultPr
           <p className="mt-2 text-sm font-semibold text-ink">Historial</p>
           <p className="mt-1 text-xs text-silver">Consulta tus registros anteriores.</p>
         </Link>
-        <ComingSoonCard
-          icon={FiGift}
-          title="Compensación"
-          description="Explora proyectos locales para mitigar tus emisiones."
-        />
-        <ComingSoonCard
-          icon={FiAward}
-          title="Certificado"
-          description="Descarga tu sello de compromiso TdeA."
-        />
       </div>
 
       <Button type="button" onClick={onRestart}>
-        Responder de nuevo
+        Actualizar mis respuestas
       </Button>
+      <p className="-mt-3 text-center text-xs text-silver">
+        Si vuelves a responder, tus nuevas respuestas reemplazan las de este mes.
+      </p>
     </div>
   );
 }

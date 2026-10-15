@@ -1,9 +1,13 @@
+import { emissionUnitLabel, formatEmissionNumber, pickEmissionUnit } from '../../lib/format';
+
 interface TdeaComparisonBarProps {
   personalKgCo2e: number;
   averageKgCo2e: number;
 }
 
 export function TdeaComparisonBar({ personalKgCo2e, averageKgCo2e }: TdeaComparisonBarProps) {
+  const unit = pickEmissionUnit(personalKgCo2e, averageKgCo2e);
+  const unitLabel = emissionUnitLabel(unit);
   const max = Math.max(personalKgCo2e, averageKgCo2e, 1);
   const personalPct = (personalKgCo2e / max) * 100;
   const averagePct = (averageKgCo2e / max) * 100;
@@ -16,11 +20,11 @@ export function TdeaComparisonBar({ personalKgCo2e, averageKgCo2e }: TdeaCompari
       <div className="flex items-center justify-between text-sm">
         <div className="flex items-center gap-4">
           <span className="flex items-center gap-1.5">
-            <span className="h-2.5 w-2.5 rounded-full bg-tdea-green" /> Tú ({(personalKgCo2e / 1000).toFixed(1)})
+            <span className="h-2.5 w-2.5 rounded-full bg-tdea-green" /> Tú ({formatEmissionNumber(personalKgCo2e, unit)} {unitLabel})
           </span>
           <span className="flex items-center gap-1.5 text-graphite">
-            <span className="h-2.5 w-2.5 rounded-full bg-tdea-blush-border" /> Promedio TdeA (
-            {(averageKgCo2e / 1000).toFixed(1)})
+            <span className="h-2.5 w-2.5 rounded-full bg-silver" /> Promedio TdeA (
+            {formatEmissionNumber(averageKgCo2e, unit)} {unitLabel})
           </span>
         </div>
       </div>
@@ -33,7 +37,7 @@ export function TdeaComparisonBar({ personalKgCo2e, averageKgCo2e }: TdeaCompari
       </div>
       <div className="h-2 w-full overflow-hidden rounded-pill bg-tdea-blush">
         <div
-          className="h-full rounded-pill bg-tdea-blush-border"
+          className="h-full rounded-pill bg-silver"
           style={{ width: `${Math.min(averagePct, 100)}%` }}
         />
       </div>
