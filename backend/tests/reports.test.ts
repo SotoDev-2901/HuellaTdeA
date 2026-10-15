@@ -90,6 +90,31 @@ async function api(path: string, token: string | null) {
   return { status: res.status, data };
 }
 
+async function submitQuestionnaire(token: string, transportKmPerTrip: number) {
+  const res = await fetch(`${baseUrl}/api/questionnaire`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+    body: JSON.stringify({
+      transportMode: 'carro',
+      transportKmPerTrip,
+      transportDaysPerWeek: 5,
+      campusHoursPerDay: 4,
+      usesLaptop: true,
+      chargesDevices: true,
+      wasteFrequency: 'media',
+      eatingFrequency: 'siempre',
+      dietType: 'carne_frecuente',
+    }),
+  });
+  return res.json();
+}
+
+function isoDateMonthsAgo(months: number): string {
+  const d = new Date();
+  d.setUTCMonth(d.getUTCMonth() - months);
+  return d.toISOString().slice(0, 10);
+}
+
 let adminToken: string;
 
 before(async () => {
@@ -102,11 +127,10 @@ test('HU-09: rechaza el acceso sin token', async () => {
   assert.equal(status, 401);
 });
 
-test('HU-09: rechaza a un usuario que no es administrador', async () => {
+test('HU-09: un usuario que no es administrador también puede consultar el reporte institucional', async () => {
   const studentToken = await createStudent();
-  const { status, data } = await api('/institutional', studentToken);
-  assert.equal(status, 403);
-  assert.match(data.message, /permisos/);
+  const { status } = await api('/institutional', studentToken);
+  assert.equal(status, 200);
 });
 
 test('HU-09: calcula la huella institucional de una zona a partir de consumo y residuos', async () => {
@@ -150,6 +174,87 @@ test('HU-09: el filtro de fechas excluye registros fuera del rango', async () =>
 
   assert.ok(zone);
   assert.equal(Number(zone.total_kwh), 300);
+});
+
+test('HU-summary: rechaza el acceso sin token', async () => {
+  const { status } = await api('/institutional-summary', null);
+  assert.equal(status, 401);
+});
+
+test('HU-summary: un usuario que no es administrador también puede consultarlo', async () => {
+  const studentToken = await createStudent();
+  const { status } = await api('/institutional-summary', studentToken);
+  assert.equal(status, 200);
+});
+
+test('HU-summary: energía y residuos institucionales suman correctamente (medido por delta, no por total absoluto)', async () => {
+  const before = await api('/institutional-summary', adminToken);
+
+  const zoneId = await createZone(adminToken, 'Bloque Resumen');
+  await addConsumption(adminToken, zoneId, 200, isoDateMonthsAgo(0));
+  await addWaste(adminToken, zoneId, 'papel', 10, isoDateMonthsAgo(0));
+
+  const after1 = await api('/institutional-summary', adminToken);
+
+  const kwhDelta = after1.data.totalKwh - before.data.totalKwh;
+  const wasteDelta = after1.data.totalWasteKg - before.data.totalWasteKg;
+  assert.equal(Math.round(kwhDelta * 100) / 100, 200);
+  assert.equal(Math.round(wasteDelta * 100) / 100, 10);
+
+  // 200 kWh * 0.199 + 10 kg * 1.54 = 39.8 + 15.4 = 55.2
+  const totalDelta = after1.data.totalKgCo2e - before.data.totalKgCo2e;
+  assert.equal(Math.round(totalDelta * 100) / 100, 55.2);
+});
+
+test('HU-summary: el transporte institucional es la suma del transporte de la última respuesta de cada usuario', async () => {
+  const before = await api('/institutional-summary', adminToken);
+
+  const newStudent = await createStudent();
+  const submitted = await submitQuestionnaire(newStudent, 30);
+
+  const after1 = await api('/institutional-summary', adminToken);
+  const transportDelta = after1.data.transportKgCo2e - before.data.transportKgCo2e;
+
+  assert.equal(Math.round(transportDelta * 100) / 100, Number(submitted.response.transport_kg_co2e));
+});
+
+test('HU-summary: registeredUsers y zonesMonitored aumentan al crear usuarios/zonas', async () => {
+  // >= en vez de === porque los tests corren en paralelo entre archivos y otro archivo puede
+  // crear usuarios/zonas propias justo en esta ventana — el invariante real es "no disminuye
+  // y refleja al menos lo que yo mismo acabo de crear", no un conteo exacto y aislado.
+  const before = await api('/institutional-summary', adminToken);
+
+  await createStudent();
+  await createZone(adminToken, 'Zona Conteo');
+
+  const after1 = await api('/institutional-summary', adminToken);
+  assert.ok(after1.data.registeredUsers >= before.data.registeredUsers + 1);
+  assert.ok(after1.data.zonesMonitored >= before.data.zonesMonitored + 1);
+});
+
+test('HU-summary: wasteComposition suma el kg de residuos por tipo (medido por delta)', async () => {
+  const before = await api('/institutional-summary', adminToken);
+
+  const zoneId = await createZone(adminToken, 'Bloque Composición');
+  await addWaste(adminToken, zoneId, 'plastico', 12, isoDateMonthsAgo(0));
+  await addWaste(adminToken, zoneId, 'papel', 5, isoDateMonthsAgo(0));
+
+  const after1 = await api('/institutional-summary', adminToken);
+
+  const plasticoDelta = after1.data.wasteComposition.plastico - before.data.wasteComposition.plastico;
+  const papelDelta = after1.data.wasteComposition.papel - before.data.wasteComposition.papel;
+  assert.equal(Math.round(plasticoDelta * 100) / 100, 12);
+  assert.equal(Math.round(papelDelta * 100) / 100, 5);
+});
+
+test('HU-summary: yearOverYearPct es un número cuando existen datos del período anterior (12-24 meses)', async () => {
+  const zoneId = await createZone(adminToken, 'Bloque YoY');
+  // 18 meses atrás cae en la ventana "año anterior" (12-24 meses), no en la actual.
+  await addConsumption(adminToken, zoneId, 100, isoDateMonthsAgo(18));
+
+  const { data } = await api('/institutional-summary', adminToken);
+  assert.notEqual(data.yearOverYearPct, null);
+  assert.equal(typeof data.yearOverYearPct, 'number');
 });
 
 after(async () => {

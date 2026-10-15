@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { FiClock, FiEdit3, FiHome } from 'react-icons/fi';
+import { FiBarChart2, FiClock, FiEdit3, FiHome } from 'react-icons/fi';
 import { AppShell, type NavItem } from '../components/organisms/AppShell';
 import * as questionnaireService from '../services/questionnaireService';
 import type { QuestionnaireResponse } from '../services/questionnaireService';
@@ -8,6 +8,7 @@ const navItems: NavItem[] = [
   { label: 'Dashboard', icon: FiHome, to: '/dashboard' },
   { label: 'Cuestionario', icon: FiEdit3, to: '/cuestionario' },
   { label: 'Historial', icon: FiClock, active: true },
+  { label: 'Huella TdeA', icon: FiBarChart2, to: '/reportes' },
 ];
 
 const brand = { title: 'TDEA HUELLA', subtitle: 'Carbon Tracking' };
@@ -25,7 +26,7 @@ export function HistorialPage() {
 
   return (
     <AppShell navItems={navItems} brand={brand}>
-      <div className="rounded-card bg-surface p-6 shadow-soft">
+      <div className="rounded-card bg-surface p-6 shadow-soft card-hover">
         <h2 className="font-display text-lg font-bold text-ink">Tus cuestionarios respondidos</h2>
         <p className="mt-1 text-sm text-graphite">
           Consulta tus registros anteriores para comparar tu impacto en el tiempo.
@@ -53,7 +54,10 @@ export function HistorialPage() {
               </thead>
               <tbody>
                 {responses.map((r) => (
-                  <tr key={r.id} className="border-b border-tdea-blush-border/60">
+                  <tr
+                    key={r.id}
+                    className="border-b border-tdea-blush-border/60 transition-colors hover:bg-tdea-blush"
+                  >
                     <td className="py-3 pr-4 text-graphite">
                       {new Date(r.created_at).toLocaleDateString('es-CO', {
                         day: '2-digit',

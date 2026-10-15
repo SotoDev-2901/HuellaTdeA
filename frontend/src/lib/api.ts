@@ -1,4 +1,4 @@
-import { getStoredToken } from './session';
+import { clearStoredSession, getStoredToken, SESSION_EXPIRED_EVENT } from './session';
 
 const API_URL = import.meta.env.VITE_API_URL ?? 'http://localhost:4000/api';
 
@@ -30,6 +30,12 @@ async function request<TResponse>(
   const data = await res.json().catch(() => ({}));
 
   if (!res.ok) {
+    // Un 401 con token adjunto significa que la sesión venció o el token es inválido — distinto
+    // de un 401 sin token (nunca inició sesión) o el propio login con credenciales incorrectas.
+    if (res.status === 401 && token) {
+      clearStoredSession();
+      window.dispatchEvent(new CustomEvent(SESSION_EXPIRED_EVENT));
+    }
     throw new ApiError(data.message ?? 'Ocurrió un error inesperado', res.status);
   }
 

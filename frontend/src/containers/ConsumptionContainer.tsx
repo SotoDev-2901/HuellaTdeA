@@ -11,6 +11,7 @@ import * as consumptionService from '../services/consumptionService';
 import type { ConsumptionRecord } from '../services/consumptionService';
 import * as zonesService from '../services/zonesService';
 import type { Zone } from '../services/zonesService';
+import { useToast } from '../context/ToastContext';
 
 const emptyForm: ConsumptionFormValues = {
   zoneId: '',
@@ -19,6 +20,7 @@ const emptyForm: ConsumptionFormValues = {
 };
 
 export function ConsumptionContainer() {
+  const { showToast } = useToast();
   const [records, setRecords] = useState<ConsumptionRecord[]>([]);
   const [zones, setZones] = useState<Zone[]>([]);
   const [loading, setLoading] = useState(true);
@@ -96,12 +98,14 @@ export function ConsumptionContainer() {
           kwh: Number(formValues.kwh),
           recordedAt: formValues.recordedAt,
         });
+        showToast('Registro de consumo creado exitosamente');
       } else if (modal.recordId) {
         await consumptionService.updateConsumptionRecord(modal.recordId, {
           zoneId: formValues.zoneId,
           kwh: Number(formValues.kwh),
           recordedAt: formValues.recordedAt,
         });
+        showToast('Registro de consumo actualizado exitosamente');
       }
       setModal(null);
       await loadData();
@@ -118,6 +122,7 @@ export function ConsumptionContainer() {
     try {
       await consumptionService.deleteConsumptionRecord(recordToDelete.id);
       setRecordToDelete(null);
+      showToast('Registro de consumo eliminado exitosamente');
       await loadData();
     } finally {
       setDeleting(false);
@@ -134,7 +139,7 @@ export function ConsumptionContainer() {
         </div>
       </div>
 
-      <div className="rounded-card bg-surface p-6 shadow-soft">
+      <div className="rounded-card bg-surface p-6 shadow-soft card-hover">
         <ConsumptionTable
           records={records}
           loading={loading}

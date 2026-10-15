@@ -1,6 +1,7 @@
 import { Navigate, Route, Routes } from 'react-router-dom';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { ThemeProvider } from './context/ThemeContext';
+import { ToastProvider } from './context/ToastContext';
 import { ProtectedRoute } from './components/molecules/ProtectedRoute';
 import { GuestRoute } from './components/molecules/GuestRoute';
 import { RoleRoute } from './components/molecules/RoleRoute';
@@ -10,7 +11,7 @@ import { CheckEmailPage } from './pages/CheckEmailPage';
 import { VerifyEmailPage } from './pages/VerifyEmailPage';
 import { ForgotPasswordPage } from './pages/ForgotPasswordPage';
 import { ResetPasswordPage } from './pages/ResetPasswordPage';
-import { DashboardPlaceholderPage } from './pages/DashboardPlaceholderPage';
+import { PersonalDashboardPage } from './pages/PersonalDashboardPage';
 import { ZonesPage } from './pages/ZonesPage';
 import { ConsumptionPage } from './pages/ConsumptionPage';
 import { ReportsPage } from './pages/ReportsPage';
@@ -28,7 +29,7 @@ function DashboardEntry() {
   if (user?.role === 'administrador') {
     return <Navigate to="/panel-administrativo" replace />;
   }
-  return <DashboardPlaceholderPage />;
+  return <PersonalDashboardPage />;
 }
 
 function AppRoutes() {
@@ -97,9 +98,9 @@ function AppRoutes() {
       <Route
         path="/reportes"
         element={
-          <RoleRoute roles={['administrador']}>
+          <ProtectedRoute>
             <ReportsPage />
-          </RoleRoute>
+          </ProtectedRoute>
         }
       />
       <Route path="*" element={<DefaultRedirect />} />
@@ -110,9 +111,11 @@ function AppRoutes() {
 export function App() {
   return (
     <ThemeProvider>
-      <AuthProvider>
-        <AppRoutes />
-      </AuthProvider>
+      <ToastProvider>
+        <AuthProvider>
+          <AppRoutes />
+        </AuthProvider>
+      </ToastProvider>
     </ThemeProvider>
   );
 }

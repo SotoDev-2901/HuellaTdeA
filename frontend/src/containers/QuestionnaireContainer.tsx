@@ -1,4 +1,6 @@
-import { useState, type FormEvent } from 'react';
+import { useEffect, useState, type FormEvent } from 'react';
+import { Link } from 'react-router-dom';
+import { FiCheckCircle, FiClock } from 'react-icons/fi';
 import {
   QuestionnaireForm,
   type QuestionnaireErrors,
@@ -7,7 +9,7 @@ import {
 import { QuestionnaireResult } from '../components/organisms/QuestionnaireResult';
 import { ApiError } from '../lib/api';
 import * as questionnaireService from '../services/questionnaireService';
-import type { QuestionnaireResponse } from '../services/questionnaireService';
+import type { QuestionnaireEligibility, QuestionnaireResponse } from '../services/questionnaireService';
 
 const initialValues: QuestionnaireFormValues = {
   transportMode: '',
@@ -59,6 +61,15 @@ export function QuestionnaireContainer() {
   const [errors, setErrors] = useState<QuestionnaireErrors>({});
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<QuestionnaireResponse | null>(null);
+  const [eligibility, setEligibility] = useState<QuestionnaireEligibility | null>(null);
+  const [checkingEligibility, setCheckingEligibility] = useState(true);
+
+  useEffect(() => {
+    questionnaireService
+      .getEligibility()
+      .then(setEligibility)
+      .finally(() => setCheckingEligibility(false));
+  }, []);
 
   function handleChange<K extends keyof QuestionnaireFormValues>(
     field: K,
@@ -105,6 +116,9 @@ export function QuestionnaireContainer() {
       });
       setResult(response);
     } catch (err) {
+      if (err instanceof ApiError && err.status === 409) {
+        setEligibility({ canSubmit: false, nextEligibleDate: null });
+      }
       setErrors({ form: err instanceof ApiError ? err.message : 'No se pudo guardar el cuestionario' });
     } finally {
       setLoading(false);
@@ -120,6 +134,49 @@ export function QuestionnaireContainer() {
 
   if (result) {
     return <QuestionnaireResult result={result} onRestart={handleRestart} />;
+  }
+
+  if (checkingEligibility) {
+    return <p className="py-8 text-center text-sm text-graphite">Cargando...</p>;
+  }
+
+  if (eligibility && !eligibility.canSubmit) {
+    return (
+      <div className="flex flex-col items-center gap-3 py-8 text-center">
+        <FiCheckCircle className="text-tdea-green" size={40} />
+        <h2 className="font-display text-xl font-bold text-ink">Ya respondiste este mes</h2>
+        <p className="max-w-sm text-sm text-graphite">
+          El cuestionario se responde una vez por mes para llevar un seguimiento real de tu huella
+          en el tiempo.
+          {eligibility.nextEligibleDate ? (
+            <>
+              {' '}
+              Podrás volver a hacerlo a partir del{' '}
+              <span className="font-semibold text-ink">
+                {new Date(`${eligibility.nextEligibleDate}T00:00:00`).toLocaleDateString('es-CO', {
+                  day: '2-digit',
+                  month: 'long',
+                  year: 'numeric',
+                })}
+              </span>
+              .
+            </>
+          ) : null}
+        </p>
+        <div className="mt-2 flex items-center gap-2 text-xs text-silver">
+          <FiClock size={14} />
+          Mientras tanto, revisa tu progreso en{' '}
+          <Link to="/dashboard" className="font-medium text-tdea-green hover:underline">
+            tu Dashboard
+          </Link>{' '}
+          o tu{' '}
+          <Link to="/historial" className="font-medium text-tdea-green hover:underline">
+            Historial
+          </Link>
+          .
+        </div>
+      </div>
+    );
   }
 
   return (

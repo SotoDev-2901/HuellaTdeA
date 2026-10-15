@@ -20,3 +20,12 @@ export async function listMyResponsesHandler(req: Request, res: Response, next: 
     next(err);
   }
 }
+
+export async function getEligibilityHandler(req: Request, res: Response, next: NextFunction) {
+  try {
+    const eligibility = await questionnaireService.getEligibility(req.auth!.sub);
+    res.status(200).json(eligibility);
+  } catch (err) {
+    next(err);
+  }
+}

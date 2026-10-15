@@ -56,3 +56,11 @@ export async function listResponsesByUser(userId: string): Promise<Questionnaire
   );
   return rows;
 }
+
+export async function findLatestResponseForUser(userId: string): Promise<{ created_at: Date } | null> {
+  const { rows } = await pool.query<{ created_at: Date }>(
+    'SELECT created_at FROM questionnaire_responses WHERE user_id = $1 ORDER BY created_at DESC LIMIT 1',
+    [userId],
+  );
+  return rows[0] ?? null;
+}

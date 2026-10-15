@@ -48,3 +48,12 @@ export async function listMyResponses(): Promise<QuestionnaireResponse[]> {
   const res = await apiGet<{ responses: QuestionnaireResponse[] }>('/questionnaire');
   return res.responses;
 }
+
+export interface QuestionnaireEligibility {
+  canSubmit: boolean;
+  nextEligibleDate: string | null;
+}
+
+export async function getEligibility(): Promise<QuestionnaireEligibility> {
+  return apiGet<QuestionnaireEligibility>('/questionnaire/eligibility');
+}

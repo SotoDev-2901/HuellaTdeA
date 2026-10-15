@@ -41,7 +41,10 @@ export function WasteTable({ records, loading, onEdit, onDelete }: WasteTablePro
         </thead>
         <tbody>
           {records.map((record) => (
-            <tr key={record.id} className="border-b border-tdea-blush-border/60">
+            <tr
+              key={record.id}
+              className="border-b border-tdea-blush-border/60 transition-colors hover:bg-tdea-blush"
+            >
               <td className="py-3 pr-4 font-medium text-ink">{record.zone_name}</td>
               <td className="py-3 pr-4 text-graphite">{wasteTypeLabels[record.waste_type]}</td>
               <td className="py-3 pr-4 text-graphite">{Number(record.kg).toFixed(2)} kg</td>
@@ -58,14 +61,14 @@ export function WasteTable({ records, loading, onEdit, onDelete }: WasteTablePro
                   <button
                     onClick={() => onEdit(record)}
                     title="Editar registro"
-                    className="text-tdea-green hover:text-tdea-green-dark"
+                    className="text-tdea-green transition-transform hover:scale-125 hover:text-tdea-green-dark"
                   >
                     <FiEdit2 size={16} />
                   </button>
                   <button
                     onClick={() => onDelete(record)}
                     title="Eliminar registro"
-                    className="text-danger hover:brightness-90"
+                    className="text-danger transition-transform hover:scale-125 hover:brightness-90"
                   >
                     <FiTrash2 size={16} />
                   </button>

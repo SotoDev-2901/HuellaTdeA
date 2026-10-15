@@ -49,19 +49,23 @@ export function AppShell({ navItems, children, brand, topBarTitle }: AppShellPro
   const [collapsed, setCollapsed] = useState(false);
 
   return (
-    <div className="flex min-h-screen bg-tdea-cream">
-      <aside
-        className={`relative flex flex-col justify-between border-r border-tdea-blush-border bg-surface py-6 transition-all duration-200 ${
-          collapsed ? 'w-20 px-2' : 'w-60 px-4'
-        }`}
+    <div className="app-shell-root flex h-screen overflow-hidden bg-tdea-cream">
+      <div
+        className={`print-hide relative h-screen shrink-0 transition-all duration-200 ${collapsed ? 'w-20' : 'w-60'}`}
       >
         <button
           onClick={() => setCollapsed((c) => !c)}
           title={collapsed ? 'Expandir menú' : 'Colapsar menú'}
-          className="absolute -right-3 top-8 flex h-6 w-6 items-center justify-center rounded-full border border-tdea-blush-border bg-surface text-graphite shadow-soft hover:text-tdea-green"
+          className="absolute -right-3 top-8 z-10 flex h-6 w-6 items-center justify-center rounded-full border border-tdea-blush-border bg-surface text-graphite shadow-soft hover:text-tdea-green"
         >
           <CollapseIcon collapsed={collapsed} />
         </button>
+
+        <aside
+          className={`flex h-screen flex-col justify-between overflow-y-auto border-r border-tdea-blush-border bg-surface py-6 transition-all duration-200 ${
+            collapsed ? 'w-20 px-2' : 'w-60 px-4'
+          }`}
+        >
 
         <div>
           <div className={`mb-8 flex items-center gap-2 ${collapsed ? 'justify-center px-0' : 'px-2'}`}>
@@ -77,9 +81,13 @@ export function AppShell({ navItems, children, brand, topBarTitle }: AppShellPro
           </div>
           <nav className="flex flex-col gap-1">
             {navItems.map((item) => {
-              const className = `flex items-center gap-2.5 truncate rounded-input px-3 py-2 text-sm font-medium ${
+              const className = `flex items-center gap-2.5 truncate rounded-input px-3 py-2 text-sm font-medium transition-all duration-150 ${
                 collapsed ? 'justify-center' : ''
-              } ${item.active ? 'bg-tdea-green/10 text-tdea-green' : 'text-graphite hover:bg-tdea-blush'}`;
+              } ${
+                item.active
+                  ? 'bg-tdea-green/10 text-tdea-green'
+                  : 'text-graphite hover:translate-x-0.5 hover:bg-tdea-blush'
+              }`;
               const content = (
                 <>
                   <item.icon size={18} className="shrink-0" />
@@ -135,30 +143,42 @@ export function AppShell({ navItems, children, brand, topBarTitle }: AppShellPro
             </>
           )}
         </div>
-      </aside>
+        </aside>
+      </div>
 
-      <main className="flex-1 overflow-auto p-8">
-        {topBarTitle ? (
-          <div className="mb-6 flex items-center justify-between border-b border-tdea-blush-border pb-4">
-            <h1 className="font-display text-lg font-bold text-ink">{topBarTitle}</h1>
-            <div className="flex items-center gap-2">
-              <NotificationBell />
-              <HelpButton />
-              <ThemeToggle />
-              <div
-                title={user?.name}
-                className="flex h-9 w-9 items-center justify-center rounded-full bg-tdea-green text-xs font-bold text-white"
-              >
-                {user?.name?.slice(0, 2).toUpperCase()}
+      <main className="relative flex-1 overflow-auto bg-gradient-to-br from-tdea-cream via-tdea-cream to-tdea-panel">
+        <div
+          aria-hidden="true"
+          className="print-hide pointer-events-none fixed -right-24 -top-24 h-96 w-96 rounded-full bg-tdea-green-light/10 blur-3xl"
+        />
+        <div
+          aria-hidden="true"
+          className="print-hide pointer-events-none fixed -left-24 bottom-0 h-96 w-96 rounded-full bg-tdea-green/10 blur-3xl"
+        />
+
+        <div className="relative p-8">
+          {topBarTitle ? (
+            <div className="print-hide mb-6 flex items-center justify-between border-b border-tdea-blush-border pb-4">
+              <h1 className="font-display text-lg font-bold text-ink">{topBarTitle}</h1>
+              <div className="flex items-center gap-2">
+                <NotificationBell />
+                <HelpButton />
+                <ThemeToggle />
+                <div
+                  title={user?.name}
+                  className="flex h-9 w-9 items-center justify-center rounded-full bg-tdea-green text-xs font-bold text-white"
+                >
+                  {user?.name?.slice(0, 2).toUpperCase()}
+                </div>
               </div>
             </div>
-          </div>
-        ) : (
-          <div className="mb-4 flex justify-end">
-            <ThemeToggle />
-          </div>
-        )}
-        {children}
+          ) : (
+            <div className="print-hide mb-4 flex justify-end">
+              <ThemeToggle />
+            </div>
+          )}
+          {children}
+        </div>
       </main>
     </div>
   );

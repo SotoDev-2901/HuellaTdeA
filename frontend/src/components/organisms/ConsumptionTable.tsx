@@ -34,7 +34,10 @@ export function ConsumptionTable({ records, loading, onEdit, onDelete }: Consump
         </thead>
         <tbody>
           {records.map((record) => (
-            <tr key={record.id} className="border-b border-tdea-blush-border/60">
+            <tr
+              key={record.id}
+              className="border-b border-tdea-blush-border/60 transition-colors hover:bg-tdea-blush"
+            >
               <td className="py-3 pr-4 font-medium text-ink">{record.zone_name}</td>
               <td className="py-3 pr-4 text-graphite">{Number(record.kwh).toFixed(2)} kWh</td>
               <td className="py-3 pr-4 text-graphite">
@@ -50,14 +53,14 @@ export function ConsumptionTable({ records, loading, onEdit, onDelete }: Consump
                   <button
                     onClick={() => onEdit(record)}
                     title="Editar registro"
-                    className="text-tdea-green hover:text-tdea-green-dark"
+                    className="text-tdea-green transition-transform hover:scale-125 hover:text-tdea-green-dark"
                   >
                     <FiEdit2 size={16} />
                   </button>
                   <button
                     onClick={() => onDelete(record)}
                     title="Eliminar registro"
-                    className="text-danger hover:brightness-90"
+                    className="text-danger transition-transform hover:scale-125 hover:brightness-90"
                   >
                     <FiTrash2 size={16} />
                   </button>
