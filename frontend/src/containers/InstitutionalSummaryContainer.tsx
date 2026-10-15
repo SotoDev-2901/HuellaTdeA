@@ -5,6 +5,7 @@ import { MonthlyTrendChart } from '../components/organisms/MonthlyTrendChart';
 import { ZoneRankingList } from '../components/organisms/ZoneRankingList';
 import * as reportsService from '../services/reportsService';
 import type { InstitutionalSummary } from '../services/reportsService';
+import { emissionUnitLabel, formatEmission, formatEmissionNumber, pickEmissionUnit } from '../lib/format';
 
 function StatCard({
   icon: Icon,
@@ -43,6 +44,7 @@ export function InstitutionalSummaryContainer() {
 
   if (!summary) return null;
 
+  const totalUnit = pickEmissionUnit(summary.totalKgCo2e);
   const monthlyPoints = summary.monthly.map((m) => ({ month: m.month, total_kg_co2e: m.kg_co2e }));
 
   return (
@@ -53,7 +55,7 @@ export function InstitutionalSummaryContainer() {
           <h2 className="mt-1 font-display text-lg font-bold">Huella Total del Campus</h2>
           <div className="mt-3 flex items-end gap-3">
             <p className="text-3xl font-bold">
-              {(summary.totalKgCo2e / 1000).toFixed(1)} <span className="text-base font-medium">tCO2e</span>
+              {formatEmissionNumber(summary.totalKgCo2e, totalUnit)} <span className="text-base font-medium">{emissionUnitLabel(totalUnit)}</span>
             </p>
             {summary.yearOverYearPct !== null ? (
               <span
@@ -85,7 +87,7 @@ export function InstitutionalSummaryContainer() {
         <StatCard
           icon={FiUsers}
           label="Promedio por Persona"
-          value={`${(summary.averagePerPersonKgCo2e / 1000).toFixed(2)} tCO2e`}
+          value={formatEmission(summary.averagePerPersonKgCo2e)}
         />
         <StatCard icon={FiMapPin} label="Zonas Monitoreadas" value={`${summary.zonesMonitored} zonas`} />
       </div>
@@ -94,7 +96,10 @@ export function InstitutionalSummaryContainer() {
         <div className="rounded-card bg-surface p-6 shadow-soft card-hover">
           <h2 className="font-display text-lg font-bold text-ink">Evolución Institucional</h2>
           <div className="mt-4">
-            <MonthlyTrendChart points={monthlyPoints} />
+            <MonthlyTrendChart
+              points={monthlyPoints}
+              formatValue={(v) => formatEmission(v, pickEmissionUnit(...monthlyPoints.map((m) => m.total_kg_co2e)))}
+            />
           </div>
         </div>
 
@@ -102,8 +107,9 @@ export function InstitutionalSummaryContainer() {
           <h2 className="font-display text-lg font-bold text-ink">Distribución por Categoría</h2>
           <div className="mt-4">
             <EmissionsDonutChart
-              totalLabel={`${(summary.totalKgCo2e / 1000).toFixed(1)}`}
-              unit="kgCO2e"
+              totalLabel={formatEmissionNumber(summary.totalKgCo2e, totalUnit)}
+              totalUnit={emissionUnitLabel(totalUnit)}
+              formatValue={(v) => formatEmission(v, totalUnit)}
               segments={[
                 { label: 'Transporte', value: summary.distribution.transporte, colorVar: 'var(--color-tdea-green-dark)' },
                 { label: 'Energía', value: summary.distribution.energia, colorVar: 'var(--color-tdea-green)' },

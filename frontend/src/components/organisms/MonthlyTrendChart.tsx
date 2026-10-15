@@ -7,6 +7,8 @@ interface MonthlyTrendChartProps {
   singlePointMessage?: string;
   /** Unidad mostrada en el tooltip al pasar el mouse (ej. "kgCO2e"). */
   unit?: string;
+  /** Formatea el valor del tooltip (p. ej. para elegir kg o toneladas). Tiene prioridad sobre `unit`. */
+  formatValue?: (value: number) => string;
 }
 
 const WIDTH = 420;
@@ -33,6 +35,7 @@ export function MonthlyTrendChart({
   emptyMessage = 'Todavía no hay suficientes datos para mostrar una tendencia.',
   singlePointMessage = 'Se necesita más de un mes de datos para ver la evolución en el tiempo.',
   unit = 'kgCO2e',
+  formatValue,
 }: MonthlyTrendChartProps) {
   const [hoverIndex, setHoverIndex] = useState<number | null>(null);
 
@@ -125,7 +128,9 @@ export function MonthlyTrendChart({
             {MONTH_LABELS[hovered.point.month.slice(5, 7)] ?? hovered.point.month}
           </p>
           <p>
-            {hovered.point.total_kg_co2e.toLocaleString('es-CO', { maximumFractionDigits: 2 })} {unit}
+            {formatValue
+              ? formatValue(hovered.point.total_kg_co2e)
+              : `${hovered.point.total_kg_co2e.toLocaleString('es-CO', { maximumFractionDigits: 2 })} ${unit}`}
           </p>
         </div>
       ) : null}

@@ -256,14 +256,20 @@ test('HU-04-cadencia: tras responder, el usuario deja de ser elegible hasta el p
   assert.match(data.nextEligibleDate, /^\d{4}-\d{2}-\d{2}$/);
 });
 
-test('HU-04-cadencia: un segundo envío en el mismo mes calendario es rechazado con 409', async () => {
+test('HU-04-cadencia: un segundo envío en el mismo mes reemplaza la respuesta (no crea otra)', async () => {
   const token = await createStudent('doble-envio');
   const first = await post('/api/questionnaire', token, basePayload);
   assert.equal(first.status, 201);
 
-  const second = await post('/api/questionnaire', token, basePayload);
-  assert.equal(second.status, 409);
-  assert.match(second.data.message, /este mes/);
+  const second = await post('/api/questionnaire', token, { ...basePayload, transportMode: 'bicicleta' });
+  assert.equal(second.status, 200);
+  assert.equal(second.data.replaced, true);
+  assert.equal(second.data.response.id, first.data.response.id);
+  assert.equal(second.data.response.transport_mode, 'bicicleta');
+  assert.equal(Number(second.data.response.transport_kg_co2e), 0);
+
+  const list = await get('/api/questionnaire', token);
+  assert.equal(list.data.responses.length, 1, 'el historial no debe duplicar la respuesta del mes');
 });
 
 after(async () => {

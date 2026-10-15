@@ -6,6 +6,7 @@ import {
   submitQuestionnaireHandler,
 } from './questionnaire.controller.js';
 import { getDashboardHandler } from './dashboard.controller.js';
+import { getRecommendationsHandler } from '../recommendations/recommendations.controller.js';
 
 export const router = Router();
 
@@ -14,4 +15,5 @@ router.use(requireAuth);
 router.post('/', submitQuestionnaireHandler);
 router.get('/', listMyResponsesHandler);
 router.get('/dashboard', getDashboardHandler);
+router.get('/recommendations', getRecommendationsHandler);
 router.get('/eligibility', getEligibilityHandler);
