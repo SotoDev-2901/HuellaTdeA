@@ -11,7 +11,7 @@ const navItems: NavItem[] = [
   { label: 'Huella TdeA', icon: FiBarChart2, to: '/reportes' },
 ];
 
-const brand = { title: 'TDEA HUELLA', subtitle: 'Carbon Tracking' };
+const brand = { title: 'TDEA HUELLA' };
 
 export function HistorialPage() {
   const [responses, setResponses] = useState<QuestionnaireResponse[]>([]);

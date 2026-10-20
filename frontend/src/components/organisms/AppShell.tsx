@@ -1,6 +1,7 @@
 import { useState, type ReactNode } from 'react';
 import type { IconType } from 'react-icons';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
+import { FiHelpCircle } from 'react-icons/fi';
 import { Logo } from '../atoms/Logo';
 import { ThemeToggle } from '../atoms/ThemeToggle';
 import { NotificationBell } from '../atoms/NotificationBell';
@@ -17,8 +18,8 @@ export interface NavItem {
 interface AppShellProps {
   navItems: NavItem[];
   children: ReactNode;
-  /** Marca alterna para el sidebar (ej. "TDEA HUELLA" / "CARBON TRACKING"). Si no se pasa, se usa el logo institucional solo. */
-  brand?: { title: string; subtitle: string };
+  /** Marca alterna para el sidebar (ej. "TDEA HUELLA"). Si no se pasa, se usa el logo institucional solo. */
+  brand?: { title: string; subtitle?: string };
   /** Si se pasa, muestra una barra superior con título + notificaciones/ayuda/tema, como en el wizard del cuestionario. */
   topBarTitle?: string;
 }
@@ -47,6 +48,12 @@ function CollapseIcon({ collapsed }: { collapsed: boolean }) {
 export function AppShell({ navItems, children, brand, topBarTitle }: AppShellProps) {
   const { user, clearSession } = useAuth();
   const [collapsed, setCollapsed] = useState(false);
+  const { pathname } = useLocation();
+  // Entrada común a todos los roles: la explicación de cómo se calcula la huella.
+  const allNavItems: NavItem[] = [
+    ...navItems,
+    { label: '¿Cómo se calcula?', icon: FiHelpCircle, to: '/como-funciona', active: pathname === '/como-funciona' },
+  ];
 
   return (
     <div className="app-shell-root flex h-screen overflow-hidden bg-tdea-cream">
@@ -73,14 +80,14 @@ export function AppShell({ navItems, children, brand, topBarTitle }: AppShellPro
             {!collapsed && brand ? (
               <div className="leading-tight">
                 <p className="text-sm font-extrabold text-ink">{brand.title}</p>
-                <p className="text-[10px] font-medium uppercase tracking-wide text-silver">
-                  {brand.subtitle}
-                </p>
+                {brand.subtitle ? (
+                  <p className="text-[10px] font-medium uppercase tracking-wide text-silver">{brand.subtitle}</p>
+                ) : null}
               </div>
             ) : null}
           </div>
           <nav className="flex flex-col gap-1">
-            {navItems.map((item) => {
+            {allNavItems.map((item) => {
               const className = `flex items-center gap-2.5 truncate rounded-input px-3 py-2 text-sm font-medium transition-all duration-150 ${
                 collapsed ? 'justify-center' : ''
               } ${
@@ -113,12 +120,13 @@ export function AppShell({ navItems, children, brand, topBarTitle }: AppShellPro
             collapsed ? 'flex-col px-0' : 'px-3'
           }`}
         >
-          <div
-            title={`${user?.name ?? ''} · ${user?.email ?? ''}`}
-            className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-tdea-green text-xs font-bold text-white"
+          <Link
+            to="/perfil"
+            title="Mi cuenta"
+            className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-tdea-green text-xs font-bold text-white transition-transform hover:scale-110"
           >
             {user?.name?.slice(0, 2).toUpperCase()}
-          </div>
+          </Link>
           {collapsed ? (
             <button
               onClick={clearSession}
@@ -129,10 +137,10 @@ export function AppShell({ navItems, children, brand, topBarTitle }: AppShellPro
             </button>
           ) : (
             <>
-              <div className="min-w-0 flex-1">
+              <Link to="/perfil" title="Mi cuenta" className="min-w-0 flex-1 rounded-input hover:text-tdea-green">
                 <p className="truncate text-sm font-medium text-ink">{user?.name}</p>
                 <p className="truncate text-xs text-silver">{user?.email}</p>
-              </div>
+              </Link>
               <button
                 onClick={clearSession}
                 title="Cerrar sesión"
@@ -164,12 +172,13 @@ export function AppShell({ navItems, children, brand, topBarTitle }: AppShellPro
                 <NotificationBell />
                 <HelpButton />
                 <ThemeToggle />
-                <div
-                  title={user?.name}
-                  className="flex h-9 w-9 items-center justify-center rounded-full bg-tdea-green text-xs font-bold text-white"
+                <Link
+                  to="/perfil"
+                  title="Mi cuenta"
+                  className="flex h-9 w-9 items-center justify-center rounded-full bg-tdea-green text-xs font-bold text-white transition-transform hover:scale-110"
                 >
                   {user?.name?.slice(0, 2).toUpperCase()}
-                </div>
+                </Link>
               </div>
             </div>
           ) : (

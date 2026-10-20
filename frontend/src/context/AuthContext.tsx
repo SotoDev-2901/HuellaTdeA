@@ -11,6 +11,8 @@ interface AuthContextValue {
    *  remember=false la guarda solo en sessionStorage (se pierde al cerrar la pestaña). */
   setSession: (user: AuthUser, token: string, remember?: boolean) => void;
   clearSession: () => void;
+  /** Actualiza los datos del usuario en memoria y en el almacenamiento de la sesión (p. ej. tras editar el nombre). */
+  updateUser: (user: AuthUser) => void;
 }
 
 const AuthContext = createContext<AuthContextValue | null>(null);
@@ -57,6 +59,19 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         } else {
           sessionStorage.setItem(SESSION_STORAGE_KEY, payload);
           localStorage.removeItem(SESSION_STORAGE_KEY);
+        }
+      },
+      updateUser: (nextUser) => {
+        setUser(nextUser);
+        const key = localStorage.getItem(SESSION_STORAGE_KEY) !== null ? 'local' : 'session';
+        const storage = key === 'local' ? localStorage : sessionStorage;
+        const raw = storage.getItem(SESSION_STORAGE_KEY);
+        if (raw) {
+          try {
+            storage.setItem(SESSION_STORAGE_KEY, JSON.stringify({ ...JSON.parse(raw), user: nextUser }));
+          } catch {
+            /* si el almacenamiento está corrupto se ignora: la sesión en memoria ya quedó actualizada */
+          }
         }
       },
       clearSession: () => {

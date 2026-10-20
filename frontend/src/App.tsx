@@ -17,6 +17,8 @@ import { ConsumptionPage } from './pages/ConsumptionPage';
 import { ReportsPage } from './pages/ReportsPage';
 import { QuestionnairePage } from './pages/QuestionnairePage';
 import { HistorialPage } from './pages/HistorialPage';
+import { ProfilePage } from './pages/ProfilePage';
+import { MethodologyPage } from './pages/MethodologyPage';
 
 function DefaultRedirect() {
   const { token, user } = useAuth();
@@ -100,6 +102,22 @@ function AppRoutes() {
         element={
           <ProtectedRoute>
             <ReportsPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/perfil"
+        element={
+          <ProtectedRoute>
+            <ProfilePage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/como-funciona"
+        element={
+          <ProtectedRoute>
+            <MethodologyPage />
           </ProtectedRoute>
         }
       />

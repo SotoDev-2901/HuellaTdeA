@@ -16,7 +16,7 @@ const communityNavItems: NavItem[] = [
   { label: 'Huella TdeA', icon: FiBarChart2, active: true },
 ];
 
-const brand = { title: 'TDEA HUELLA', subtitle: 'Carbon Tracking' };
+const brand = { title: 'TDEA HUELLA' };
 
 export function ReportsPage() {
   const { user } = useAuth();
