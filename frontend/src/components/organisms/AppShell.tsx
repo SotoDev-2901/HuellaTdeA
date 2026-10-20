@@ -1,7 +1,7 @@
 import { useState, type ReactNode } from 'react';
 import type { IconType } from 'react-icons';
 import { Link, useLocation } from 'react-router-dom';
-import { FiHelpCircle } from 'react-icons/fi';
+import { FiHelpCircle, FiSliders } from 'react-icons/fi';
 import { Logo } from '../atoms/Logo';
 import { ThemeToggle } from '../atoms/ThemeToggle';
 import { NotificationBell } from '../atoms/NotificationBell';
@@ -52,6 +52,7 @@ export function AppShell({ navItems, children, brand, topBarTitle }: AppShellPro
   // Entrada común a todos los roles: la explicación de cómo se calcula la huella.
   const allNavItems: NavItem[] = [
     ...navItems,
+    { label: 'Simulador', icon: FiSliders, to: '/simulador', active: pathname === '/simulador' },
     { label: '¿Cómo se calcula?', icon: FiHelpCircle, to: '/como-funciona', active: pathname === '/como-funciona' },
   ];
 

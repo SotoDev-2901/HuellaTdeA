@@ -19,6 +19,7 @@ import { QuestionnairePage } from './pages/QuestionnairePage';
 import { HistorialPage } from './pages/HistorialPage';
 import { ProfilePage } from './pages/ProfilePage';
 import { MethodologyPage } from './pages/MethodologyPage';
+import { SimulatorPage } from './pages/SimulatorPage';
 
 function DefaultRedirect() {
   const { token, user } = useAuth();
@@ -118,6 +119,14 @@ function AppRoutes() {
         element={
           <ProtectedRoute>
             <MethodologyPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/simulador"
+        element={
+          <ProtectedRoute>
+            <SimulatorPage />
           </ProtectedRoute>
         }
       />

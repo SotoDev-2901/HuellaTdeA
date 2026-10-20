@@ -115,6 +115,14 @@ export function MethodologyContainer() {
         </p>
       </Block>
 
+      <Block title="Simulador">
+        <p>
+          En el simulador escribes una pregunta con tus palabras. Una IA solo la traduce a cambios concretos (por ejemplo,
+          “50 % de quienes usan carro pasan al bus”); los números los calcula el sistema con los mismos factores de esta
+          página, sin azar: la misma pregunta siempre da el mismo resultado. Lo que la IA no pueda traducir se rechaza.
+        </p>
+      </Block>
+
       <Block title="Limitaciones">
         <p>
           Los valores marcados como supuesto declarado no provienen de una fuente oficial y deben ajustarse con

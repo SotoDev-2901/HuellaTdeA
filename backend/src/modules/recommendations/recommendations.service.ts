@@ -1,9 +1,9 @@
 import { z } from 'zod';
 import { env } from '../../config/env.js';
+import { completeJson } from '../../shared/ai/llm.js';
 import * as questionnaireRepository from '../questionnaire/questionnaire.repository.js';
 import type { Recommendation, RecommendationCategory, RecommendationsResult } from './recommendations.types.js';
 
-const REQUEST_TIMEOUT_MS = 20_000;
 const CACHE_LIMIT = 500;
 
 /** Cada respuesta del cuestionario es inmutable, así que sus recomendaciones se calculan una sola vez. */
@@ -75,35 +75,13 @@ function buildPrompt(row: ResponseRow, tdeaAverageKg: number | null): string {
 }
 
 async function askModel(prompt: string): Promise<Recommendation[]> {
-  const res = await fetch(`${env.ai.baseUrl}/chat/completions`, {
-    method: 'POST',
-    headers: {
-      'content-type': 'application/json',
-      authorization: `Bearer ${env.ai.apiKey}`,
-    },
-    body: JSON.stringify({
-      model: env.ai.model,
-      max_tokens: 1500,
-      temperature: 0.4,
-      response_format: { type: 'json_object' },
-      messages: [
-        {
-          role: 'system',
-          content:
-            'Eres un asesor de sostenibilidad para estudiantes y docentes del Tecnológico de Antioquia. Respondes en español, de forma breve, amable y accionable.',
-        },
-        { role: 'user', content: prompt },
-      ],
-    }),
-    signal: AbortSignal.timeout(REQUEST_TIMEOUT_MS),
-  });
-  if (!res.ok) throw new Error(`La API de IA respondió ${res.status}`);
-  const data = (await res.json()) as { choices?: Array<{ message?: { content?: string } }> };
-  const text = data.choices?.[0]?.message?.content ?? '';
-  const match = text.match(/[\[{][\s\S]*[\]}]/);
-  if (!match) throw new Error('La respuesta de la IA no contiene JSON');
-  const parsed = JSON.parse(match[0]);
-  return aiResponseSchema.parse(Array.isArray(parsed) ? parsed : parsed.recomendaciones ?? parsed.recommendations ?? parsed.items);
+  const parsed = (await completeJson(
+    'Eres un asesor de sostenibilidad para estudiantes y docentes del Tecnológico de Antioquia. Respondes en español, de forma breve, amable y accionable.',
+    prompt,
+  )) as Record<string, unknown>;
+  return aiResponseSchema.parse(
+    Array.isArray(parsed) ? parsed : (parsed.recomendaciones ?? parsed.recommendations ?? parsed.items),
+  );
 }
 
 export async function getRecommendations(userId: string, tdeaAverageKg: number | null): Promise<RecommendationsResult> {
