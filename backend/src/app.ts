@@ -8,6 +8,8 @@ import { router as consumptionRouter } from './modules/consumption/consumption.r
 import { router as wasteRouter } from './modules/consumption/waste.routes.js';
 import { router as footprintRouter } from './modules/footprint/footprint.routes.js';
 import { router as reportsRouter } from './modules/reports/reports.routes.js';
+import { router as accountRouter } from './modules/account/account.routes.js';
+import { router as simulationRouter } from './modules/simulation/simulation.routes.js';
 import { errorHandler } from './shared/middlewares/errorHandler.js';
 
 export const app = express();
@@ -24,5 +26,7 @@ app.use('/api/consumption', consumptionRouter);
 app.use('/api/waste', wasteRouter);
 app.use('/api/footprint', footprintRouter);
 app.use('/api/reports', reportsRouter);
+app.use('/api/account', accountRouter);
+app.use('/api/simulations', simulationRouter);
 
 app.use(errorHandler);

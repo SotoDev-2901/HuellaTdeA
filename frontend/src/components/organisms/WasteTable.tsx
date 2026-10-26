@@ -1,4 +1,7 @@
+import { useEffect, useState } from 'react';
 import { FiEdit2, FiTrash2 } from 'react-icons/fi';
+import { Pagination } from '../molecules/Pagination';
+import { formatDecimal } from '../../lib/format';
 import type { WasteRecord } from '../../services/wasteService';
 
 interface WasteTableProps {
@@ -14,7 +17,15 @@ const wasteTypeLabels: Record<WasteRecord['waste_type'], string> = {
   organico: 'Orgánico',
 };
 
+const PAGE_SIZE = 20;
+
 export function WasteTable({ records, loading, onEdit, onDelete }: WasteTableProps) {
+  const [page, setPage] = useState(1);
+  useEffect(() => {
+    const lastPage = Math.max(1, Math.ceil(records.length / PAGE_SIZE));
+    if (page > lastPage) setPage(lastPage);
+  }, [records.length, page]);
+
   if (loading) {
     return <p className="py-8 text-center text-sm text-graphite">Cargando registros...</p>;
   }
@@ -40,14 +51,14 @@ export function WasteTable({ records, loading, onEdit, onDelete }: WasteTablePro
           </tr>
         </thead>
         <tbody>
-          {records.map((record) => (
+          {records.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE).map((record) => (
             <tr
               key={record.id}
               className="border-b border-tdea-blush-border/60 transition-colors hover:bg-tdea-blush"
             >
               <td className="py-3 pr-4 font-medium text-ink">{record.zone_name}</td>
               <td className="py-3 pr-4 text-graphite">{wasteTypeLabels[record.waste_type]}</td>
-              <td className="py-3 pr-4 text-graphite">{Number(record.kg).toFixed(2)} kg</td>
+              <td className="py-3 pr-4 text-graphite">{formatDecimal(record.kg)} kg</td>
               <td className="py-3 pr-4 text-graphite">
                 {new Date(record.recorded_at).toLocaleDateString('es-CO', {
                   day: '2-digit',
@@ -78,6 +89,7 @@ export function WasteTable({ records, loading, onEdit, onDelete }: WasteTablePro
           ))}
         </tbody>
       </table>
+      <Pagination page={page} pageSize={PAGE_SIZE} total={records.length} onPageChange={setPage} />
     </div>
   );
 }

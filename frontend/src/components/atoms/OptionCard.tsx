@@ -8,6 +8,7 @@ export function OptionCard({ label, selected, onClick }: OptionCardProps) {
   return (
     <button
       type="button"
+      aria-pressed={selected}
       onClick={onClick}
       className={`flex-1 rounded-input border px-3.5 py-3 text-sm font-medium capitalize transition-colors ${
         selected

@@ -106,6 +106,31 @@ test('Recomendaciones: con clave de IA usa la respuesta del modelo y la cachea',
   }
 });
 
+test('Recomendaciones: si la IA devuelve menos de 3 categorías se completan con el catálogo', async () => {
+  const previousKey = env.ai.apiKey;
+  const realFetch = globalThis.fetch;
+  env.ai.apiKey = 'clave-de-prueba';
+  globalThis.fetch = (async (input: Parameters<typeof fetch>[0], init?: Parameters<typeof fetch>[1]) => {
+    if (String(input).includes('/chat/completions')) {
+      const items = [{ category: 'energia', title: 'Apaga tu laptop', description: 'Apaga y desconecta tu laptop al terminar la jornada en el campus.' }];
+      return new Response(JSON.stringify({ choices: [{ message: { content: JSON.stringify({ recomendaciones: items }) } }] }), { status: 200 });
+    }
+    return realFetch(input, init);
+  }) as typeof fetch;
+  try {
+    const token = await createUser('ia-incompleta');
+    await submit(token);
+    const data = await (await get(token)).json();
+    assert.equal(data.source, 'ai');
+    assert.equal(data.items.length, 3);
+    assert.deepEqual([...data.items.map((i: { category: string }) => i.category)].sort(), ['energia', 'residuos', 'transporte']);
+    assert.equal(data.items.find((i: { category: string }) => i.category === 'energia').title, 'Apaga tu laptop');
+  } finally {
+    globalThis.fetch = realFetch;
+    env.ai.apiKey = previousKey;
+  }
+});
+
 test('Recomendaciones: si la IA falla responde con el catálogo de respaldo', async () => {
   const previousKey = env.ai.apiKey;
   const realFetch = globalThis.fetch;

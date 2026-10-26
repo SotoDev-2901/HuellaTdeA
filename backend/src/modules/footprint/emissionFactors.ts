@@ -185,3 +185,82 @@ export function calculateDietEmissions(
   const dailyFootprint = DIET_KG_CO2E_PER_YEAR[dietType] / DAYS_PER_YEAR;
   return dailyFootprint * daysPerWeek * EATING_FREQUENCY_RATIO[eatingFrequency] * WEEKS_PER_YEAR;
 }
+
+export interface MethodologyFactor {
+  key: string;
+  value: string;
+  source: string;
+  /** 'official' = fuente publicada; 'assumption' = supuesto de ingeniería declarado (sin fuente oficial). */
+  kind: 'official' | 'assumption';
+}
+
+/**
+ * Resumen legible de los factores y supuestos que usa el cálculo. Se arma desde las mismas
+ * constantes del módulo para que la página "¿Cómo se calcula?" nunca se desactualice.
+ */
+export function getMethodology(): {
+  weeksPerYear: number;
+  categories: { id: string; label: string; formula: string; factors: MethodologyFactor[] }[];
+} {
+  const fmt = (n: number) => String(n).replace('.', ',');
+  const spaceLabels: Record<CampusSpace, string> = {
+    aulas: 'aulas',
+    laboratorios: 'laboratorios',
+    auditorio: 'auditorio',
+    cafeteria: 'cafetería',
+    biblioteca: 'biblioteca',
+    zonas_verdes: 'zonas verdes',
+  };
+  return {
+    weeksPerYear: WEEKS_PER_YEAR,
+    categories: [
+      {
+        id: 'transporte',
+        label: 'Transporte',
+        formula: 'km por trayecto × días por semana × 52 semanas × factor del medio',
+        factors: [
+          { key: 'Caminar y bicicleta', value: '0 kgCO₂e', source: 'Sin emisiones directas', kind: 'official' },
+          { key: 'Gasolina (carro y moto)', value: `${fmt(GASOLINE_KG_CO2_PER_GAL)} kgCO₂/galón`, source: 'FECOC 2016 (UPME), gasolina motor sin mezcla de bioetanol', kind: 'official' },
+          { key: 'Rendimiento del carro', value: `${FUEL_EFFICIENCY_KM_PER_GAL.carro} km/galón`, source: 'Supuesto declarado', kind: 'assumption' },
+          { key: 'Rendimiento de la moto', value: `${FUEL_EFFICIENCY_KM_PER_GAL.moto} km/galón`, source: 'Supuesto declarado', kind: 'assumption' },
+          { key: 'Transporte público (bus)', value: `${fmt(BUS_KG_CO2E_PER_PASSENGER_KM)} kgCO₂e/pasajero-km`, source: 'Referencia internacional de bus urbano; no hay factor colombiano público', kind: 'assumption' },
+        ],
+      },
+      {
+        id: 'energia',
+        label: 'Energía (instalaciones y dispositivos)',
+        formula: 'horas por día × días por semana × 52 × potencia (kW) × factor eléctrico',
+        factors: [
+          { key: 'Factor eléctrico del SIN', value: `${fmt(ELECTRICITY_KG_CO2E_PER_KWH)} kgCO₂e/kWh`, source: 'UPME, Sistema Interconectado Nacional', kind: 'official' },
+          { key: 'Laptop en uso', value: `${fmt(LAPTOP_POWER_KW)} kW`, source: 'Supuesto declarado', kind: 'assumption' },
+          { key: 'Carga de celular', value: `${fmt(PHONE_CHARGE_KWH)} kWh por carga`, source: 'Supuesto declarado', kind: 'assumption' },
+          ...(Object.keys(FACILITY_KW_PER_PERSON_BY_SPACE) as CampusSpace[]).map((space) => ({
+            key: `Instalaciones: ${spaceLabels[space]}`,
+            value: `${fmt(FACILITY_KW_PER_PERSON_BY_SPACE[space])} kW por persona`,
+            source: 'Estimación de ingeniería (carga eléctrica por ocupante); no es un factor oficial',
+            kind: 'assumption' as const,
+          })),
+        ],
+      },
+      {
+        id: 'residuos',
+        label: 'Residuos',
+        formula: 'kg por día de asistencia × días por semana × 52 × factor de residuos',
+        factors: [
+          { key: 'Residuos en relleno sanitario', value: `${fmt(WASTE_KG_CO2E_PER_KG)} kgCO₂e/kg`, source: 'IPCC 2006, Vol. 5 (vía MVC Colombia)', kind: 'official' },
+          { key: 'Frecuencia baja / media / alta', value: `${fmt(WASTE_FREQUENCY_KG_PER_DAY.baja)} / ${fmt(WASTE_FREQUENCY_KG_PER_DAY.media)} / ${fmt(WASTE_FREQUENCY_KG_PER_DAY.alta)} kg por día`, source: 'Supuesto declarado (nadie sabe de memoria cuántos kg genera)', kind: 'assumption' },
+        ],
+      },
+      {
+        id: 'alimentacion',
+        label: 'Alimentación',
+        formula: '(huella anual de la dieta ÷ 365) × días de asistencia × frecuencia de consumo en la universidad × 52',
+        factors: [
+          { key: 'Vegano / vegetariano', value: `${DIET_KG_CO2E_PER_YEAR.vegano} / ${DIET_KG_CO2E_PER_YEAR.vegetariano} kgCO₂e al año`, source: 'Poore y Nemecek (2018)', kind: 'official' },
+          { key: 'Mixto / carne frecuente', value: `${DIET_KG_CO2E_PER_YEAR.mixto_moderado} / ${DIET_KG_CO2E_PER_YEAR.carne_frecuente} kgCO₂e al año`, source: 'Poore y Nemecek (2018)', kind: 'official' },
+          { key: 'Come en la universidad: nunca / ocasional / mayoría / siempre', value: `${EATING_FREQUENCY_RATIO.nunca} / ${EATING_FREQUENCY_RATIO.ocasional} / ${EATING_FREQUENCY_RATIO.mayoria} / ${EATING_FREQUENCY_RATIO.siempre} de los días`, source: 'Supuesto declarado', kind: 'assumption' },
+        ],
+      },
+    ],
+  };
+}

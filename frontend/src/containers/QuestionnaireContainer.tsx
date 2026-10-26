@@ -147,12 +147,12 @@ export function QuestionnaireContainer() {
         <FiCheckCircle className="text-tdea-green" size={40} />
         <h2 className="font-display text-xl font-bold text-ink">Ya respondiste este mes</h2>
         <p className="max-w-sm text-sm text-graphite">
-          El cuestionario se responde una vez por mes para llevar un seguimiento real de tu huella
-          en el tiempo. Si tus hábitos cambiaron, puedes actualizar tu respuesta de este mes y reemplazará la anterior.
+          Tienes una respuesta guardada para este mes. Si tus hábitos cambiaron, puedes actualizarla y
+          reemplazará a la anterior.
           {eligibility.nextEligibleDate ? (
             <>
               {' '}
-              Podrás volver a hacerlo a partir del{' '}
+              Una respuesta nueva, para llevar tu historial mes a mes, podrás enviarla a partir del{' '}
               <span className="font-semibold text-ink">
                 {new Date(`${eligibility.nextEligibleDate}T00:00:00`).toLocaleDateString('es-CO', {
                   day: '2-digit',

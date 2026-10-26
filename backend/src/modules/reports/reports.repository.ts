@@ -105,3 +105,21 @@ export async function getZoneTotals(from?: string, to?: string): Promise<ZoneTot
   );
   return rows;
 }
+
+export interface ZoneWasteTypeRow {
+  zone_name: string;
+  waste_type: string;
+  total_kg: string;
+}
+
+/** Residuos por zona y tipo en un rango de fechas (para el simulador). */
+export async function getZoneWasteByType(from: string, to: string): Promise<ZoneWasteTypeRow[]> {
+  const { rows } = await pool.query<ZoneWasteTypeRow>(
+    `SELECT z.name AS zone_name, w.waste_type, SUM(w.kg) AS total_kg
+     FROM waste_records w JOIN zones z ON z.id = w.zone_id
+     WHERE w.recorded_at BETWEEN $1 AND $2
+     GROUP BY z.name, w.waste_type`,
+    [from, to],
+  );
+  return rows;
+}

@@ -23,3 +23,8 @@ export function emissionUnitLabel(unit: EmissionUnit): string {
 export function formatEmission(kg: number, unit: EmissionUnit = pickEmissionUnit(kg)): string {
   return `${formatEmissionNumber(kg, unit)} ${emissionUnitLabel(unit)}`;
 }
+
+/** Número con separadores locales (es-CO): 3.971,93. Evita mezclar "1181.48" con "1,03" en la misma app. */
+export function formatDecimal(value: number | string, digits = 2): string {
+  return Number(value).toLocaleString('es-CO', { minimumFractionDigits: digits, maximumFractionDigits: digits });
+}

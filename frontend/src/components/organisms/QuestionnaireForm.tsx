@@ -314,11 +314,13 @@ export function QuestionnaireForm({
             <label className="mb-1.5 flex items-center gap-1.5 text-sm font-medium text-graphite">
               <FiCoffee /> ¿Con qué frecuencia consumes alimentos dentro de la universidad?
             </label>
-            <div className="grid grid-cols-2 gap-2">
+            <div role="group" aria-label="Frecuencia con la que consumes alimentos en la universidad" className="grid grid-cols-2 gap-2">
               {EATING_FREQUENCIES.map((freq) => (
                 <button
                   type="button"
                   key={freq.value}
+                  aria-pressed={values.eatingFrequency === freq.value}
+                  aria-label={`${freq.label}: ${freq.description}`}
                   onClick={() => onChange('eatingFrequency', freq.value)}
                   className={`rounded-input border px-2.5 py-3 text-left text-xs transition-colors ${
                     values.eatingFrequency === freq.value
@@ -359,11 +361,13 @@ export function QuestionnaireForm({
             <label className="mb-1.5 flex items-center gap-1.5 text-sm font-medium text-graphite">
               <FiTrash2 /> ¿Con qué frecuencia generas residuos?
             </label>
-            <div className="grid grid-cols-3 gap-2">
+            <div role="group" aria-label="Frecuencia con la que generas residuos" className="grid grid-cols-3 gap-2">
               {WASTE_FREQUENCIES.map((freq) => (
                 <button
                   type="button"
                   key={freq.value}
+                  aria-pressed={values.wasteFrequency === freq.value}
+                  aria-label={`${freq.label}: ${freq.description}`}
                   onClick={() => onChange('wasteFrequency', freq.value)}
                   className={`rounded-input border px-2.5 py-3 text-left text-xs transition-colors ${
                     values.wasteFrequency === freq.value
