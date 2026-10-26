@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { formatEmission, pickEmissionUnit, formatEmissionNumber } from './format';
+import { formatEmission, pickEmissionUnit, formatEmissionNumber, formatDecimal } from './format';
 
 describe('formatEmission', () => {
   it('muestra kg cuando el valor es menor a una tonelada', () => {
@@ -20,5 +20,13 @@ describe('formatEmission', () => {
 
   it('no muestra decimales sobrantes en cero', () => {
     expect(formatEmission(0)).toBe('0 kgCO2e');
+  });
+});
+
+describe('formatDecimal', () => {
+  it('usa separadores locales y decimales fijos', () => {
+    expect(formatDecimal(3971.9)).toBe('3.971,90');
+    expect(formatDecimal('1181.484')).toBe('1.181,48');
+    expect(formatDecimal(0)).toBe('0,00');
   });
 });

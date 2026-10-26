@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom';
 import { FiCheck, FiClock } from 'react-icons/fi';
 import { Button } from '../atoms/Button';
+import { formatDecimal } from '../../lib/format';
 import type { QuestionnaireResponse } from '../../services/questionnaireService';
 
 interface QuestionnaireResultProps {
@@ -14,7 +15,7 @@ function Row({ label, value, max }: { label: string; value: number; max: number 
     <div className="py-2">
       <div className="flex items-center justify-between text-sm">
         <span className="text-graphite">{label}</span>
-        <span className="font-medium text-ink">{value.toFixed(2)} kgCO2e</span>
+        <span className="font-medium text-ink">{formatDecimal(value)} kgCO2e</span>
       </div>
       <div className="mt-1 h-1.5 w-full rounded-pill bg-tdea-blush-border">
         <div className="h-1.5 rounded-pill bg-tdea-green" style={{ width: `${pct}%` }} />
@@ -54,7 +55,7 @@ export function QuestionnaireResult({ result, onRestart }: QuestionnaireResultPr
           <h2 className="mt-3 font-display text-xl font-bold text-ink">¡Respuestas completadas!</h2>
           <p className="mt-1 text-sm text-graphite">
             Tu huella de carbono anual estimada es de{' '}
-            <span className="font-bold text-tdea-green">{result.total_kg_co2e} kgCO2e</span>. Tu
+            <span className="font-bold text-tdea-green">{formatDecimal(result.total_kg_co2e)} kgCO2e</span>. Tu
             compromiso con la sostenibilidad es el primer paso hacia un futuro más verde.
           </p>
         </div>

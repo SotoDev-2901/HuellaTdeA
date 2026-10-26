@@ -4,14 +4,27 @@ import { InstitutionalSummaryContainer } from './InstitutionalSummaryContainer';
 import { ZoneFootprintTable } from '../components/organisms/ZoneFootprintTable';
 import { Logo } from '../components/atoms/Logo';
 import { downloadCsv } from '../lib/csv';
+import { formatEmission } from '../lib/format';
 import * as reportsService from '../services/reportsService';
 import type { ZoneFootprintSummary } from '../services/reportsService';
+
+function isoDate(date: Date): string {
+  return date.toISOString().slice(0, 10);
+}
+
+/** Mismo periodo que el resumen institucional de arriba (últimos 12 meses), para que las cifras coincidan. */
+function last12Months(): { from: string; to: string } {
+  const now = new Date();
+  const from = new Date(now);
+  from.setUTCMonth(from.getUTCMonth() - 12);
+  return { from: isoDate(from), to: isoDate(now) };
+}
 
 export function ReportsContainer() {
   const [zones, setZones] = useState<ZoneFootprintSummary[]>([]);
   const [loading, setLoading] = useState(true);
-  const [from, setFrom] = useState('');
-  const [to, setTo] = useState('');
+  const [from, setFrom] = useState(() => last12Months().from);
+  const [to, setTo] = useState(() => last12Months().to);
 
   async function loadReport() {
     setLoading(true);
@@ -35,12 +48,32 @@ export function ReportsContainer() {
     loadReport();
   }
 
-  function handleClear() {
-    setFrom('');
-    setTo('');
+  function applyRange(nextFrom: string, nextTo: string) {
+    setFrom(nextFrom);
+    setTo(nextTo);
     setLoading(true);
-    reportsService.getInstitutionalReport({}).then(setZones).finally(() => setLoading(false));
+    reportsService
+      .getInstitutionalReport({ from: nextFrom || undefined, to: nextTo || undefined })
+      .then(setZones)
+      .finally(() => setLoading(false));
   }
+
+  function handleLast12Months() {
+    const range = last12Months();
+    applyRange(range.from, range.to);
+  }
+
+  function handleAllHistory() {
+    applyRange('', '');
+  }
+
+  const defaults = last12Months();
+  const periodLabel =
+    !from && !to
+      ? 'histórico completo'
+      : from === defaults.from && to === defaults.to
+        ? 'últimos 12 meses'
+        : `${from || 'inicio'} a ${to || 'hoy'}`;
 
   const totalKgCo2e = zones.reduce((sum, z) => sum + z.total_kg_co2e, 0);
 
@@ -130,26 +163,31 @@ export function ReportsContainer() {
           >
             Filtrar
           </button>
-          {from || to ? (
-            <button
-              type="button"
-              onClick={handleClear}
-              className="rounded-button border border-tdea-blush-border px-4 py-2.5 text-sm font-medium text-graphite hover:bg-tdea-blush"
-            >
-              Limpiar
-            </button>
-          ) : null}
+          <button
+            type="button"
+            onClick={handleLast12Months}
+            className="rounded-button border border-tdea-blush-border px-4 py-2.5 text-sm font-medium text-graphite hover:bg-tdea-blush"
+          >
+            Últimos 12 meses
+          </button>
+          <button
+            type="button"
+            onClick={handleAllHistory}
+            className="rounded-button border border-tdea-blush-border px-4 py-2.5 text-sm font-medium text-graphite hover:bg-tdea-blush"
+          >
+            Histórico completo
+          </button>
         </div>
 
-        <p className="hidden text-sm text-graphite print:block">
-          Periodo: {from || to ? `${from || 'inicio'} a ${to || 'hoy'}` : 'histórico completo'}
+        <p className="text-sm text-graphite">
+          Periodo mostrado: <span className="font-medium text-ink">{periodLabel}</span>
         </p>
 
         <div className="rounded-card bg-surface p-6 shadow-soft card-hover">
           <div className="mb-1 flex items-baseline justify-between">
             <p className="text-sm text-graphite">Huella por zona (electricidad + residuos)</p>
             <p className="text-sm text-graphite">
-              Total: <span className="font-semibold text-tdea-green">{totalKgCo2e.toFixed(2)} kg CO2e</span>
+              Total: <span className="font-semibold text-tdea-green">{formatEmission(totalKgCo2e)}</span>
             </p>
           </div>
           <ZoneFootprintTable zones={zones} loading={loading} />

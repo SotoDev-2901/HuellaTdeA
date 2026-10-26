@@ -11,6 +11,7 @@ export function IconOptionCard({ icon: Icon, label, selected, onClick }: IconOpt
   return (
     <button
       type="button"
+      aria-pressed={selected}
       onClick={onClick}
       className={`flex flex-1 flex-col items-center gap-2 rounded-input border px-3 py-3 text-xs font-medium transition-colors ${
         selected

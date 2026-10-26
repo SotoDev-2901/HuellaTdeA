@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { FiBarChart2, FiClock, FiEdit3, FiHome } from 'react-icons/fi';
 import { AppShell, type NavItem } from '../components/organisms/AppShell';
 import * as questionnaireService from '../services/questionnaireService';
+import { formatDecimal } from '../lib/format';
 import type { QuestionnaireResponse } from '../services/questionnaireService';
 
 const navItems: NavItem[] = [
@@ -65,12 +66,12 @@ export function HistorialPage() {
                         year: 'numeric',
                       })}
                     </td>
-                    <td className="py-3 pr-4">{r.transport_kg_co2e} kg</td>
-                    <td className="py-3 pr-4">{r.facilities_kg_co2e} kg</td>
-                    <td className="py-3 pr-4">{r.devices_kg_co2e} kg</td>
-                    <td className="py-3 pr-4">{r.waste_kg_co2e} kg</td>
-                    <td className="py-3 pr-4">{r.diet_kg_co2e} kg</td>
-                    <td className="py-3 pr-4 font-semibold text-tdea-green">{r.total_kg_co2e} kg</td>
+                    <td className="py-3 pr-4">{formatDecimal(r.transport_kg_co2e)} kg</td>
+                    <td className="py-3 pr-4">{formatDecimal(r.facilities_kg_co2e)} kg</td>
+                    <td className="py-3 pr-4">{formatDecimal(r.devices_kg_co2e)} kg</td>
+                    <td className="py-3 pr-4">{formatDecimal(r.waste_kg_co2e)} kg</td>
+                    <td className="py-3 pr-4">{formatDecimal(r.diet_kg_co2e)} kg</td>
+                    <td className="py-3 pr-4 font-semibold text-tdea-green">{formatDecimal(r.total_kg_co2e)} kg</td>
                   </tr>
                 ))}
               </tbody>

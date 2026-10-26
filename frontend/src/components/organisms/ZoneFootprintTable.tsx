@@ -1,3 +1,4 @@
+import { emissionUnitLabel, formatDecimal, formatEmissionNumber, pickEmissionUnit } from '../../lib/format';
 import type { ZoneFootprintSummary } from '../../services/reportsService';
 
 interface ZoneFootprintTableProps {
@@ -14,6 +15,9 @@ export function ZoneFootprintTable({ zones, loading }: ZoneFootprintTableProps) 
     return <p className="py-8 text-center text-sm text-graphite">Todavía no hay zonas registradas.</p>;
   }
 
+  const unit = pickEmissionUnit(...zones.map((z) => z.total_kg_co2e));
+  const unitLabel = emissionUnitLabel(unit);
+
   return (
     <div className="overflow-x-auto">
       <table className="w-full text-left text-sm">
@@ -22,9 +26,9 @@ export function ZoneFootprintTable({ zones, loading }: ZoneFootprintTableProps) 
             <th className="py-2 pr-4 font-medium">Zona</th>
             <th className="py-2 pr-4 font-medium">Consumo total</th>
             <th className="py-2 pr-4 font-medium">Residuos totales</th>
-            <th className="py-2 pr-4 font-medium">Huella electricidad</th>
-            <th className="py-2 pr-4 font-medium">Huella residuos</th>
-            <th className="py-2 pr-4 font-medium">Huella total</th>
+            <th className="py-2 pr-4 font-medium">Huella electricidad ({unitLabel})</th>
+            <th className="py-2 pr-4 font-medium">Huella residuos ({unitLabel})</th>
+            <th className="py-2 pr-4 font-medium">Huella total ({unitLabel})</th>
           </tr>
         </thead>
         <tbody>
@@ -34,12 +38,12 @@ export function ZoneFootprintTable({ zones, loading }: ZoneFootprintTableProps) 
               className="border-b border-tdea-blush-border/60 transition-colors hover:bg-tdea-blush"
             >
               <td className="py-3 pr-4 font-medium text-ink">{zone.zone_name}</td>
-              <td className="py-3 pr-4 text-graphite">{zone.total_kwh.toFixed(2)} kWh</td>
-              <td className="py-3 pr-4 text-graphite">{zone.total_waste_kg.toFixed(2)} kg</td>
-              <td className="py-3 pr-4 text-graphite">{zone.electricity_kg_co2e.toFixed(2)} kg</td>
-              <td className="py-3 pr-4 text-graphite">{zone.waste_kg_co2e.toFixed(2)} kg</td>
+              <td className="py-3 pr-4 text-graphite">{formatDecimal(zone.total_kwh)} kWh</td>
+              <td className="py-3 pr-4 text-graphite">{formatDecimal(zone.total_waste_kg)} kg</td>
+              <td className="py-3 pr-4 text-graphite">{formatEmissionNumber(zone.electricity_kg_co2e, unit)}</td>
+              <td className="py-3 pr-4 text-graphite">{formatEmissionNumber(zone.waste_kg_co2e, unit)}</td>
               <td className="py-3 pr-4 font-semibold text-tdea-green">
-                {zone.total_kg_co2e.toFixed(2)} kg
+                {formatEmissionNumber(zone.total_kg_co2e, unit)}
               </td>
             </tr>
           ))}
