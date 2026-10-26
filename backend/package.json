@@ -10,11 +10,13 @@
     "dev": "tsx watch src/server.ts",
     "build": "tsc",
     "start": "node dist/server.js",
-    "migrate": "node-pg-migrate -m /database/migrations",
-    "migrate:up": "node-pg-migrate -m /database/migrations up",
-    "migrate:down": "node-pg-migrate -m /database/migrations down",
+    "migrate": "node-pg-migrate -m ../database/migrations",
+    "migrate:up": "node-pg-migrate -m ../database/migrations up",
+    "migrate:down": "node-pg-migrate -m ../database/migrations down",
     "seed:admin": "tsx scripts/seed-admin.ts",
     "seed:demo": "tsx scripts/seed-demo.ts",
+    "seed:demo-if-empty": "tsx scripts/seed-demo-if-empty.ts",
+    "start:render": "npm run migrate:up && npm run seed:admin && npm run seed:demo-if-empty && npm start",
     "test": "tsx --test --test-concurrency=1 tests/**/*.test.ts"
   },
   "dependencies": {
