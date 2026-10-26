@@ -16,7 +16,7 @@ function KindBadge({ kind }: { kind: MethodologyFactor['kind'] }) {
 
 function Block({ title, children }: { title: string; children: React.ReactNode }) {
   return (
-    <section className="rounded-card bg-surface p-6 shadow-soft">
+    <section className="min-w-0 rounded-card bg-surface p-4 shadow-soft sm:p-6">
       <h2 className="font-display text-lg font-bold text-ink">{title}</h2>
       <div className="mt-2 space-y-2 text-sm text-graphite">{children}</div>
     </section>
@@ -55,7 +55,7 @@ export function MethodologyContainer() {
         <p className="py-6 text-center text-sm text-graphite">Cargando...</p>
       ) : (
         data.categories.map((category) => (
-          <section key={category.id} className="rounded-card bg-surface p-6 shadow-soft">
+          <section key={category.id} className="min-w-0 rounded-card bg-surface p-4 shadow-soft sm:p-6">
             <h2 className="font-display text-lg font-bold text-ink">{category.label}</h2>
             <p className="mt-1 rounded-input bg-tdea-blush px-3 py-2 text-xs text-graphite">
               <span className="font-semibold text-ink">Fórmula: </span>
@@ -75,7 +75,7 @@ export function MethodologyContainer() {
                   {category.factors.map((factor) => (
                     <tr key={factor.key} className="border-b border-tdea-blush-border/60 align-top">
                       <td className="py-2 pr-4 font-medium text-ink">{factor.key}</td>
-                      <td className="py-2 pr-4 whitespace-nowrap text-graphite">{factor.value}</td>
+                      <td className="py-2 pr-4 text-graphite sm:whitespace-nowrap">{factor.value}</td>
                       <td className="py-2 pr-4 text-graphite">{factor.source}</td>
                       <td className="py-2">
                         <KindBadge kind={factor.kind} />

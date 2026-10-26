@@ -51,7 +51,7 @@ export function EmissionsDonutChart({ segments, totalLabel, unit = 'kg', formatV
   }
 
   return (
-    <div ref={containerRef} className="relative flex items-center gap-6">
+    <div ref={containerRef} className="relative flex flex-col items-center gap-4 sm:flex-row sm:gap-6">
       <svg width={SIZE} height={SIZE} viewBox={`0 0 ${SIZE} ${SIZE}`}>
         <circle
           cx={SIZE / 2}

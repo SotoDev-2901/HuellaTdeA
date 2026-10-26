@@ -183,7 +183,7 @@ export function ReportsContainer() {
           Periodo mostrado: <span className="font-medium text-ink">{periodLabel}</span>
         </p>
 
-        <div className="rounded-card bg-surface p-6 shadow-soft card-hover">
+        <div className="rounded-card bg-surface p-4 sm:p-6 shadow-soft card-hover">
           <div className="mb-1 flex items-baseline justify-between">
             <p className="text-sm text-graphite">Huella por zona (electricidad + residuos)</p>
             <p className="text-sm text-graphite">

@@ -27,7 +27,7 @@ export function HistorialPage() {
 
   return (
     <AppShell navItems={navItems} brand={brand}>
-      <div className="rounded-card bg-surface p-6 shadow-soft card-hover">
+      <div className="rounded-card bg-surface p-4 sm:p-6 shadow-soft card-hover">
         <h2 className="font-display text-lg font-bold text-ink">Tus cuestionarios respondidos</h2>
         <p className="mt-1 text-sm text-graphite">
           Consulta tus registros anteriores para comparar tu impacto en el tiempo.
@@ -41,16 +41,16 @@ export function HistorialPage() {
               Todavía no has respondido el cuestionario.
             </p>
           ) : (
-            <table className="w-full text-left text-sm">
+            <table className="w-full text-left text-xs sm:text-sm">
               <thead>
                 <tr className="border-b border-tdea-blush-border text-xs uppercase text-silver">
-                  <th className="py-2 pr-4 font-medium">Fecha</th>
-                  <th className="py-2 pr-4 font-medium">Transporte</th>
-                  <th className="py-2 pr-4 font-medium">Instalaciones</th>
-                  <th className="py-2 pr-4 font-medium">Dispositivos</th>
-                  <th className="py-2 pr-4 font-medium">Residuos</th>
-                  <th className="py-2 pr-4 font-medium">Alimentación</th>
-                  <th className="py-2 pr-4 font-medium">Total</th>
+                  <th className="py-2 pr-2 sm:pr-4 font-medium">Fecha</th>
+                  <th className="py-2 pr-2 sm:pr-4 font-medium">Transporte</th>
+                  <th className="py-2 pr-2 sm:pr-4 font-medium">Instalaciones</th>
+                  <th className="py-2 pr-2 sm:pr-4 font-medium">Dispositivos</th>
+                  <th className="py-2 pr-2 sm:pr-4 font-medium">Residuos</th>
+                  <th className="py-2 pr-2 sm:pr-4 font-medium">Alimentación</th>
+                  <th className="py-2 pr-2 sm:pr-4 font-medium">Total</th>
                 </tr>
               </thead>
               <tbody>
@@ -59,19 +59,19 @@ export function HistorialPage() {
                     key={r.id}
                     className="border-b border-tdea-blush-border/60 transition-colors hover:bg-tdea-blush"
                   >
-                    <td className="py-3 pr-4 text-graphite">
+                    <td className="py-3 pr-2 sm:pr-4 text-graphite">
                       {new Date(r.created_at).toLocaleDateString('es-CO', {
                         day: '2-digit',
                         month: 'short',
                         year: 'numeric',
                       })}
                     </td>
-                    <td className="py-3 pr-4">{formatDecimal(r.transport_kg_co2e)} kg</td>
-                    <td className="py-3 pr-4">{formatDecimal(r.facilities_kg_co2e)} kg</td>
-                    <td className="py-3 pr-4">{formatDecimal(r.devices_kg_co2e)} kg</td>
-                    <td className="py-3 pr-4">{formatDecimal(r.waste_kg_co2e)} kg</td>
-                    <td className="py-3 pr-4">{formatDecimal(r.diet_kg_co2e)} kg</td>
-                    <td className="py-3 pr-4 font-semibold text-tdea-green">{formatDecimal(r.total_kg_co2e)} kg</td>
+                    <td className="py-3 pr-2 sm:pr-4">{formatDecimal(r.transport_kg_co2e)} kg</td>
+                    <td className="py-3 pr-2 sm:pr-4">{formatDecimal(r.facilities_kg_co2e)} kg</td>
+                    <td className="py-3 pr-2 sm:pr-4">{formatDecimal(r.devices_kg_co2e)} kg</td>
+                    <td className="py-3 pr-2 sm:pr-4">{formatDecimal(r.waste_kg_co2e)} kg</td>
+                    <td className="py-3 pr-2 sm:pr-4">{formatDecimal(r.diet_kg_co2e)} kg</td>
+                    <td className="py-3 pr-2 sm:pr-4 font-semibold text-tdea-green">{formatDecimal(r.total_kg_co2e)} kg</td>
                   </tr>
                 ))}
               </tbody>

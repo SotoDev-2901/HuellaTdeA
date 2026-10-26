@@ -93,7 +93,7 @@ export function InstitutionalSummaryContainer() {
       </div>
 
       <div className="grid gap-4 lg:grid-cols-2">
-        <div className="rounded-card bg-surface p-6 shadow-soft card-hover">
+        <div className="rounded-card bg-surface p-4 sm:p-6 shadow-soft card-hover">
           <h2 className="font-display text-lg font-bold text-ink">Evolución Institucional</h2>
           <div className="mt-4">
             <MonthlyTrendChart
@@ -103,7 +103,7 @@ export function InstitutionalSummaryContainer() {
           </div>
         </div>
 
-        <div className="rounded-card bg-surface p-6 shadow-soft card-hover">
+        <div className="rounded-card bg-surface p-4 sm:p-6 shadow-soft card-hover">
           <h2 className="font-display text-lg font-bold text-ink">Distribución por Categoría</h2>
           <div className="mt-4">
             <EmissionsDonutChart
@@ -125,14 +125,14 @@ export function InstitutionalSummaryContainer() {
       </div>
 
       <div className="grid gap-4 lg:grid-cols-2">
-        <div className="rounded-card bg-surface p-6 shadow-soft card-hover">
+        <div className="rounded-card bg-surface p-4 sm:p-6 shadow-soft card-hover">
           <h2 className="font-display text-lg font-bold text-ink">Top Zonas con Mayor Huella</h2>
           <div className="mt-4">
             <ZoneRankingList zones={summary.topZones} />
           </div>
         </div>
 
-        <div className="rounded-card bg-surface p-6 shadow-soft card-hover">
+        <div className="rounded-card bg-surface p-4 sm:p-6 shadow-soft card-hover">
           <h2 className="font-display text-lg font-bold text-ink">Composición de Residuos</h2>
           <div className="mt-4">
             {summary.wasteComposition.plastico + summary.wasteComposition.papel + summary.wasteComposition.organico >

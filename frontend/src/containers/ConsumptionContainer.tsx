@@ -139,7 +139,7 @@ export function ConsumptionContainer() {
         </div>
       </div>
 
-      <div className="rounded-card bg-surface p-6 shadow-soft card-hover">
+      <div className="rounded-card bg-surface p-4 sm:p-6 shadow-soft card-hover">
         <ConsumptionTable
           records={records}
           loading={loading}

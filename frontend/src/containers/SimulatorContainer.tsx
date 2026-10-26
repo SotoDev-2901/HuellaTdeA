@@ -65,7 +65,7 @@ export function SimulatorContainer() {
 
   return (
     <div className="grid max-w-4xl gap-4">
-      <form onSubmit={handleAsk} className="rounded-card bg-surface p-6 shadow-soft">
+      <form onSubmit={handleAsk} className="rounded-card bg-surface p-4 sm:p-6 shadow-soft">
         <label htmlFor="pregunta" className="font-display text-lg font-bold text-ink">
           Pregunta lo que quieras
         </label>

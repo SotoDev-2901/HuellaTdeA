@@ -17,7 +17,7 @@ export function ConfirmDialog({
 }: ConfirmDialogProps) {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30 px-4">
-      <div className="w-full max-w-sm rounded-card bg-surface p-6 shadow-soft">
+      <div className="w-full max-w-sm rounded-card bg-surface p-4 sm:p-6 shadow-soft">
         <h2 className="font-display text-lg font-bold text-ink">{title}</h2>
         <p className="mt-2 text-sm text-graphite">{message}</p>
 
