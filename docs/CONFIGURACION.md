@@ -46,3 +46,15 @@ docker compose exec backend npm run seed:demo
 ```
 
 Borra zonas, usuarios no administradores y todos sus registros, y crea 120 estudiantes y 25 docentes (contraseña `Demo12345`) con hasta 12 meses de cuestionarios, más 10 zonas con 24 meses de consumo y residuos. Los datos son deterministas: cada ejecución genera lo mismo.
+
+## Proveedor de correo por API (Brevo)
+
+Donde el hosting bloquea SMTP (por ejemplo, algunos planes gratuitos) se puede enviar por la API HTTPS de Brevo:
+
+```env
+MAIL_PROVIDER=brevo
+BREVO_API_KEY=xkeysib-...
+MAIL_FROM="Huella TdeA <remitente-verificado@dominio.co>"
+```
+
+El remitente debe estar verificado en Brevo. Ver [DESPLIEGUE_RENDER.md](DESPLIEGUE_RENDER.md).

@@ -9,7 +9,20 @@ export const env = {
   nodeEnv: process.env.NODE_ENV || 'development',
   jwtSecret: process.env.JWT_SECRET,
   frontendUrl: process.env.FRONTEND_URL || 'http://localhost:5173',
+  // Orígenes permitidos por CORS: el frontend desplegado y, en desarrollo, localhost.
+  corsOrigins: (process.env.CORS_ORIGINS || process.env.FRONTEND_URL || 'http://localhost:5173')
+    .split(',')
+    .map((o) => o.trim().replace(/\/$/, ''))
+    .filter(Boolean),
   db: {
+    // En Render (y similares) basta con DATABASE_URL; si no existe se usan las variables sueltas.
+    ...(process.env.DATABASE_URL
+      ? {
+          connectionString: process.env.DATABASE_URL,
+          // La base externa de Render exige SSL; la interna (misma región) no. Se activa con DB_SSL=true.
+          ssl: process.env.DB_SSL === 'true' ? { rejectUnauthorized: false } : undefined,
+        }
+      : {}),
     host: process.env.DB_HOST || 'localhost',
     port: Number(process.env.DB_PORT) || 5432,
     database: process.env.DB_NAME || 'huellatdea',
@@ -25,6 +38,9 @@ export const env = {
     user: process.env.MAIL_USER || '',
     password: process.env.MAIL_PASSWORD || '',
     secure: process.env.MAIL_SECURE === 'true',
+    // 'smtp' (por defecto) o 'brevo' (API HTTPS: útil donde el hosting bloquea los puertos SMTP).
+    provider: (process.env.MAIL_PROVIDER || 'smtp').toLowerCase(),
+    brevoApiKey: process.env.BREVO_API_KEY || '',
   },
   // Cualquier proveedor con API compatible con OpenAI (Groq, OpenRouter, Gemini, Ollama...).
   // Por defecto Groq, que tiene un plan gratuito sin tarjeta.

@@ -1,0 +1,60 @@
+# Blueprint de Render: base de datos PostgreSQL, API (Node) y frontend (sitio estático).
+# Los valores con `sync: false` se piden en el panel de Render la primera vez; los secretos
+# nunca se guardan en el repositorio. Guía paso a paso: docs/DESPLIEGUE_RENDER.md
+databases:
+  - name: huellatdea-db
+    databaseName: huellatdea
+    user: huellatdea
+    plan: free
+
+services:
+  - type: web
+    name: huellatdea-api
+    runtime: node
+    rootDir: backend
+    plan: free
+    # --include=dev porque el build necesita TypeScript y el arranque usa node-pg-migrate y tsx.
+    buildCommand: npm install --include=dev && npm run build
+    # Migra la base, crea/actualiza el administrador, carga datos demo solo si la base está vacía y arranca.
+    startCommand: npm run start:render
+    healthCheckPath: /health/db
+    envVars:
+      - key: NODE_VERSION
+        value: "24"
+      - key: NODE_ENV
+        value: production
+      - key: DATABASE_URL
+        fromDatabase:
+          name: huellatdea-db
+          property: connectionString
+      - key: JWT_SECRET
+        generateValue: true
+      - key: FRONTEND_URL # URL pública del frontend, p. ej. https://huellatdea-web.onrender.com
+        sync: false
+      - key: ADMIN_PASSWORD # mínimo 10 caracteres; el script de arranque lo exige en producción
+        sync: false
+      - key: SEED_DEMO # "true" carga datos de demostración solo en el primer arranque
+        value: "true"
+      - key: MAIL_PROVIDER # Render puede bloquear SMTP en el plan gratuito: se usa la API HTTPS de Brevo
+        value: brevo
+      - key: BREVO_API_KEY
+        sync: false
+      - key: MAIL_FROM # debe ser un remitente verificado en Brevo, p. ej. "Huella TdeA <cuenta@gmail.com>"
+        sync: false
+      - key: AI_API_KEY # opcional: sin clave, las recomendaciones usan el catálogo por reglas
+        sync: false
+
+  - type: web
+    name: huellatdea-web
+    runtime: static
+    rootDir: frontend
+    buildCommand: npm install --include=dev && npm run build
+    staticPublishPath: dist
+    routes:
+      # Las rutas de React (/dashboard, /simulador...) deben servir siempre index.html.
+      - type: rewrite
+        source: /*
+        destination: /index.html
+    envVars:
+      - key: VITE_API_URL # URL de la API terminada en /api, p. ej. https://huellatdea-api.onrender.com/api
+        sync: false

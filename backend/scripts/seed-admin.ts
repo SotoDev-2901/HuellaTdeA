@@ -6,6 +6,11 @@ const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || 'Admin12345';
 const ADMIN_NAME = process.env.ADMIN_NAME || 'Administrador TdeA';
 
 async function main() {
+  // En producción no se acepta la contraseña por defecto: una cuenta de administrador pública con
+  // 'Admin12345' sería un hueco de seguridad.
+  if (process.env.NODE_ENV === 'production' && (!process.env.ADMIN_PASSWORD || ADMIN_PASSWORD.length < 10)) {
+    throw new Error('En producción define ADMIN_PASSWORD (mínimo 10 caracteres) antes de crear el administrador.');
+  }
   const passwordHash = await bcrypt.hash(ADMIN_PASSWORD, 10);
 
   const { rows } = await pool.query(
