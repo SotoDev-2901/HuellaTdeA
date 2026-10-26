@@ -19,7 +19,7 @@ function errorMessage(err: unknown, fallback: string): string {
 
 function Card({ title, description, children }: { title: string; description?: string; children: React.ReactNode }) {
   return (
-    <section className="rounded-card bg-surface p-6 shadow-soft">
+    <section className="rounded-card bg-surface p-4 sm:p-6 shadow-soft">
       <h2 className="font-display text-lg font-bold text-ink">{title}</h2>
       {description ? <p className="mt-1 text-sm text-graphite">{description}</p> : null}
       <div className="mt-4">{children}</div>

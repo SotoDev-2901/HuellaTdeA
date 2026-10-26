@@ -35,13 +35,13 @@ export function ConsumptionTable({ records, loading, onEdit, onDelete }: Consump
 
   return (
     <div className="overflow-x-auto">
-      <table className="w-full text-left text-sm">
+      <table className="w-full text-left text-xs sm:text-sm">
         <thead>
           <tr className="border-b border-tdea-blush-border text-xs uppercase text-silver">
-            <th className="py-2 pr-4 font-medium">Zona</th>
-            <th className="py-2 pr-4 font-medium">Consumo (kWh)</th>
-            <th className="py-2 pr-4 font-medium">Fecha registrada</th>
-            <th className="py-2 pr-4 font-medium">Acciones</th>
+            <th className="py-2 pr-2 sm:pr-4 font-medium">Zona</th>
+            <th className="py-2 pr-2 sm:pr-4 font-medium">Consumo (kWh)</th>
+            <th className="py-2 pr-2 sm:pr-4 font-medium">Fecha registrada</th>
+            <th className="py-2 pr-2 sm:pr-4 font-medium">Acciones</th>
           </tr>
         </thead>
         <tbody>
@@ -50,9 +50,9 @@ export function ConsumptionTable({ records, loading, onEdit, onDelete }: Consump
               key={record.id}
               className="border-b border-tdea-blush-border/60 transition-colors hover:bg-tdea-blush"
             >
-              <td className="py-3 pr-4 font-medium text-ink">{record.zone_name}</td>
-              <td className="py-3 pr-4 text-graphite">{formatDecimal(record.kwh)} kWh</td>
-              <td className="py-3 pr-4 text-graphite">
+              <td className="py-3 pr-2 sm:pr-4 font-medium text-ink">{record.zone_name}</td>
+              <td className="py-3 pr-2 sm:pr-4 text-graphite">{formatDecimal(record.kwh)} kWh</td>
+              <td className="py-3 pr-2 sm:pr-4 text-graphite">
                 {new Date(record.recorded_at).toLocaleDateString('es-CO', {
                   day: '2-digit',
                   month: 'short',
@@ -60,7 +60,7 @@ export function ConsumptionTable({ records, loading, onEdit, onDelete }: Consump
                   timeZone: 'UTC',
                 })}
               </td>
-              <td className="py-3 pr-4">
+              <td className="py-3 pr-2 sm:pr-4">
                 <div className="flex items-center gap-3">
                   <button
                     onClick={() => onEdit(record)}

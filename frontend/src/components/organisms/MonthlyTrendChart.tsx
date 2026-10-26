@@ -62,11 +62,10 @@ export function MonthlyTrendChart({
 
   return (
     <div className="relative">
-      <div className="overflow-x-auto">
+      <div>
       <svg
         viewBox={`0 0 ${WIDTH} ${HEIGHT}`}
-        width={WIDTH}
-        height={HEIGHT}
+        className="h-auto w-full"
         role="img"
         aria-label="Evolución mensual de tu huella"
         onMouseLeave={() => setHoverIndex(null)}
@@ -116,8 +115,9 @@ export function MonthlyTrendChart({
         <div
           className="print-hide pointer-events-none absolute z-10 rounded-input bg-[#1a1a1a] px-3 py-2 text-xs font-medium text-white shadow-soft"
           style={{
-            left: hovered.x,
-            top: hovered.y + 14,
+            // El gráfico escala con el ancho de la pantalla: la posición va en porcentaje del área dibujada.
+            left: `${(hovered.x / WIDTH) * 100}%`,
+            top: `calc(${(hovered.y / HEIGHT) * 100}% + 14px)`,
             // Cerca de los bordes izquierdo/derecho, no centrar el tooltip en el punto —
             // así nunca se sale del contenedor ni se recorta.
             transform:

@@ -37,14 +37,14 @@ export function ZonesTable({ zones, loading, onEdit, onDelete }: ZonesTableProps
 
   return (
     <div className="overflow-x-auto">
-      <table className="w-full text-left text-sm">
+      <table className="w-full text-left text-xs sm:text-sm">
         <thead>
           <tr className="border-b border-tdea-blush-border text-xs uppercase text-silver">
-            <th className="py-2 pr-4 font-medium">Nombre de la zona</th>
-            <th className="py-2 pr-4 font-medium">Tipo de zona</th>
-            <th className="py-2 pr-4 font-medium">Estado</th>
-            <th className="py-2 pr-4 font-medium">Fecha de registro</th>
-            <th className="py-2 pr-4 font-medium">Acciones</th>
+            <th className="py-2 pr-2 sm:pr-4 font-medium">Nombre de la zona</th>
+            <th className="py-2 pr-2 sm:pr-4 font-medium">Tipo de zona</th>
+            <th className="py-2 pr-2 sm:pr-4 font-medium">Estado</th>
+            <th className="hidden py-2 pr-2 font-medium sm:table-cell sm:pr-4">Fecha de registro</th>
+            <th className="py-2 pr-2 sm:pr-4 font-medium">Acciones</th>
           </tr>
         </thead>
         <tbody>
@@ -53,19 +53,19 @@ export function ZonesTable({ zones, loading, onEdit, onDelete }: ZonesTableProps
               key={zone.id}
               className="border-b border-tdea-blush-border/60 transition-colors hover:bg-tdea-blush"
             >
-              <td className="py-3 pr-4 font-medium text-ink">{zone.name}</td>
-              <td className="py-3 pr-4 text-graphite">{typeLabels[zone.type]}</td>
-              <td className="py-3 pr-4">
+              <td className="py-3 pr-2 sm:pr-4 font-medium text-ink">{zone.name}</td>
+              <td className="py-3 pr-2 sm:pr-4 text-graphite">{typeLabels[zone.type]}</td>
+              <td className="py-3 pr-2 sm:pr-4">
                 <StatusPill status={zone.status} />
               </td>
-              <td className="py-3 pr-4 text-graphite">
+              <td className="hidden py-3 pr-2 text-graphite sm:table-cell sm:pr-4">
                 {new Date(zone.created_at).toLocaleDateString('es-CO', {
                   day: '2-digit',
                   month: 'short',
                   year: 'numeric',
                 })}
               </td>
-              <td className="py-3 pr-4">
+              <td className="py-3 pr-2 sm:pr-4">
                 <div className="flex items-center gap-3">
                   <button
                     onClick={() => onEdit(zone)}

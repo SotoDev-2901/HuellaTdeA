@@ -141,7 +141,7 @@ export function WasteContainer() {
         </div>
       </div>
 
-      <div className="rounded-card bg-surface p-6 shadow-soft card-hover">
+      <div className="rounded-card bg-surface p-4 sm:p-6 shadow-soft card-hover">
         <WasteTable
           records={records}
           loading={loading}
