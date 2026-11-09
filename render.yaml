@@ -1,6 +1,6 @@
 # Blueprint de Render: base de datos PostgreSQL, API (Node) y frontend (sitio estático).
 # Los valores con `sync: false` se piden en el panel de Render la primera vez; los secretos
-# nunca se guardan en el repositorio. Guía paso a paso: docs/DESPLIEGUE_RENDER.md
+# nunca se guardan en el repositorio. Guía paso a paso: sección "Despliegue en Render" del README.md
 databases:
   - name: huellatdea-db
     databaseName: huellatdea
