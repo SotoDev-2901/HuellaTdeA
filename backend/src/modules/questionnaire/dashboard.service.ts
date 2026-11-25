@@ -9,20 +9,22 @@ function round2(value: number): number {
 }
 
 /**
- * El dashboard personal solo muestra 3 categorías (Transporte, Energía, Residuos) — la
- * Alimentación no se incluye en esta vista por decisión explícita del usuario, aunque sigue
- * calculándose y guardándose para Historial/HU-05. "Energía" agrupa Instalaciones + Dispositivos
- * porque ambas son electricidad consumida en el campus (mismo factor UPME).
+ * El dashboard personal muestra las cinco categorías del cuestionario agrupadas en cuatro:
+ * Transporte, Energía, Residuos y Alimentación, de modo que su total coincide con el del
+ * resultado y el historial. "Energía" agrupa Instalaciones + Dispositivos porque ambas son
+ * electricidad consumida en el campus (mismo factor UPME).
  */
 function toBreakdown(row: RawFootprintRow): PersonalFootprintBreakdown {
   const transporte = Number(row.transport_kg_co2e);
   const energia = Number(row.facilities_kg_co2e) + Number(row.devices_kg_co2e);
   const residuos = Number(row.waste_kg_co2e);
+  const alimentacion = Number(row.diet_kg_co2e);
   return {
     transporte_kg_co2e: round2(transporte),
     energia_kg_co2e: round2(energia),
     residuos_kg_co2e: round2(residuos),
-    total_kg_co2e: round2(transporte + energia + residuos),
+    alimentacion_kg_co2e: round2(alimentacion),
+    total_kg_co2e: round2(transporte + energia + residuos + alimentacion),
   };
 }
 
