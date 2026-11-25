@@ -2,6 +2,7 @@ export interface PersonalFootprintBreakdown {
   transporte_kg_co2e: number;
   energia_kg_co2e: number;
   residuos_kg_co2e: number;
+  alimentacion_kg_co2e: number;
   total_kg_co2e: number;
 }
 

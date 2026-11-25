@@ -71,7 +71,7 @@ test('HU-personal-dashboard: usuario sin respuestas obtiene hasResponses=false y
   assert.equal(data.latest, null);
 });
 
-test('HU-personal-dashboard: el total personal excluye alimentación y agrupa instalaciones+dispositivos en energía', async () => {
+test('HU-personal-dashboard: el total personal incluye la alimentación y agrupa instalaciones+dispositivos en energía', async () => {
   const { token } = await createUser('con-respuesta');
   const submitted = await submitQuestionnaire(token);
   const r = submitted.response;
@@ -84,14 +84,15 @@ test('HU-personal-dashboard: el total personal excluye alimentación y agrupa in
   assert.equal(data.latest.transporte_kg_co2e, Number(r.transport_kg_co2e));
   assert.equal(data.latest.energia_kg_co2e, expectedEnergia);
   assert.equal(data.latest.residuos_kg_co2e, Number(r.waste_kg_co2e));
+  assert.equal(data.latest.alimentacion_kg_co2e, Number(r.diet_kg_co2e));
 
   const expectedTotal = round2(
-    Number(r.transport_kg_co2e) + expectedEnergia + Number(r.waste_kg_co2e),
+    Number(r.transport_kg_co2e) + expectedEnergia + Number(r.waste_kg_co2e) + Number(r.diet_kg_co2e),
   );
   assert.equal(data.latest.total_kg_co2e, expectedTotal);
-  // La huella de alimentación existe en la respuesta guardada pero no debe sumarse aquí.
-  assert.ok(Number(r.diet_kg_co2e) > 0, 'la dieta sí genera huella (para HU-05/Historial)');
-  assert.notEqual(data.latest.total_kg_co2e, Number(r.total_kg_co2e));
+  // El total del dashboard coincide con el del resultado y el historial (las cinco categorías).
+  assert.ok(Number(r.diet_kg_co2e) > 0, 'la dieta genera huella');
+  assert.equal(data.latest.total_kg_co2e, Number(r.total_kg_co2e));
 });
 
 function round2(value: number): number {
@@ -121,7 +122,8 @@ test('HU-personal-dashboard: el promedio TdeA usa solo la última respuesta de c
     Number(secondA.response.transport_kg_co2e) +
       Number(secondA.response.facilities_kg_co2e) +
       Number(secondA.response.devices_kg_co2e) +
-      Number(secondA.response.waste_kg_co2e),
+      Number(secondA.response.waste_kg_co2e) +
+      Number(secondA.response.diet_kg_co2e),
   );
   assert.ok(data.tdeaAverageKgCo2e > 0);
   // El promedio de A(latest) y B debe ser al menos tan grande como el menor de los dos.

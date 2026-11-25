@@ -5,12 +5,13 @@ export interface RawFootprintRow {
   facilities_kg_co2e: string;
   devices_kg_co2e: string;
   waste_kg_co2e: string;
+  diet_kg_co2e: string;
   created_at: Date;
 }
 
 export async function getResponsesForUser(userId: string): Promise<RawFootprintRow[]> {
   const { rows } = await pool.query<RawFootprintRow>(
-    `SELECT transport_kg_co2e, facilities_kg_co2e, devices_kg_co2e, waste_kg_co2e, created_at
+    `SELECT transport_kg_co2e, facilities_kg_co2e, devices_kg_co2e, waste_kg_co2e, diet_kg_co2e, created_at
      FROM questionnaire_responses
      WHERE user_id = $1
      ORDER BY created_at ASC`,
@@ -27,7 +28,7 @@ export async function getResponsesForUser(userId: string): Promise<RawFootprintR
 export async function getLatestResponsePerUser(): Promise<RawFootprintRow[]> {
   const { rows } = await pool.query<RawFootprintRow>(
     `SELECT DISTINCT ON (user_id)
-       transport_kg_co2e, facilities_kg_co2e, devices_kg_co2e, waste_kg_co2e, created_at
+       transport_kg_co2e, facilities_kg_co2e, devices_kg_co2e, waste_kg_co2e, diet_kg_co2e, created_at
      FROM questionnaire_responses
      ORDER BY user_id, created_at DESC`,
   );

@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { FiTruck, FiZap, FiTrash2 } from 'react-icons/fi';
+import { FiTruck, FiZap, FiTrash2, FiCoffee } from 'react-icons/fi';
 import { EmissionsDonutChart } from '../components/organisms/EmissionsDonutChart';
 import { MonthlyTrendChart } from '../components/organisms/MonthlyTrendChart';
 import { TdeaComparisonBar } from '../components/organisms/TdeaComparisonBar';
@@ -105,11 +105,12 @@ export function PersonalDashboardContainer() {
         </div>
       ) : null}
 
-      <div className="grid gap-4 sm:grid-cols-4">
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
         <StatCard icon={FiZap} label="Huella personal total" valueKg={latest.total_kg_co2e} unit={dashUnit} highlight />
         <StatCard icon={FiTruck} label="Transporte" valueKg={latest.transporte_kg_co2e} unit={dashUnit} />
         <StatCard icon={FiZap} label="Energía" valueKg={latest.energia_kg_co2e} unit={dashUnit} />
         <StatCard icon={FiTrash2} label="Residuos" valueKg={latest.residuos_kg_co2e} unit={dashUnit} />
+        <StatCard icon={FiCoffee} label="Alimentación" valueKg={latest.alimentacion_kg_co2e} unit={dashUnit} />
       </div>
       {deltaKg !== null ? (
         <p className="-mt-3 text-xs text-graphite">
@@ -130,6 +131,7 @@ export function PersonalDashboardContainer() {
                 { label: 'Transporte', value: latest.transporte_kg_co2e, colorVar: 'var(--color-tdea-green-dark)' },
                 { label: 'Energía', value: latest.energia_kg_co2e, colorVar: 'var(--color-tdea-green)' },
                 { label: 'Residuos', value: latest.residuos_kg_co2e, colorVar: 'var(--color-tdea-green-light)' },
+                { label: 'Alimentación', value: latest.alimentacion_kg_co2e, colorVar: 'var(--color-silver)' },
               ]}
             />
           </div>
